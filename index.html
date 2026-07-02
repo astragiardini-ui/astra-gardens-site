@@ -45,7 +45,7 @@
   .burger{display:none;background:none;border:0;cursor:pointer}
 
   /* HERO */
-  .hero{position:relative;overflow:hidden;background:linear-gradient(160deg,#0e3a2c 0%,#134c39 46%,#1c6347 100%);color:#fff}
+  .hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(102deg,rgba(11,43,32,.95) 0%,rgba(19,76,57,.84) 46%,rgba(28,99,71,.52) 100%),url('https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1920&q=75') center/cover}
   .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(1200px 500px at 80% -10%,rgba(122,177,137,.32),transparent 60%),radial-gradient(900px 500px at 0% 110%,rgba(201,162,75,.18),transparent 55%);pointer-events:none}
   .hero .leaves{position:absolute;inset:0;opacity:.14;background-size:340px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='340' height='340' viewBox='0 0 340 340'><g fill='none' stroke='%23ffffff' stroke-width='1.4' opacity='.8'><path d='M60 250 C90 180 150 140 210 120'/><path d='M210 120 c-34 6 -60 26 -74 58 34 -2 62 -20 74 -58z'/><path d='M210 120 c-8 -34 -34 -58 -70 -66 4 34 26 60 70 66z'/><path d='M250 300 C240 240 250 190 290 150'/></g></svg>")}
   .hero-inner{position:relative;z-index:2;padding:96px 0 108px;max-width:760px}
@@ -73,7 +73,7 @@
   /* HERITAGE */
   .heritage{background:#fff}
   .heritage .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
-  .heritage .art{aspect-ratio:4/3.4;border-radius:20px;background:linear-gradient(150deg,#1c6347,#2a8a52 60%,#7ab189);position:relative;overflow:hidden;box-shadow:0 30px 60px -30px rgba(17,66,50,.5)}
+  .heritage .art{aspect-ratio:4/3.4;border-radius:20px;background:url('https://images.unsplash.com/photo-1560749003-f4b1e17e2dff?auto=format&fit=crop&w=1100&q=75') center/cover;position:relative;overflow:hidden;box-shadow:0 30px 60px -30px rgba(17,66,50,.5)}
   .heritage .art .badge{position:absolute;left:22px;bottom:22px;background:rgba(255,255,255,.94);border-radius:14px;padding:16px 20px}
   .heritage .art .badge b{font-family:'Fraunces',serif;font-size:30px;color:var(--green);display:block;line-height:1}
   .heritage .art .badge span{font-size:12.5px;color:var(--muted);font-weight:600}
@@ -111,12 +111,12 @@
   .tile::after{content:attr(data-label);position:absolute;left:14px;bottom:12px;color:#fff;font-weight:700;font-size:14px;text-shadow:0 1px 8px rgba(0,0,0,.5);z-index:2}
   .tile::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(14,58,44,.55));z-index:1}
   .tile:hover{transform:scale(1.02)}
-  .g1{background:linear-gradient(140deg,#2a8a52,#134c39)}
-  .g2{background:linear-gradient(140deg,#7ab189,#2a8a52)}
-  .g3{background:linear-gradient(140deg,#1c6347,#0e3a2c)}
-  .g4{background:linear-gradient(140deg,#3f7d5a,#7ab189)}
-  .g5{background:linear-gradient(140deg,#134c39,#2a8a52)}
-  .g6{background:linear-gradient(140deg,#5a9b6f,#134c39)}
+  .g1{background:url('https://images.unsplash.com/photo-1558904541-efa843a96f01?auto=format&fit=crop&w=760&q=72') center/cover}
+  .g2{background:url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=760&q=72') center/cover}
+  .g3{background:url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=760&q=72') center/cover}
+  .g4{background:url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=760&q=72') center/cover}
+  .g5{background:url('https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?auto=format&fit=crop&w=760&q=72') center/cover}
+  .g6{background:url('https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=760&q=72') center/cover}
   .gal-note{text-align:center;color:var(--muted);font-size:13.5px;margin-top:22px;font-style:italic}
 
   /* QUOTE */
@@ -222,7 +222,6 @@
 <section class="pad heritage" id="chi">
   <div class="wrap grid">
     <div class="art reveal">
-      <span class="ph-note">Foto Astra Gardens</span>
       <div class="badge"><b>100%</b><span>giardini seguiti<br>con passione</span></div>
     </div>
     <div class="reveal" data-d="1">
@@ -320,14 +319,14 @@
       <p>Uno sguardo ai risultati: prati curati, siepi sagomate e nuove realizzazioni.</p>
     </div>
     <div class="gal-grid">
-      <div class="tile g1 reveal" data-d="1" data-label="Manutenzione prato"></div>
-      <div class="tile g2 reveal" data-d="2" data-label="Potatura siepi"></div>
-      <div class="tile g3 reveal" data-d="3" data-label="Nuova aiuola"></div>
-      <div class="tile g4 reveal" data-d="1" data-label="Impianto d'irrigazione"></div>
-      <div class="tile g5 reveal" data-d="2" data-label="Prato in zolla"></div>
-      <div class="tile g6 reveal" data-d="3" data-label="Realizzazione giardino"></div>
+      <div class="tile g1 reveal" data-d="1" data-label="Taglio e cura del prato"></div>
+      <div class="tile g2 reveal" data-d="2" data-label="Aiuole fiorite"></div>
+      <div class="tile g3 reveal" data-d="3" data-label="Messa a dimora"></div>
+      <div class="tile g4 reveal" data-d="1" data-label="Manutenzione e cura"></div>
+      <div class="tile g5 reveal" data-d="2" data-label="Verde curato"></div>
+      <div class="tile g6 reveal" data-d="3" data-label="Nuove realizzazioni"></div>
     </div>
-    <p class="gal-note">Le fotografie dei giardini di Astra Gardens verranno inserite qui.</p>
+    <p class="gal-note">Immagini di riferimento — presto le foto reali dei giardini seguiti da Astra Gardens.</p>
   </div>
 </section>
 
