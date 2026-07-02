@@ -45,7 +45,7 @@
   .burger{display:none;background:none;border:0;cursor:pointer}
 
   /* HERO */
-  .hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(102deg,rgba(11,43,32,.95) 0%,rgba(19,76,57,.84) 46%,rgba(28,99,71,.52) 100%),url('https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1920&q=75') center/cover}
+  .hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(100deg,rgba(10,40,30,.93) 0%,rgba(16,64,48,.70) 42%,rgba(22,82,60,.30) 100%),url('https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1920&q=75') center/cover}
   .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(1200px 500px at 80% -10%,rgba(122,177,137,.32),transparent 60%),radial-gradient(900px 500px at 0% 110%,rgba(201,162,75,.18),transparent 55%);pointer-events:none}
   .hero .leaves{position:absolute;inset:0;opacity:.14;background-size:340px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='340' height='340' viewBox='0 0 340 340'><g fill='none' stroke='%23ffffff' stroke-width='1.4' opacity='.8'><path d='M60 250 C90 180 150 140 210 120'/><path d='M210 120 c-34 6 -60 26 -74 58 34 -2 62 -20 74 -58z'/><path d='M210 120 c-8 -34 -34 -58 -70 -66 4 34 26 60 70 66z'/><path d='M250 300 C240 240 250 190 290 150'/></g></svg>")}
   .hero-inner{position:relative;z-index:2;padding:96px 0 108px;max-width:760px}
@@ -160,7 +160,11 @@
     .foot-grid{grid-template-columns:1fr 1fr}
   }
   @media(max-width:640px){
-    .nav-links{display:none}
+    .nav-links{position:absolute;top:74px;left:0;right:0;background:#fff;flex-direction:column;gap:0;padding:6px 0 12px;border-bottom:1px solid var(--line);box-shadow:0 16px 34px rgba(20,39,28,.1);display:none}
+    .nav-links.open{display:flex}
+    .nav-links a{padding:13px 24px;width:100%;font-size:16px}
+    .burger{display:block}
+    .nav-cta{display:none}
     .cards,.why .cards,.gal-grid{grid-template-columns:1fr}
     section.pad{padding:70px 0}
     .foot-grid{grid-template-columns:1fr}
@@ -188,6 +192,9 @@
       <a href="#contatti">Contatti</a>
     </nav>
     <a class="btn btn-primary nav-cta" href="#contatti">Preventivo gratuito</a>
+    <button class="burger" id="burger" aria-label="Apri menu">
+      <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#114232" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
   </div>
 </header>
 
@@ -396,6 +403,10 @@
   // sticky header shadow
   const hdr = document.getElementById('hdr');
   addEventListener('scroll', () => hdr.classList.toggle('scrolled', scrollY > 12));
+  // mobile menu
+  const nav = document.querySelector('.nav-links');
+  document.getElementById('burger').addEventListener('click', () => nav.classList.toggle('open'));
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
   // scroll reveal
   const io = new IntersectionObserver((es) => {
     es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
