@@ -1,0 +1,39 @@
+{
+ "_nota": "Scelte dei video del sito. Percorsi relativi alla cartella MEDIA (~/Documents/AstraMarketing). Tempi in secondi. ritaglio = [centro x, y inizio, y fine] in frazioni del fotogramma verticale; null = intero. Mai il tagliabordi.",
+ "apertura": {
+  "dissolvenza": 0.25,
+  "uscite": [
+   {"file": "assets/video/astra-gardens-lavori.mp4", "larghezza": 720, "max_kb": 3000},
+   {"file": "assets/video/astra-gardens-lavori-telefono.mp4", "larghezza": 540, "max_kb": 1500}
+  ],
+  "poster": "assets/video/astra-gardens-lavori-poster",
+  "pezzi": [
+   {"nome": "Giardino di pregio con piscina", "sorgente": "nuovi_05ott/casa-piscina-1.mov", "inizio": 0.0, "durata": 2.3, "ritaglio": [0.6, 0.12, 0.53]},
+   {"nome": "Abbattimento controllato", "sorgente": "instagram_storie/tree-climbing_01.mp4", "inizio": 0.0, "durata": 2.2, "ritaglio": null},
+   {"nome": "Tree climbing sul cedro", "sorgente": "instagram/DGl4b-bNepO_1.mp4", "inizio": 10.65, "durata": 1.8, "ritaglio": null},
+   {"nome": "Rami tagliati per il cippatore", "sorgente": "nuovi_05ott/cippatore-2.mov", "inizio": 4.8, "durata": 2.0, "ritaglio": null},
+   {"nome": "Cippatore al lavoro", "sorgente": "nuovi_05ott/cippatore-1.mov", "inizio": 2.0, "durata": 1.9, "ritaglio": [0.22, 0.4, 0.82]},
+   {"nome": "Camion della terra e miniescavatore", "sorgente": "nuovi_05ott/video-IMG_2248.mov", "inizio": 5.5, "durata": 2.5, "ritaglio": null},
+   {"nome": "Giardino con i fiori arancio", "sorgente": "instagram/DS9OngxiNwD.mp4", "inizio": 4.9, "durata": 1.85, "ritaglio": null},
+   {"nome": "Impianto antizanzare", "sorgente": "nuovi_05ott/impianto-antizanzare.mov", "inizio": 2.0, "durata": 2.2, "ritaglio": null}
+  ]
+ },
+ "cartella_clip": "assets/video/clip",
+ "max_kb_clip": 460,
+ "uscite_clip": [
+  {"suffisso": "", "larghezza": 540, "max_kb": 460},
+  {"suffisso": "-telefono", "larghezza": 432, "max_kb": 330}
+ ],
+ "clip": [
+  {"nome": "manutenzione", "descrizione": "giardino di pregio, alberi e rose", "sorgente": "instagram_storie/casa_01.mp4", "inizio": 0.3, "durata": 4.0, "ritaglio": null},
+  {"nome": "tree-climbing", "descrizione": "potatura in tree climbing su un cedro", "sorgente": "instagram_storie/tree-climbing_06.mp4", "inizio": 0.5, "durata": 3.5, "ritaglio": null},
+  {"nome": "abbattimento", "descrizione": "abbattimento controllato a sezioni", "sorgente": "instagram_storie/tree-climbing_01.mp4", "inizio": 0.0, "durata": 4.0, "ritaglio": null},
+  {"nome": "cippatura", "descrizione": "cippatore al lavoro", "sorgente": "nuovi_05ott/cippatore-1.mov", "inizio": 1.0, "durata": 4.0, "ritaglio": [0.22, 0.4, 0.82]},
+  {"nome": "movimento-terra", "descrizione": "miniescavatore e furgone Astra Gardens", "sorgente": "instagram_storie/movimento-terra_01.mp4", "inizio": 0.5, "durata": 4.0, "ritaglio": null},
+  {"nome": "antizanzare", "descrizione": "nebulizzazione lungo la siepe", "sorgente": "nuovi_05ott/impianto-antizanzare.mov", "inizio": 2.0, "durata": 4.0, "ritaglio": null},
+  {"nome": "cantiere-terra", "descrizione": "camion che scarica la terra e miniescavatore", "sorgente": "nuovi_05ott/video-IMG_2248.mov", "inizio": 4.0, "durata": 4.5, "ritaglio": null},
+  {"nome": "robot", "descrizione": "robot rasaerba tra gli ulivi", "sorgente": "instagram_storie/robot-rasaerba_02.mp4", "inizio": 1.0, "durata": 4.0, "ritaglio": null},
+  {"nome": "fioriture", "descrizione": "messa a dimora di nuove fioriture", "sorgente": "instagram_storie/aiuole_01.mp4", "inizio": 2.0, "durata": 4.0, "ritaglio": null},
+  {"nome": "irrigazione", "descrizione": "irrigazione automatica in funzione", "sorgente": "instagram_storie/prati-sintetici_01.mp4", "inizio": 0.5, "durata": 4.0, "ritaglio": null}
+ ]
+}
