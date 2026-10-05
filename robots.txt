@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://astragiardini-ui.github.io/astra-gardens-site/sitemap.xml

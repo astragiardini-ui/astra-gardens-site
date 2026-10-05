@@ -1,417 +1,646 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Astra Gardens — Giardinieri a Flero e Brescia | Manutenzione, potature, irrigazione</title>
-<meta name="description" content="Astra Gardens: giardinieri di fiducia a Flero e Brescia. Manutenzione giardini, taglio prato, potature, impianti d'irrigazione e realizzazioni. Preventivo gratuito, subito." />
-<meta property="og:title" content="Astra Gardens — Il tuo giardino, curato da chi lo ama" />
-<meta property="og:description" content="Manutenzione, potature, irrigazione e realizzazioni. Vicino a te, a Flero e Brescia. Chiedi il preventivo gratuito." />
-<meta property="og:type" content="website" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<style>
-  :root{
-    --green:#114232; --green2:#2a8a52; --sage:#7ab189; --leaf:#e7f2ea;
-    --cream:#f5f7f4; --ink:#14271c; --muted:#5c6f62; --line:#e4ebe5; --gold:#c9a24b;
-    --maxw:1180px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{font-family:'Manrope',system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.65;-webkit-font-smoothing:antialiased}
-  h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;line-height:1.12;letter-spacing:-.01em}
-  a{color:inherit;text-decoration:none}
-  img{max-width:100%;display:block}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
-  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:15px;padding:14px 24px;border-radius:999px;transition:.25s;cursor:pointer;border:0}
-  .btn-primary{background:var(--green);color:#fff}
-  .btn-primary:hover{background:#0c3527;transform:translateY(-2px);box-shadow:0 10px 26px rgba(17,66,50,.28)}
-  .btn-wa{background:#25D366;color:#fff}
-  .btn-wa:hover{filter:brightness(.95);transform:translateY(-2px)}
-  .btn-ghost{background:transparent;color:var(--green);border:1.5px solid var(--green)}
-  .btn-ghost:hover{background:var(--green);color:#fff}
-
-  /* HEADER */
-  header{position:sticky;top:0;z-index:50;background:rgba(245,247,244,.82);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:.3s}
-  header.scrolled{border-color:var(--line);box-shadow:0 4px 24px rgba(20,39,28,.05)}
-  .nav{display:flex;align-items:center;justify-content:space-between;height:74px}
-  .logo{display:flex;align-items:center;gap:11px;font-family:'Fraunces',serif;font-weight:600;font-size:21px;color:var(--green);letter-spacing:.02em}
-  .logo .mark{width:34px;height:34px;flex:0 0 34px}
-  .nav-links{display:flex;gap:30px;align-items:center}
-  .nav-links a{font-weight:600;font-size:14.5px;color:var(--ink);opacity:.85;transition:.2s}
-  .nav-links a:hover{opacity:1;color:var(--green)}
-  .nav-cta{display:inline-flex}
-  .burger{display:none;background:none;border:0;cursor:pointer}
-
-  /* HERO */
-  .hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(100deg,rgba(10,40,30,.93) 0%,rgba(16,64,48,.70) 42%,rgba(22,82,60,.30) 100%),url('https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1920&q=75') center/cover}
-  .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(1200px 500px at 80% -10%,rgba(122,177,137,.32),transparent 60%),radial-gradient(900px 500px at 0% 110%,rgba(201,162,75,.18),transparent 55%);pointer-events:none}
-  .hero .leaves{position:absolute;inset:0;opacity:.14;background-size:340px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='340' height='340' viewBox='0 0 340 340'><g fill='none' stroke='%23ffffff' stroke-width='1.4' opacity='.8'><path d='M60 250 C90 180 150 140 210 120'/><path d='M210 120 c-34 6 -60 26 -74 58 34 -2 62 -20 74 -58z'/><path d='M210 120 c-8 -34 -34 -58 -70 -66 4 34 26 60 70 66z'/><path d='M250 300 C240 240 250 190 290 150'/></g></svg>")}
-  .hero-inner{position:relative;z-index:2;padding:96px 0 108px;max-width:760px}
-  .kicker{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin-bottom:22px}
-  .kicker::before{content:"";width:26px;height:1.5px;background:var(--sage)}
-  .hero h1{font-size:clamp(38px,6vw,66px);color:#fff;margin-bottom:22px}
-  .hero h1 em{font-style:italic;color:var(--sage)}
-  .hero p.lead{font-size:clamp(17px,2.2vw,21px);color:rgba(255,255,255,.86);max-width:600px;margin-bottom:34px}
-  .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
-  .hero .scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.55);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
-
-  /* TRUST STRIP */
-  .trust{background:var(--green);color:#fff}
-  .trust .wrap{display:flex;flex-wrap:wrap;gap:18px 46px;justify-content:center;padding:20px 24px;font-weight:600;font-size:14.5px;opacity:.95}
-  .trust span{display:inline-flex;align-items:center;gap:9px}
-  .trust svg{flex:0 0 18px}
-
-  /* SECTION base */
-  section.pad{padding:96px 0}
-  .eyebrow{font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:12.5px;color:var(--green2);margin-bottom:14px}
-  .sec-head{max-width:640px;margin-bottom:52px}
-  .sec-head h2{font-size:clamp(28px,4vw,44px);margin-bottom:16px}
-  .sec-head p{color:var(--muted);font-size:17px}
-
-  /* HERITAGE */
-  .heritage{background:#fff}
-  .heritage .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
-  .heritage .art{aspect-ratio:4/3.4;border-radius:20px;background:url('https://images.unsplash.com/photo-1560749003-f4b1e17e2dff?auto=format&fit=crop&w=1100&q=75') center/cover;position:relative;overflow:hidden;box-shadow:0 30px 60px -30px rgba(17,66,50,.5)}
-  .heritage .art .badge{position:absolute;left:22px;bottom:22px;background:rgba(255,255,255,.94);border-radius:14px;padding:16px 20px}
-  .heritage .art .badge b{font-family:'Fraunces',serif;font-size:30px;color:var(--green);display:block;line-height:1}
-  .heritage .art .badge span{font-size:12.5px;color:var(--muted);font-weight:600}
-  .heritage .art .ph-note{position:absolute;top:16px;right:16px;background:rgba(0,0,0,.28);color:#fff;font-size:11px;padding:5px 10px;border-radius:999px;letter-spacing:.03em}
-  .heritage h2{font-size:clamp(28px,4vw,42px);margin-bottom:18px}
-  .heritage p{color:var(--muted);margin-bottom:16px;font-size:16.5px}
-  .heritage .sign{font-family:'Fraunces',serif;font-style:italic;color:var(--green);font-size:18px;margin-top:6px}
-
-  /* SERVICES */
-  .services{background:var(--cream)}
-  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-  .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px 26px;transition:.3s}
-  .card:hover{transform:translateY(-6px);box-shadow:0 24px 44px -24px rgba(17,66,50,.4);border-color:transparent}
-  .card .ic{width:52px;height:52px;border-radius:14px;background:var(--leaf);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
-  .card .ic svg{width:26px;height:26px;stroke:var(--green);fill:none;stroke-width:1.7}
-  .card h3{font-size:20px;margin-bottom:9px}
-  .card p{color:var(--muted);font-size:15px}
-
-  /* WHY */
-  .why{background:#0e3a2c;color:#fff}
-  .why .cards{grid-template-columns:repeat(4,1fr)}
-  .why .card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12)}
-  .why .card:hover{background:rgba(255,255,255,.09);box-shadow:none;transform:translateY(-6px)}
-  .why .card h3{color:#fff;font-size:18px}
-  .why .card p{color:rgba(255,255,255,.72);font-size:14.5px}
-  .why .ic{background:rgba(122,177,137,.16)}
-  .why .ic svg{stroke:var(--sage)}
-  .why .sec-head h2{color:#fff}
-  .why .sec-head p{color:rgba(255,255,255,.72)}
-
-  /* GALLERY */
-  .gallery{background:#fff}
-  .gal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  .tile{aspect-ratio:4/3;border-radius:16px;position:relative;overflow:hidden;background-size:cover;background-position:center;transition:.4s}
-  .tile::after{content:attr(data-label);position:absolute;left:14px;bottom:12px;color:#fff;font-weight:700;font-size:14px;text-shadow:0 1px 8px rgba(0,0,0,.5);z-index:2}
-  .tile::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(14,58,44,.55));z-index:1}
-  .tile:hover{transform:scale(1.02)}
-  .g1{background:url('https://images.unsplash.com/photo-1558904541-efa843a96f01?auto=format&fit=crop&w=760&q=72') center/cover}
-  .g2{background:url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=760&q=72') center/cover}
-  .g3{background:url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=760&q=72') center/cover}
-  .g4{background:url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=760&q=72') center/cover}
-  .g5{background:url('https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?auto=format&fit=crop&w=760&q=72') center/cover}
-  .g6{background:url('https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=760&q=72') center/cover}
-  .gal-note{text-align:center;color:var(--muted);font-size:13.5px;margin-top:22px;font-style:italic}
-
-  /* QUOTE */
-  .quote{background:var(--leaf)}
-  .quote .wrap{max-width:820px;text-align:center}
-  .quote svg{width:44px;height:44px;fill:var(--sage);margin:0 auto 18px}
-  .quote p{font-family:'Fraunces',serif;font-size:clamp(22px,3.2vw,30px);color:var(--green);line-height:1.4;margin-bottom:18px}
-  .quote cite{font-style:normal;font-weight:700;color:var(--muted);font-size:15px}
-
-  /* CTA */
-  .cta{background:linear-gradient(160deg,#134c39,#1c6347)}
-  .cta .wrap{text-align:center;padding:84px 24px}
-  .cta h2{color:#fff;font-size:clamp(28px,4.4vw,46px);margin-bottom:16px}
-  .cta p{color:rgba(255,255,255,.85);font-size:18px;max-width:560px;margin:0 auto 30px}
-  .cta .hero-cta{justify-content:center}
-
-  /* FOOTER */
-  footer{background:#0b2b20;color:rgba(255,255,255,.72);padding:56px 0 30px;font-size:14.5px}
-  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:36px;margin-bottom:36px}
-  footer .logo{color:#fff;margin-bottom:14px}
-  footer h4{color:#fff;font-family:'Manrope';font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
-  footer a{display:block;padding:4px 0;transition:.2s}
-  footer a:hover{color:var(--sage)}
-  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:13px;opacity:.75}
-
-  /* reveal animation */
-  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
-  .reveal.in{opacity:1;transform:none}
-  .reveal[data-d="1"]{transition-delay:.08s}.reveal[data-d="2"]{transition-delay:.16s}.reveal[data-d="3"]{transition-delay:.24s}.reveal[data-d="4"]{transition-delay:.32s}.reveal[data-d="5"]{transition-delay:.4s}
-
-  /* WhatsApp float */
-  .wa-float{position:fixed;right:22px;bottom:22px;z-index:60;width:58px;height:58px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(37,211,102,.45);transition:.25s}
-  .wa-float:hover{transform:scale(1.08)}
-  .wa-float svg{width:30px;height:30px;fill:#fff}
-
-  @media(max-width:900px){
-    .heritage .grid{grid-template-columns:1fr;gap:34px}
-    .cards{grid-template-columns:repeat(2,1fr)}
-    .why .cards{grid-template-columns:repeat(2,1fr)}
-    .gal-grid{grid-template-columns:repeat(2,1fr)}
-    .foot-grid{grid-template-columns:1fr 1fr}
-  }
-  @media(max-width:640px){
-    .nav-links{position:absolute;top:74px;left:0;right:0;background:#fff;flex-direction:column;gap:0;padding:6px 0 12px;border-bottom:1px solid var(--line);box-shadow:0 16px 34px rgba(20,39,28,.1);display:none}
-    .nav-links.open{display:flex}
-    .nav-links a{padding:13px 24px;width:100%;font-size:16px}
-    .burger{display:block}
-    .nav-cta{display:none}
-    .cards,.why .cards,.gal-grid{grid-template-columns:1fr}
-    section.pad{padding:70px 0}
-    .foot-grid{grid-template-columns:1fr}
-  }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Giardiniere a Flero e Brescia sud | Astra Gardens</title>
+<meta name="description" content="Giardinieri a Flero e nel sud di Brescia: manutenzione, potature, tree climbing, prato in zolle e irrigazione. Scrivici su WhatsApp per un sopralluogo.">
+<link rel="canonical" href="https://astragiardini-ui.github.io/astra-gardens-site/">
+<meta name="theme-color" content="#114232">
+<meta name="format-detection" content="telephone=no">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="Astra Gardens">
+<meta property="og:title" content="Giardiniere a Flero e Brescia sud | Astra Gardens">
+<meta property="og:description" content="Giardinieri a Flero e nel sud di Brescia: manutenzione, potature, tree climbing, prato in zolle e irrigazione. Scrivici su WhatsApp per un sopralluogo.">
+<meta property="og:url" content="https://astragiardini-ui.github.io/astra-gardens-site/">
+<meta property="og:image" content="https://astragiardini-ui.github.io/astra-gardens-site/assets/img/og-astra-gardens.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Astra Gardens, giardinieri a Flero e nel sud di Brescia">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preload" href="assets/fonts/atkinson-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css?v=20261005">
+<script>document.documentElement.className += " js";</script>
 </head>
 <body>
-
-<!-- HEADER -->
-<header id="hdr">
-  <div class="wrap nav">
-    <a class="logo" href="#top">
-      <svg class="mark" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="19" stroke="#114232" stroke-width="1.5"/>
-        <path d="M20 30c0-7 3-12 9-15-1 8-4 12-9 15z" fill="#2a8a52"/>
-        <path d="M20 30c0-6-2-10-7-12 1 7 3 10 7 12z" fill="#114232"/>
-        <path d="M20 30V17" stroke="#114232" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
-      Astra Gardens
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none">
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></symbol>
+  <symbol id="i-tel" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></g></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.4"/><circle cx="12" cy="12" r="4.3"/></g><circle cx="17.5" cy="6.5" r="1.25" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></g></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></g></symbol>
+  <symbol id="i-dx" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></g></symbol>
+  <symbol id="i-sx" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></g></symbol>
+  <symbol id="i-scudo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="8.5 12 11 14.5 15.5 10"/></g></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></g></symbol>
+  <symbol id="i-perito" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.2v4.6c0 1.6 2.7 3.2 6 3.2s6-1.6 6-3.2v-4.6"/><path d="M22 9v5.5"/></g></symbol>
+  <symbol id="i-mezzi" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="6" width="13" height="10" rx="1.2"/><path d="M14.5 9.5h4l3 3.2V16h-7z"/><circle cx="6" cy="18" r="2.2"/><circle cx="17.5" cy="18" r="2.2"/></g></symbol>
+  <symbol id="i-foglia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 19.5C4.5 11 9.8 4.7 20 3.8c-.8 10.3-7.2 15.7-15.5 15.7z"/><path d="M4.5 19.5c3.2-4.6 6.6-7.6 10.6-10.2"/></g></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></symbol>
+</svg>
+<a class="salta" href="#contenuto">Vai al contenuto</a>
+<header class="testata">
+  <div class="contenitore testata__riga">
+    <a class="marchio" href="#inizio" aria-label="Astra Gardens, torna all'inizio">
+      <picture><source type="image/webp" srcset="assets/img/logo-verde-240.webp 240w, assets/img/logo-verde-480.webp 480w" sizes="196px"><img src="assets/img/logo-verde-480.png" alt="Astra Gardens" width="480" height="98"></picture>
     </a>
-    <nav class="nav-links">
+    <nav class="menu" aria-label="Menu principale">
       <a href="#servizi">Servizi</a>
-      <a href="#perche">Perché noi</a>
-      <a href="#lavori">I lavori</a>
+      <a href="#come-lavoriamo">Come lavoriamo</a>
+      <a href="#lavori">Lavori</a>
+      <a href="#condomini-aziende">Condomini e aziende</a>
       <a href="#contatti">Contatti</a>
     </nav>
-    <a class="btn btn-primary nav-cta" href="#contatti">Preventivo gratuito</a>
-    <button class="burger" id="burger" aria-label="Apri menu">
-      <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#114232" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-    </button>
+    <a class="btn btn--wa testata__wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20sopralluogo%20per%20il%20mio%20giardino." target="_blank" rel="noopener"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Scrivici su WhatsApp</span></a>
+    <a class="testata__wa-tondo" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20sopralluogo%20per%20il%20mio%20giardino." target="_blank" rel="noopener" aria-label="Scrivici su WhatsApp"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg></a>
+    <button class="apri-menu" type="button" aria-expanded="false" aria-controls="menu-telefono"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-menu" xlink:href="#i-menu"></use></svg><span>Menu</span></button>
   </div>
 </header>
-
-<!-- HERO -->
-<section class="hero" id="top">
-  <div class="leaves"></div>
-  <div class="wrap hero-inner">
-    <span class="kicker reveal in">Giardinieri a Flero e Brescia</span>
-    <h1 class="reveal in" data-d="1">Il tuo giardino, curato<br>da chi lo <em>ama davvero</em>.</h1>
-    <p class="lead reveal in" data-d="2">Manutenzione, potature, impianti d'irrigazione e nuove realizzazioni. Squadra tua di fiducia, vicino a te, con foto di ogni intervento. Il preventivo è chiaro e gratuito.</p>
-    <div class="hero-cta reveal in" data-d="3">
-      <a class="btn btn-wa" href="https://wa.me/393341865764?text=Buongiorno,%20vorrei%20un%20preventivo%20per%20il%20mio%20giardino." target="_blank" rel="noopener">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M.06 24l1.68-6.13A11.82 11.82 0 0112 0a11.9 11.9 0 018.41 20.32A11.9 11.9 0 016.2 22.37L.06 24zM6.6 20.15l.37.22a9.86 9.86 0 004.99 1.37 9.88 9.88 0 100-19.76 9.86 9.86 0 00-8.35 15.15l.24.38-1 3.63 3.75-1z"/></svg>
-        Scrivici su WhatsApp
-      </a>
-      <a class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,.6)" href="#servizi">Scopri i servizi</a>
-    </div>
+<div class="pannello" id="menu-telefono" hidden>
+  <div class="pannello__testa">
+    <img src="assets/img/logo-bianco-480.png" alt="Astra Gardens" width="480" height="98">
+    <button class="chiudi-menu" type="button"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-x" xlink:href="#i-x"></use></svg><span>Chiudi</span></button>
   </div>
-  <span class="scroll-hint">Scorri</span>
-</section>
-
-<!-- TRUST -->
-<div class="trust">
-  <div class="wrap">
-    <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7ab189" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Preventivo gratuito e chiaro</span>
-    <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7ab189" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Foto prima e dopo di ogni lavoro</span>
-    <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7ab189" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Squadra di zona, sempre la stessa</span>
-  </div>
+  <nav aria-label="Menu">
+    <a href="#servizi">Servizi</a>
+    <a href="#come-lavoriamo">Come lavoriamo</a>
+    <a href="#lavori">Lavori</a>
+    <a href="#condomini-aziende">Condomini e aziende</a>
+    <a href="#zone">Zone servite</a>
+    <a href="#contatti">Contatti</a>
+  </nav>
+  <a class="btn btn--wa btn--largo" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20sopralluogo%20per%20il%20mio%20giardino." target="_blank" rel="noopener"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Scrivici su WhatsApp</span></a>
+  <p class="pannello__nota">Flero (BS) e sud di Brescia</p>
 </div>
 
-<!-- HERITAGE -->
-<section class="pad heritage" id="chi">
-  <div class="wrap grid">
-    <div class="art reveal">
-      <div class="badge"><b>100%</b><span>giardini seguiti<br>con passione</span></div>
-    </div>
-    <div class="reveal" data-d="1">
-      <div class="eyebrow">Chi siamo</div>
-      <h2>Curiamo il verde delle persone come te, ogni stagione.</h2>
-      <p>Astra Gardens è la squadra di giardinieri che segue prati, siepi, aiuole e impianti dei giardini di Flero, Brescia e dintorni. Torniamo dai nostri clienti con una frequenza pensata su misura, così il verde resta sempre in ordine, sano e bello.</p>
-      <p>Ci trovi vicino, rispondiamo subito e lasciamo il giardino pulito a fine giornata. Ogni intervento è documentato con le foto: sai sempre cosa abbiamo fatto.</p>
-      <div class="sign">— La squadra Astra Gardens</div>
-    </div>
-  </div>
-</section>
+<main id="contenuto">
 
-<!-- SERVICES -->
-<section class="pad services" id="servizi">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="eyebrow">I nostri servizi</div>
-      <h2>Tutto quello che serve al tuo giardino, in un'unica squadra.</h2>
-      <p>Dalla manutenzione periodica alle nuove realizzazioni: pensiamo noi a tutto, con cura e attrezzatura professionale.</p>
-    </div>
-    <div class="cards">
-      <div class="card reveal" data-d="1">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 20c4-1 7-4 8-9M12 11c1-5 4-8 8-8-1 4-4 7-8 8zM12 11c-1-4-4-6-8-6 1 4 4 6 8 6z"/></svg></div>
-        <h3>Manutenzione giardini</h3>
-        <p>Il tuo giardino curato tutto l'anno: prato, siepi, aiuole e pulizia, con la frequenza giusta per te.</p>
+  <section class="hero" id="inizio" aria-labelledby="titolo-hero">
+    <div class="hero__griglia">
+      <div class="hero__media">
+        <picture><source type="image/webp" srcset="assets/video/astra-gardens-lavori-poster.webp"><img src="assets/video/astra-gardens-lavori-poster.jpg" alt="" width="720" height="1280" fetchpriority="high"></picture>
+        <video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">
+          <source src="assets/video/astra-gardens-lavori.mp4" type="video/mp4">
+        </video>
+        <span class="hero__etichetta">Dai nostri cantieri</span>
+        <button class="hero__pausa" type="button" hidden aria-label="Metti in pausa il video"><svg class="icona" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
       </div>
-      <div class="card reveal" data-d="2">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 18h18M6 18V9M10 18V6M14 18v-8M18 18v-5"/></svg></div>
-        <h3>Taglio prato e cura</h3>
-        <p>Taglio, bordatura, arieggiatura, semina e concimazione: un prato verde, folto e sano.</p>
-      </div>
-      <div class="card reveal" data-d="3">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3c3 4 5 7 5 10a5 5 0 01-10 0c0-3 2-6 5-10z"/></svg></div>
-        <h3>Potatura siepi e alberi</h3>
-        <p>Siepi sagomate, alberi alleggeriti e messi in sicurezza, con raccolta e smaltimento inclusi.</p>
-      </div>
-      <div class="card reveal" data-d="1">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2v6M12 22a7 7 0 007-7c0-4-3-7-7-7M12 22a7 7 0 01-7-7c0-4 3-7 7-7"/></svg></div>
-        <h3>Impianti d'irrigazione</h3>
-        <p>Progettiamo e posiamo impianti automatici a goccia e a pioggia: il giardino si annaffia da solo.</p>
-      </div>
-      <div class="card reveal" data-d="2">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/></svg></div>
-        <h3>Realizzazione giardini</h3>
-        <p>Nuove aiuole, prati in zolla, messa a dimora di piante e sistemazioni: diamo vita al giardino che sogni.</p>
-      </div>
-      <div class="card reveal" data-d="3">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5-7-11a7 7 0 0114 0c0 6-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
-        <h3>Sopralluogo e consulenza</h3>
-        <p>Veniamo a vedere il tuo giardino e ti diciamo subito cosa serve, con un preventivo chiaro e gratuito.</p>
+      <div class="hero__testo contenitore">
+        <h1 id="titolo-hero"><span class="occhiello">Giardinieri a Flero e nel sud di Brescia</span> Il tuo giardino sempre bello. <em>Ci pensiamo noi.</em></h1>
+        <p class="hero__lead">Manutenzione, potature, alberi alti e giardini nuovi: scrivici su WhatsApp e veniamo a vedere il tuo verde.</p>
+        <a class="btn btn--wa btn--largo" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20sopralluogo%20per%20il%20mio%20giardino." target="_blank" rel="noopener"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Scrivici su WhatsApp</span></a>
+        <p class="hero__nota"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-chat" xlink:href="#i-chat"></use></svg><span>Ti rispondiamo direttamente noi.</span></p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- WHY -->
-<section class="pad why" id="perche">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="eyebrow" style="color:var(--sage)">Perché scegliere Astra</div>
-      <h2>La cura di un professionista, la fiducia di un vicino.</h2>
-      <p>Lavoriamo per farti sentire il giardino sempre in buone mani.</p>
+  <section class="fiducia" aria-label="Perché sceglierci">
+    <div class="contenitore">
+      <ul>
+        <li class="rivela"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-perito" xlink:href="#i-perito"></use></svg></span><div><strong>Perito agrario</strong><span>Francesco, il titolare, conosce le piante e le loro stagioni.</span></div></li>
+        <li class="rivela" data-ritardo="1"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-scudo" xlink:href="#i-scudo"></use></svg></span><div><strong>Assicurazione RC</strong><span>Lavoriamo con assicurazione di responsabilità civile verso terzi.</span></div></li>
+        <li class="rivela" data-ritardo="2"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-mezzi" xlink:href="#i-mezzi"></use></svg></span><div><strong>Mezzi professionali</strong><span>Piattaforma aerea, attrezzatura da tree climbing, miniescavatore e catenaria.</span></div></li>
+        <li class="rivela" data-ritardo="3"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-doc" xlink:href="#i-doc"></use></svg></span><div><strong>Preventivo scritto</strong><span>Chiaro e voce per voce, prima di iniziare.</span></div></li>
+      </ul>
     </div>
-    <div class="cards">
-      <div class="card reveal" data-d="1">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5-7-11a7 7 0 0114 0c0 6-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
-        <h3>Vicino a te</h3>
-        <p>Siamo di Flero e lavoriamo a Brescia e provincia: arriviamo in fretta, quando serve.</p>
-      </div>
-      <div class="card reveal" data-d="2">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-2a4 4 0 00-3-3.87"/></svg></div>
-        <h3>Sempre la stessa squadra</h3>
-        <p>Conosciamo il tuo giardino intervento dopo intervento: niente sorprese, solo continuità.</p>
-      </div>
-      <div class="card reveal" data-d="3">
-        <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M8 5l1.5-2h5L16 5"/></svg></div>
-        <h3>Foto di ogni lavoro</h3>
-        <p>Documentiamo prima e dopo ogni intervento: vedi sempre il risultato, in trasparenza.</p>
-      </div>
-      <div class="card reveal" data-d="4">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22V4"/></svg></div>
-        <h3>Preventivo chiaro</h3>
-        <p>Ti diciamo subito quanto costa, senza sorprese. Il sopralluogo e il preventivo sono gratis.</p>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<!-- GALLERY -->
-<section class="pad gallery" id="lavori">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="eyebrow">I nostri lavori</div>
-      <h2>Giardini che parlano per noi.</h2>
-      <p>Uno sguardo ai risultati: prati curati, siepi sagomate e nuove realizzazioni.</p>
+  <section class="sezione" id="servizi" aria-labelledby="titolo-servizi">
+    <div class="contenitore">
+      <header class="intestazione rivela">
+        <p class="occhiello">Servizi</p>
+        <h2 id="titolo-servizi">Tutto il tuo verde, con un'unica squadra.</h2>
+        <p class="lead">Dal taglio del prato agli alberi più alti, dalla siepe al giardino nuovo. Scegli il lavoro e scrivici: fissiamo insieme il sopralluogo.</p>
+      </header>
+      <ul class="servizi">
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-manutenzione-360.webp 360w, assets/img/srv-manutenzione-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-manutenzione-720.jpg" alt="Giardino curato con prato rasato e siepe potata" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Manutenzione del giardino</h3>
+          <p>Prato, siepi, aiuole e pulizia, su chiamata o con un contratto annuale: il tuo giardino resta curato in ogni stagione.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20informazioni%20sulla%20manutenzione%20del%20giardino." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Manutenzione del giardino"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-siepi-360.webp 360w, assets/img/srv-siepi-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-siepi-720.jpg" alt="Siepe potata con cura lungo il prato" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Potatura di siepi e arbusti</h3>
+          <p>Siepi compatte e arbusti in forma, potati nel periodo giusto per ogni pianta.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20far%20potare%20siepi%20e%20arbusti." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Potatura di siepi e arbusti"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-alberi-360.webp 360w, assets/img/srv-alberi-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-alberi-720.jpg" alt="Giardiniere in tree climbing tra i rami di una grande magnolia" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Alberi alti e tree climbing</h3>
+          <p>Saliamo sulla pianta con funi e imbrago, oppure con la piattaforma aerea, e potiamo con tagli puliti e mirati.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20far%20potare%20un%20albero%20ad%20alto%20fusto." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Alberi alti e tree climbing"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-abbattimenti-360.webp 360w, assets/img/srv-abbattimenti-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-abbattimenti-720.jpg" alt="Abbattimento controllato: il tronco viene ridotto a sezioni dall&#x27;alto" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Abbattimenti controllati</h3>
+          <p>Smontiamo l&#x27;albero pezzo per pezzo e caliamo i rami con le funi, per proteggere tutto ciò che c&#x27;è intorno.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20informazioni%20per%20l%27abbattimento%20di%20un%20albero." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Abbattimenti controllati"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-ulivi-360.webp 360w, assets/img/srv-ulivi-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-ulivi-720.jpg" alt="Ulivo ornamentale potato nella forma a pon pon" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Ulivi</h3>
+          <p>Potatura degli ulivi, anche ornamentali nella forma a pon pon: una chioma ariosa, luminosa e bella da vedere.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20far%20potare%20i%20miei%20ulivi." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Ulivi"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-movimento-terra-360.webp 360w, assets/img/srv-movimento-terra-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-movimento-terra-720.jpg" alt="Miniescavatore al lavoro e furgone Astra Gardens sullo sfondo" width="720" height="900" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Giardini nuovi e movimento terra</h3>
+          <p>Scavi, livellamenti e rimozione delle ceppaie con il miniescavatore, poi piante, prato e finiture: dal terreno al giardino finito.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20realizzare%20un%20giardino%20nuovo." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Giardini nuovi e movimento terra"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-prato-360.webp 360w, assets/img/srv-prato-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-prato-720.jpg" alt="Prato in zolle appena posato tra bossi e vialetti" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Prato in zolle e semina</h3>
+          <p>Prepariamo e livelliamo il terreno, poi posiamo le zolle o seminiamo, per un prato verde e uniforme.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20prato%20nuovo%2C%20in%20zolle%20o%20seminato." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Prato in zolle e semina"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-irrigazione-360.webp 360w, assets/img/srv-irrigazione-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-irrigazione-720.jpg" alt="Scavo stretto e preciso con la catenaria" width="1091" height="1364" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Impianti di irrigazione</h3>
+          <p>Progettiamo e posiamo l&#x27;impianto più adatto al tuo giardino. Con la catenaria scaviamo le tracce anche negli spazi stretti.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20informazioni%20per%20un%20impianto%20di%20irrigazione." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Impianti di irrigazione"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-robot-360.webp 360w, assets/img/srv-robot-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-robot-720.jpg" alt="Robot rasaerba sul prato tra gli ulivi" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Robot rasaerba</h3>
+          <p>Installiamo e regoliamo il robot rasaerba sul tuo prato: l&#x27;erba resta corta e ordinata tutta la settimana.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20informazioni%20su%20un%20robot%20rasaerba." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Robot rasaerba"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-corten-360.webp 360w, assets/img/srv-corten-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-corten-720.jpg" alt="Bordura circolare in corten sagomata su misura intorno a un albero" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Bordure in corten</h3>
+          <p>Bordure in acciaio corten sagomate su misura direttamente in giardino: linee pulite tra prato, ghiaia e aiuole.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20informazioni%20sulle%20bordure%20in%20corten." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Bordure in corten"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio rivela">
+        <picture><source type="image/webp" srcset="assets/img/srv-sintetico-360.webp 360w, assets/img/srv-sintetico-720.webp 720w" sizes="(min-width: 1200px) 270px, (min-width: 960px) 30vw, (min-width: 640px) 45vw, 116px"><img src="assets/img/srv-sintetico-720.jpg" alt="Prato sintetico con bordura in corten davanti a casa" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+        <div class="servizio__testo">
+          <h3>Cura dell&#x27;erba sintetica</h3>
+          <p>Pulizia e spazzolatura del prato sintetico, per un manto ordinato, morbido e pulito.</p>
+          <a class="link-wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20informazioni%20per%20la%20cura%20dell%27erba%20sintetica." target="_blank" rel="noopener" aria-label="Chiedi su WhatsApp: Cura dell&#x27;erba sintetica"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi su WhatsApp</span></a>
+        </div>
+      </li>
+      <li class="servizio servizio--invito rivela">
+        <div class="servizio__testo">
+          <img class="foglia" src="assets/img/foglia-salvia.png" alt="" width="216" height="158" loading="lazy">
+          <h3>Hai in mente un altro lavoro?</h3>
+          <p>Raccontacelo su WhatsApp, anche con una foto: troviamo insieme la soluzione giusta per il tuo verde.</p>
+          <a class="btn btn--wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20consiglio%20per%20il%20mio%20giardino." target="_blank" rel="noopener"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Scrivici</span></a>
+        </div>
+      </li>
+      </ul>
     </div>
-    <div class="gal-grid">
-      <div class="tile g1 reveal" data-d="1" data-label="Taglio e cura del prato"></div>
-      <div class="tile g2 reveal" data-d="2" data-label="Aiuole fiorite"></div>
-      <div class="tile g3 reveal" data-d="3" data-label="Messa a dimora"></div>
-      <div class="tile g4 reveal" data-d="1" data-label="Manutenzione e cura"></div>
-      <div class="tile g5 reveal" data-d="2" data-label="Verde curato"></div>
-      <div class="tile g6 reveal" data-d="3" data-label="Nuove realizzazioni"></div>
+  </section>
+
+  <section class="sezione sezione--bianca" id="chi-siamo" aria-labelledby="titolo-chi">
+    <div class="contenitore duo">
+      <div class="duo__foto rivela">
+        <picture><source type="image/webp" srcset="assets/img/chi-siamo-furgone-480.webp 480w, assets/img/chi-siamo-furgone-800.webp 800w, assets/img/chi-siamo-furgone-1080.webp 1080w" sizes="(min-width: 960px) 480px, 92vw"><img src="assets/img/chi-siamo-furgone-800.jpg" alt="Furgone Astra Gardens con l&#x27;arcobaleno sullo sfondo" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+        <p class="bollo">Astra Gardens<small>Flero (BS) · dal 2025</small></p>
+      </div>
+      <div class="rivela" data-ritardo="1">
+        <p class="occhiello">Chi siamo</p>
+        <h2 id="titolo-chi">Una squadra giovane, nata a Flero.</h2>
+        <p class="lead">Astra Gardens nasce nel 2025 a Flero da un'idea di Francesco Guizzardi, perito agrario.</p>
+        <p>Con la nostra squadra portiamo nei giardini del sud di Brescia competenza, mezzi professionali e tanta cura per i dettagli. Il nostro metodo è semplice: ascoltiamo chi vive il giardino, scegliamo il momento giusto per ogni pianta e a fine lavoro lasciamo tutto pulito e in ordine.</p>
+        <p class="citazione">«Pensato con la testa, realizzato con le mani.»</p>
+        <ul class="mezzi" aria-label="I nostri mezzi">
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg>Tree climbing</li>
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg>Piattaforma aerea</li>
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg>Miniescavatore</li>
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg>Catenaria</li>
+        </ul>
+      </div>
     </div>
-    <p class="gal-note">Immagini di riferimento — presto le foto reali dei giardini seguiti da Astra Gardens.</p>
-  </div>
-</section>
+  </section>
 
-<!-- QUOTE -->
-<section class="pad quote">
-  <div class="wrap reveal">
-    <svg viewBox="0 0 24 24"><path d="M9 7H5a2 2 0 00-2 2v4a2 2 0 002 2h2v2a2 2 0 01-2 2H4v2h1a4 4 0 004-4V9a2 2 0 00-2-2h2zm10 0h-4a2 2 0 00-2 2v4a2 2 0 002 2h2v2a2 2 0 01-2 2h-1v2h1a4 4 0 004-4V9a2 2 0 00-2-2h2z"/></svg>
-    <p>"Puntuali, precisi e sempre gentili. Il nostro giardino non è mai stato così curato."</p>
-    <cite>Un cliente di Astra Gardens</cite>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta" id="contatti">
-  <div class="wrap">
-    <h2 class="reveal">Vuoi un giardino curato, senza pensieri?</h2>
-    <p class="reveal" data-d="1">Scrivici ora: veniamo a vedere il tuo giardino e ti diamo subito un preventivo chiaro e gratuito.</p>
-    <div class="hero-cta reveal" data-d="2">
-      <a class="btn btn-wa" href="https://wa.me/393341865764?text=Buongiorno,%20vorrei%20un%20preventivo%20per%20il%20mio%20giardino." target="_blank" rel="noopener">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M.06 24l1.68-6.13A11.82 11.82 0 0112 0a11.9 11.9 0 018.41 20.32A11.9 11.9 0 016.2 22.37L.06 24z"/></svg>
-        WhatsApp 334 186 5764
-      </a>
-      <a class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,.6)" href="tel:+393341865764">Chiama ora</a>
+  <section class="sezione sezione--salvia" id="come-lavoriamo" aria-labelledby="titolo-come">
+    <div class="contenitore">
+      <header class="intestazione rivela">
+        <p class="occhiello">Come lavoriamo</p>
+        <h2 id="titolo-come">Quattro passi chiari, dal primo messaggio al lavoro finito.</h2>
+      </header>
+      <ol class="passi" role="list">
+        <li class="passo rivela"><span class="passo__numero" aria-hidden="true">1</span><h3>Sopralluogo</h3><p>Ci scrivi su WhatsApp, fissiamo insieme un giorno e veniamo a vedere il tuo giardino. Ascoltiamo cosa desideri.</p></li>
+        <li class="passo rivela" data-ritardo="1"><span class="passo__numero" aria-hidden="true">2</span><h3>Preventivo scritto e chiaro</h3><p>Ricevi un preventivo scritto, voce per voce: sai fin da subito cosa facciamo e come.</p></li>
+        <li class="passo rivela" data-ritardo="2"><span class="passo__numero" aria-hidden="true">3</span><h3>Squadra attrezzata</h3><p>Arriviamo nel giorno concordato con le persone e i mezzi giusti, dalla piattaforma aerea al miniescavatore.</p></li>
+        <li class="passo rivela" data-ritardo="3"><span class="passo__numero" aria-hidden="true">4</span><h3>Pulizia e foto finali</h3><p>A fine lavoro puliamo tutto e ti mandiamo le foto del lavoro finito: vedi il risultato anche da lontano.</p></li>
+      </ol>
+      <div class="passi__invito rivela">
+        <a class="btn btn--wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20sopralluogo%20per%20il%20mio%20giardino." target="_blank" rel="noopener" aria-label="Fissa il sopralluogo su WhatsApp"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Fissa il sopralluogo</span></a>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="wrap">
-    <div class="foot-grid">
+  <section class="sezione sezione--bianca" id="lavori" aria-labelledby="titolo-lavori">
+    <div class="contenitore">
+      <header class="intestazione rivela">
+        <p class="occhiello">Lavori</p>
+        <h2 id="titolo-lavori">Guarda i nostri lavori.</h2>
+        <p class="lead">Foto vere dei nostri cantieri, scattate dalla squadra. Tocca una foto per vederla grande.</p>
+      </header>
+      <div class="prima-dopo rivela">
+        <figure><picture><source type="image/webp" srcset="assets/img/lav-prima-640.webp 640w, assets/img/lav-prima-1080.webp 1080w" sizes="(min-width: 720px) 560px, 92vw"><img src="assets/img/lav-prima-1080.jpg" alt="Prima: giardino con terreno spoglio e secco" width="1080" height="810" loading="lazy" decoding="async"></picture><figcaption class="etichetta">Prima</figcaption></figure>
+        <figure><picture><source type="image/webp" srcset="assets/img/lav-dopo-640.webp 640w, assets/img/lav-dopo-1080.webp 1080w" sizes="(min-width: 720px) 560px, 92vw"><img src="assets/img/lav-dopo-1080.jpg" alt="Dopo: prato sintetico con bordura in corten, ghiaia e piante" width="1080" height="810" loading="lazy" decoding="async"></picture><figcaption class="etichetta etichetta--dopo">Dopo</figcaption></figure>
+        <p class="prima-dopo__testo"><strong>Da terreno spoglio a giardino a bassa manutenzione</strong>Bordure in corten, ghiaia, piante e prato sintetico: un giardino ordinato, facile da vivere ogni giorno.</p>
+      </div>
+      <div class="galleria">
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-ulivi-rose-1080.webp" data-didascalia="Ulivi, rose e un prato curato." aria-label="Ingrandisci la foto: Ulivi, rose e un prato curato"><picture><source type="image/webp" srcset="assets/img/lav-ulivi-rose-400.webp 400w, assets/img/lav-ulivi-rose-800.webp 800w, assets/img/lav-ulivi-rose-1080.webp 1080w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-ulivi-rose-800.jpg" alt="Ulivi, rose e un prato curato" width="1080" height="1620" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Ulivi, rose e un prato curato.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-cedro-1080.webp" data-didascalia="Tree climbing su un grande cedro." aria-label="Ingrandisci la foto: Tree climbing su un grande cedro"><picture><source type="image/webp" srcset="assets/img/lav-cedro-400.webp 400w, assets/img/lav-cedro-800.webp 800w, assets/img/lav-cedro-1080.webp 1080w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-cedro-800.jpg" alt="Tree climbing su un grande cedro" width="1080" height="1350" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Tree climbing su un grande cedro.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-chioma-937.webp" data-didascalia="Ricostruzione della chioma di un albero capitozzato." aria-label="Ingrandisci la foto: Ricostruzione della chioma di un albero capitozzato"><picture><source type="image/webp" srcset="assets/img/lav-chioma-400.webp 400w, assets/img/lav-chioma-800.webp 800w, assets/img/lav-chioma-937.webp 937w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-chioma-800.jpg" alt="Ricostruzione della chioma di un albero capitozzato" width="937" height="1171" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Ricostruzione della chioma di un albero capitozzato.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-bosso-vialetto-718.webp" data-didascalia="Bossi, prato e vialetto: la cura di un giardino di pregio." aria-label="Ingrandisci la foto: Bossi, prato e vialetto: la cura di un giardino di pregio"><picture><source type="image/webp" srcset="assets/img/lav-bosso-vialetto-400.webp 400w, assets/img/lav-bosso-vialetto-718.webp 718w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-bosso-vialetto-718.jpg" alt="Bossi, prato e vialetto: la cura di un giardino di pregio" width="718" height="897" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Bossi, prato e vialetto: la cura di un giardino di pregio.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-piattaforma-1080.webp" data-didascalia="Lavori in quota con la piattaforma aerea." aria-label="Ingrandisci la foto: Lavori in quota con la piattaforma aerea"><picture><source type="image/webp" srcset="assets/img/lav-piattaforma-400.webp 400w, assets/img/lav-piattaforma-800.webp 800w, assets/img/lav-piattaforma-1080.webp 1080w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-piattaforma-800.jpg" alt="Lavori in quota con la piattaforma aerea" width="1080" height="1620" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Lavori in quota con la piattaforma aerea.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-corten-ghiaia-1080.webp" data-didascalia="Bordura in corten tra ghiaia, piante e prato sintetico." aria-label="Ingrandisci la foto: Bordura in corten tra ghiaia, piante e prato sintetico"><picture><source type="image/webp" srcset="assets/img/lav-corten-ghiaia-400.webp 400w, assets/img/lav-corten-ghiaia-800.webp 800w, assets/img/lav-corten-ghiaia-1080.webp 1080w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-corten-ghiaia-800.jpg" alt="Bordura in corten tra ghiaia, piante e prato sintetico" width="1080" height="1350" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Bordura in corten tra ghiaia, piante e prato sintetico.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-zolle-siepe-1080.webp" data-didascalia="Prato rigoglioso lungo una siepe curata." aria-label="Ingrandisci la foto: Prato rigoglioso lungo una siepe curata"><picture><source type="image/webp" srcset="assets/img/lav-zolle-siepe-400.webp 400w, assets/img/lav-zolle-siepe-800.webp 800w, assets/img/lav-zolle-siepe-1080.webp 1080w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-zolle-siepe-800.jpg" alt="Prato rigoglioso lungo una siepe curata" width="1080" height="1350" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Prato rigoglioso lungo una siepe curata.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-bordi-1080.webp" data-didascalia="Bordi del prato rifiniti al millimetro." aria-label="Ingrandisci la foto: Bordi del prato rifiniti al millimetro"><picture><source type="image/webp" srcset="assets/img/lav-bordi-400.webp 400w, assets/img/lav-bordi-800.webp 800w, assets/img/lav-bordi-1080.webp 1080w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-bordi-800.jpg" alt="Bordi del prato rifiniti al millimetro" width="1080" height="1350" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Bordi del prato rifiniti al millimetro.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-ulivo-ponpon-1080.webp" data-didascalia="Ulivo ornamentale a pon pon, appena potato." aria-label="Ingrandisci la foto: Ulivo ornamentale a pon pon, appena potato"><picture><source type="image/webp" srcset="assets/img/lav-ulivo-ponpon-400.webp 400w, assets/img/lav-ulivo-ponpon-800.webp 800w, assets/img/lav-ulivo-ponpon-1080.webp 1080w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-ulivo-ponpon-800.jpg" alt="Ulivo ornamentale a pon pon, appena potato" width="1080" height="1350" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Ulivo ornamentale a pon pon, appena potato.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-aiuola-ombra-1080.webp" data-didascalia="Aiuola per una zona d&#x27;ombra, con pacciamatura e bordo netto." aria-label="Ingrandisci la foto: Aiuola per una zona d&#x27;ombra, con pacciamatura e bordo netto"><picture><source type="image/webp" srcset="assets/img/lav-aiuola-ombra-400.webp 400w, assets/img/lav-aiuola-ombra-800.webp 800w, assets/img/lav-aiuola-ombra-1080.webp 1080w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-aiuola-ombra-800.jpg" alt="Aiuola per una zona d&#x27;ombra, con pacciamatura e bordo netto" width="1091" height="1364" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Aiuola per una zona d&#x27;ombra, con pacciamatura e bordo netto.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-prato-fiorito-720.webp" data-didascalia="Prato e aiuole fiorite in primavera." aria-label="Ingrandisci la foto: Prato e aiuole fiorite in primavera"><picture><source type="image/webp" srcset="assets/img/lav-prato-fiorito-400.webp 400w, assets/img/lav-prato-fiorito-720.webp 720w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-prato-fiorito-720.jpg" alt="Prato e aiuole fiorite in primavera" width="720" height="900" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Prato e aiuole fiorite in primavera.</figcaption>
+      </figure>
+      <figure class="rivela">
+        <button type="button" data-grande="assets/img/lav-vialetto-ciottoli-720.webp" data-didascalia="Giardino di pregio seguito con una manutenzione regolare." aria-label="Ingrandisci la foto: Giardino di pregio seguito con una manutenzione regolare"><picture><source type="image/webp" srcset="assets/img/lav-vialetto-ciottoli-400.webp 400w, assets/img/lav-vialetto-ciottoli-720.webp 720w" sizes="(min-width: 960px) 360px, 46vw"><img src="assets/img/lav-vialetto-ciottoli-720.jpg" alt="Giardino di pregio seguito con una manutenzione regolare" width="720" height="1080" loading="lazy" decoding="async"></picture></button>
+        <figcaption>Giardino di pregio seguito con una manutenzione regolare.</figcaption>
+      </figure>
+      </div>
+      <p class="instagram-invito rivela"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-ig" xlink:href="#i-ig"></use></svg><span>Altre foto e video dai nostri cantieri sul profilo Instagram <a href="https://www.instagram.com/astra.gardens/" target="_blank" rel="noopener">@astra.gardens</a></span></p>
+    </div>
+  </section>
+
+  <section class="sezione sezione--verde" id="condomini-aziende" aria-labelledby="titolo-condomini">
+    <div class="contenitore duo duo--inverso">
+      <div class="duo__foto rivela">
+        <picture><source type="image/webp" srcset="assets/img/condomini-siepe-480.webp 480w, assets/img/condomini-siepe-800.webp 800w, assets/img/condomini-siepe-1080.webp 1080w" sizes="(min-width: 960px) 520px, 92vw"><img src="assets/img/condomini-siepe-800.jpg" alt="Potatura di una siepe lungo la strada con il cantiere segnalato" width="1080" height="1350" loading="lazy" decoding="async"></picture>
+      </div>
+      <div class="rivela" data-ritardo="1">
+        <p class="occhiello">Condomini e aziende</p>
+        <h2 id="titolo-condomini">Il verde del tuo condominio o della tua azienda, sempre in ordine.</h2>
+        <p class="lead">Per amministratori, condomini e aziende organizziamo la manutenzione programmata del verde, con un referente unico che segue ogni intervento.</p>
+        <ul class="spunte">
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Manutenzione programmata del verde, tutto l'anno</span></li>
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Un referente unico per ogni richiesta</span></li>
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Alberi alti con piattaforma aerea e tree climbing</span></li>
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Cantiere segnalato e assicurazione RC verso terzi</span></li>
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Preventivo scritto e foto a fine intervento</span></li>
+        </ul>
+        <a class="btn btn--wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20sopralluogo%20per%20il%20verde%20di%20un%20condominio%20o%20di%20un%27azienda." target="_blank" rel="noopener"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi un sopralluogo</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sezione" id="zone" aria-labelledby="titolo-zone">
+    <div class="contenitore zone">
+      <figure class="zone__foto rivela">
+        <picture><source media="(min-width: 960px)" type="image/webp" srcset="assets/img/zone-brescia-alta-600.webp 600w, assets/img/zone-brescia-alta-1080.webp 1080w" sizes="560px"><source media="(min-width: 960px)" srcset="assets/img/zone-brescia-alta-800.jpg 800w" sizes="560px"><source type="image/webp" srcset="assets/img/zone-brescia-640.webp 640w, assets/img/zone-brescia-1080.webp 1080w" sizes="92vw"><img src="assets/img/zone-brescia-1080.jpg" alt="Tetti del centro storico di Brescia con la cupola del Duomo" width="1080" height="810" loading="lazy" decoding="async"></picture>
+        <figcaption>Brescia, il centro storico</figcaption>
+      </figure>
+      <div class="rivela" data-ritardo="1">
+        <p class="occhiello">Zone servite</p>
+        <h2 id="titolo-zone">Vicino a te: Flero, Brescia e dintorni.</h2>
+        <p class="lead">Partiamo da Flero e lavoriamo in questi comuni:</p>
+        <ul class="comuni">
+          <li class="casa">Flero</li>
+          <li>Brescia</li>
+          <li>Castel Mella</li>
+          <li>Poncarale</li>
+          <li>Roncadelle</li>
+          <li>San Zeno Naviglio</li>
+          <li>Borgosatollo</li>
+          <li>Montirone</li>
+          <li>Capriano del Colle</li>
+          <li>Castenedolo</li>
+          <li>Bagnolo Mella</li>
+          <li>Azzano Mella</li>
+          <li>Torbole Casaglia</li>
+          <li>Gussago</li>
+          <li>Cellatica</li>
+        </ul>
+        <p>Abiti in un comune vicino? Scrivici su WhatsApp e valutiamo insieme.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sezione sezione--verde contatti" id="contatti" aria-labelledby="titolo-contatti">
+    <div class="contenitore contatti__griglia">
+      <div class="rivela">
+        <p class="occhiello">Contatti</p>
+        <h2 id="titolo-contatti">Parliamo del tuo giardino.</h2>
+        <p class="lead">Il modo più facile è WhatsApp: scrivici due righe e, se vuoi, aggiungi qualche foto del tuo verde. Ti rispondiamo direttamente noi.</p>
+        <a class="btn btn--wa btn--largo" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20sopralluogo%20per%20il%20mio%20giardino." target="_blank" rel="noopener"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Scrivici su WhatsApp</span></a>
+      </div>
+      <div class="recapiti rivela" data-ritardo="1">
+        <a class="recapito recapito--wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20sopralluogo%20per%20il%20mio%20giardino." target="_blank" rel="noopener"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg></span><span><small>WhatsApp</small><strong>+39 334 186 5764</strong></span></a>
+        <a class="recapito" href="tel:+393341865764"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-tel" xlink:href="#i-tel"></use></svg></span><span><small>Telefono</small><strong>+39 334 186 5764</strong></span></a>
+        <a class="recapito" href="mailto:astragiardini@gmail.com"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-mail" xlink:href="#i-mail"></use></svg></span><span><small>Email</small><strong>astragiardini@gmail.com</strong></span></a>
+        <a class="recapito" href="https://www.instagram.com/astra.gardens/" target="_blank" rel="noopener"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-ig" xlink:href="#i-ig"></use></svg></span><span><small>Instagram</small><strong>@astra.gardens</strong></span></a>
+        <div class="recapito"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg></span><span><small>Dove siamo</small><strong>Flero (BS) e sud di Brescia</strong></span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<footer class="piede">
+  <div class="contenitore">
+    <div class="piede__alto">
       <div>
-        <a class="logo" href="#top">
-          <svg class="mark" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="19" stroke="#7ab189" stroke-width="1.5"/><path d="M20 30c0-7 3-12 9-15-1 8-4 12-9 15z" fill="#7ab189"/><path d="M20 30c0-6-2-10-7-12 1 7 3 10 7 12z" fill="#fff"/></svg>
-          Astra Gardens
-        </a>
-        <p style="max-width:320px">Giardinieri di fiducia a Flero, Brescia e provincia. Curiamo il tuo verde tutto l'anno.</p>
+        <img src="assets/img/logo-bianco-480.png" alt="Astra Gardens" width="480" height="98" loading="lazy">
+        <p class="piede__motto">Pensato con la testa, realizzato con le mani.</p>
       </div>
-      <div>
-        <h4>Servizi</h4>
-        <a href="#servizi">Manutenzione giardini</a>
-        <a href="#servizi">Taglio prato</a>
-        <a href="#servizi">Potature</a>
-        <a href="#servizi">Irrigazione</a>
-        <a href="#servizi">Realizzazioni</a>
-      </div>
-      <div>
-        <h4>Contatti</h4>
-        <a href="https://wa.me/393341865764" target="_blank" rel="noopener">WhatsApp 334 186 5764</a>
-        <a href="tel:+393341865764">Tel. 334 186 5764</a>
-        <a href="#">Flero (BS) e provincia</a>
-      </div>
+      <nav aria-label="Collegamenti">
+        <ul>
+          <li><a href="#servizi">Servizi</a></li>
+          <li><a href="#lavori">Lavori</a></li>
+          <li><a href="#contatti">Contatti</a></li>
+          <li><a href="privacy.html">Privacy</a></li>
+          <li><a href="https://www.instagram.com/astra.gardens/" target="_blank" rel="noopener">Instagram</a></li>
+        </ul>
+      </nav>
     </div>
-    <div class="foot-bottom">
-      <span>© <span id="yr"></span> Astra Gardens — Giardinaggio a Brescia</span>
-      <span>Sito realizzato con cura · versione anteprima</span>
+    <div class="piede__basso">
+      <p><span class="intero">Astra Gardens di Francesco Guizzardi ·</span> <span class="intero">Flero (BS) ·</span> <span class="intero">P.IVA 04489190985</span></p>
+      <p><span class="intero">© <span id="anno">2026</span> Astra Gardens ·</span> <span class="intero">Zero cookie, zero tracciamento</span></p>
     </div>
   </div>
 </footer>
 
-<a class="wa-float" href="https://wa.me/393341865764?text=Buongiorno,%20vorrei%20un%20preventivo." target="_blank" rel="noopener" aria-label="WhatsApp">
-  <svg viewBox="0 0 24 24"><path d="M.06 24l1.68-6.13A11.82 11.82 0 0112 0a11.9 11.9 0 018.41 20.32A11.9 11.9 0 016.2 22.37L.06 24zM6.6 20.15l.37.22a9.86 9.86 0 004.99 1.37 9.88 9.88 0 100-19.76 9.86 9.86 0 00-8.35 15.15l.24.38-1 3.63 3.75-1z"/></svg>
-</a>
+<div class="barra-wa" aria-hidden="false">
+  <a class="btn btn--wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20sopralluogo%20per%20il%20mio%20giardino." target="_blank" rel="noopener"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Scrivici su WhatsApp</span></a>
+</div>
+<a class="wa-tondo" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20sopralluogo%20per%20il%20mio%20giardino." target="_blank" rel="noopener" aria-label="Scrivici su WhatsApp"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg></a>
 
-<script>
-  document.getElementById('yr').textContent = new Date().getFullYear();
-  // sticky header shadow
-  const hdr = document.getElementById('hdr');
-  addEventListener('scroll', () => hdr.classList.toggle('scrolled', scrollY > 12));
-  // mobile menu
-  const nav = document.querySelector('.nav-links');
-  document.getElementById('burger').addEventListener('click', () => nav.classList.toggle('open'));
-  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
-  // scroll reveal
-  const io = new IntersectionObserver((es) => {
-    es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold:.14 });
-  document.querySelectorAll('.reveal:not(.in)').forEach(el => io.observe(el));
+<dialog class="lightbox" id="lightbox" aria-label="Foto ingrandita">
+  <div class="lightbox__corpo" tabindex="-1" autofocus>
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+    <div class="lightbox__piede">
+      <p></p>
+      <button type="button" data-azione="prima" aria-label="Foto precedente"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-sx" xlink:href="#i-sx"></use></svg></button>
+      <button type="button" data-azione="dopo" aria-label="Foto successiva"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-dx" xlink:href="#i-dx"></use></svg></button>
+      <button type="button" data-azione="chiudi" aria-label="Chiudi"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-x" xlink:href="#i-x"></use></svg></button>
+    </div>
+  </div>
+</dialog>
+
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "HomeAndConstructionBusiness",
+ "@id": "https://astragiardini-ui.github.io/astra-gardens-site/#azienda",
+ "name": "Astra Gardens",
+ "legalName": "Astra Gardens di Francesco Guizzardi",
+ "description": "Impresa di giardinaggio e cura del verde a Flero (BS): manutenzione di giardini, potature, tree climbing, abbattimenti controllati, prato in zolle, irrigazione e realizzazione di giardini per privati, condomini e aziende del sud di Brescia.",
+ "url": "https://astragiardini-ui.github.io/astra-gardens-site/",
+ "logo": "https://astragiardini-ui.github.io/astra-gardens-site/assets/img/logo-quadrato-512.png",
+ "image": "https://astragiardini-ui.github.io/astra-gardens-site/assets/img/og-astra-gardens.jpg",
+ "telephone": "+39 334 186 5764",
+ "email": "astragiardini@gmail.com",
+ "vatID": "IT04489190985",
+ "foundingDate": "2025",
+ "founder": {
+  "@type": "Person",
+  "name": "Francesco Guizzardi",
+  "jobTitle": "Perito agrario"
+ },
+ "address": {
+  "@type": "PostalAddress",
+  "addressLocality": "Flero",
+  "postalCode": "25020",
+  "addressRegion": "BS",
+  "addressCountry": "IT"
+ },
+ "areaServed": [
+  {
+   "@type": "City",
+   "name": "Flero"
+  },
+  {
+   "@type": "City",
+   "name": "Brescia"
+  },
+  {
+   "@type": "City",
+   "name": "Castel Mella"
+  },
+  {
+   "@type": "City",
+   "name": "Poncarale"
+  },
+  {
+   "@type": "City",
+   "name": "Roncadelle"
+  },
+  {
+   "@type": "City",
+   "name": "San Zeno Naviglio"
+  },
+  {
+   "@type": "City",
+   "name": "Borgosatollo"
+  },
+  {
+   "@type": "City",
+   "name": "Montirone"
+  },
+  {
+   "@type": "City",
+   "name": "Capriano del Colle"
+  },
+  {
+   "@type": "City",
+   "name": "Castenedolo"
+  },
+  {
+   "@type": "City",
+   "name": "Bagnolo Mella"
+  },
+  {
+   "@type": "City",
+   "name": "Azzano Mella"
+  },
+  {
+   "@type": "City",
+   "name": "Torbole Casaglia"
+  },
+  {
+   "@type": "City",
+   "name": "Gussago"
+  },
+  {
+   "@type": "City",
+   "name": "Cellatica"
+  }
+ ],
+ "sameAs": [
+  "https://www.instagram.com/astra.gardens/"
+ ],
+ "knowsAbout": [
+  "Manutenzione del giardino",
+  "Potatura di siepi e arbusti",
+  "Alberi alti e tree climbing",
+  "Abbattimenti controllati",
+  "Ulivi",
+  "Giardini nuovi e movimento terra",
+  "Prato in zolle e semina",
+  "Impianti di irrigazione",
+  "Robot rasaerba",
+  "Bordure in corten",
+  "Cura dell'erba sintetica"
+ ],
+ "hasOfferCatalog": {
+  "@type": "OfferCatalog",
+  "name": "Servizi per il verde",
+  "itemListElement": [
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Manutenzione del giardino",
+     "description": "Prato, siepi, aiuole e pulizia, su chiamata o con un contratto annuale: il tuo giardino resta curato in ogni stagione."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Potatura di siepi e arbusti",
+     "description": "Siepi compatte e arbusti in forma, potati nel periodo giusto per ogni pianta."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Alberi alti e tree climbing",
+     "description": "Saliamo sulla pianta con funi e imbrago, oppure con la piattaforma aerea, e potiamo con tagli puliti e mirati."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Abbattimenti controllati",
+     "description": "Smontiamo l'albero pezzo per pezzo e caliamo i rami con le funi, per proteggere tutto ciò che c'è intorno."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Ulivi",
+     "description": "Potatura degli ulivi, anche ornamentali nella forma a pon pon: una chioma ariosa, luminosa e bella da vedere."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Giardini nuovi e movimento terra",
+     "description": "Scavi, livellamenti e rimozione delle ceppaie con il miniescavatore, poi piante, prato e finiture: dal terreno al giardino finito."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Prato in zolle e semina",
+     "description": "Prepariamo e livelliamo il terreno, poi posiamo le zolle o seminiamo, per un prato verde e uniforme."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Impianti di irrigazione",
+     "description": "Progettiamo e posiamo l'impianto più adatto al tuo giardino. Con la catenaria scaviamo le tracce anche negli spazi stretti."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Robot rasaerba",
+     "description": "Installiamo e regoliamo il robot rasaerba sul tuo prato: l'erba resta corta e ordinata tutta la settimana."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Bordure in corten",
+     "description": "Bordure in acciaio corten sagomate su misura direttamente in giardino: linee pulite tra prato, ghiaia e aiuole."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Cura dell'erba sintetica",
+     "description": "Pulizia e spazzolatura del prato sintetico, per un manto ordinato, morbido e pulito."
+    }
+   }
+  ]
+ }
+}
 </script>
+<script src="assets/js/main.js?v=20261005" defer></script>
 </body>
 </html>
