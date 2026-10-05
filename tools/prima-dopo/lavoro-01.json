@@ -1,0 +1,21 @@
+{
+ "_nota": "Prato, aiuola e ulivo dietro la recinzione (settembre 2026). Punti e linee letti a mano: l'automatico SIFT+RANSAC dava 5 punti buoni su 78.",
+ "prima": "nuovi_05ott/IMG_7299.jpg",
+ "dopo": "nuovi_05ott/IMG_4024.jpg",
+ "punti": [
+  [2185, 2463, 1938, 2014],
+  [2161, 3090, 1898, 2888],
+  [2805, 2300, 3478, 1808],
+  [2792, 2717, 3394, 2422]
+ ],
+ "_punti": "cima e base del palo sinistro, cima e base del palo destro della recinzione",
+ "linee": [
+  {"nome": "cordolo, spigolo verso la recinzione", "prima": [-0.580817, 4300.38], "dopo": [-0.298789, 3387.52]},
+  {"nome": "cordolo, spigolo davanti", "prima": [-0.637997, 4570.90], "dopo": [-0.323140, 3608.02]},
+  {"nome": "cordolo, piede sulla pavimentazione", "prima": [-0.732368, 4893.16], "dopo": [-0.372877, 3866.79]}
+ ],
+ "ritaglio": [1700, 1784, 3560, 3024],
+ "tono": 0.6,
+ "tono_x_max": 3500,
+ "uscita": {"prima": "lavoro-prima", "dopo": "lavoro-dopo", "larghezze": [640, 900, 1200]}
+}

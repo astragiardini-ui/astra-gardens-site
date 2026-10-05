@@ -119,12 +119,13 @@
   /* ---------- Confronto oggi / progetto con cursore ---------- */
   Array.prototype.slice.call(document.querySelectorAll("[data-confronto]")).forEach(function (box) {
     var input = box.querySelector("input");
+    var dx = box.getAttribute("data-dx") || "Progetto";
     var toccato = false;
     function metti(pct) {
       pct = Math.max(0, Math.min(100, pct));
       box.style.setProperty("--pos", pct + "%");
       input.value = Math.round(pct);
-      input.setAttribute("aria-valuetext", "Progetto visibile al " + Math.round(100 - pct) + " per cento");
+      input.setAttribute("aria-valuetext", dx + " visibile al " + Math.round(100 - pct) + " per cento");
     }
     function daPuntatore(e) {
       var r = box.getBoundingClientRect();

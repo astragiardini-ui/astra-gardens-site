@@ -25,7 +25,7 @@
 <link rel="manifest" href="site.webmanifest">
 <link rel="preload" href="assets/fonts/atkinson-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=20261005c">
+<link rel="stylesheet" href="assets/css/style.css?v=20261005d">
 <script>document.documentElement.className += " js";</script>
 </head>
 <body>
@@ -54,8 +54,8 @@
       <picture><source type="image/webp" srcset="assets/img/logo-verde-240.webp 240w, assets/img/logo-verde-480.webp 480w" sizes="196px"><img src="assets/img/logo-verde-480.png" alt="Astra Gardens" width="480" height="98"></picture>
     </a>
     <nav class="menu" aria-label="Menu principale">
-      <a href="#servizi">Servizi</a>
       <a href="#progetto">Progetto</a>
+      <a href="#servizi">Servizi</a>
       <a href="#come-lavoriamo">Come lavoriamo</a>
       <a href="#lavori">Lavori</a>
       <a href="#condomini-aziende">Condomini</a>
@@ -72,8 +72,8 @@
     <button class="chiudi-menu" type="button"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-x" xlink:href="#i-x"></use></svg><span>Chiudi</span></button>
   </div>
   <nav aria-label="Menu">
-    <a href="#servizi">Servizi</a>
     <a href="#progetto">Progetto e render</a>
+    <a href="#servizi">Servizi</a>
     <a href="#come-lavoriamo">Come lavoriamo</a>
     <a href="#lavori">Lavori</a>
     <a href="#condomini-aziende">Condomini e aziende</a>
@@ -114,6 +114,49 @@
         <li class="rivela" data-ritardo="2"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-mezzi" xlink:href="#i-mezzi"></use></svg></span><div><strong>Mezzi professionali</strong><span>Piattaforma aerea, attrezzatura da tree climbing, miniescavatore e catenaria.</span></div></li>
         <li class="rivela" data-ritardo="3"><span class="tondo"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-doc" xlink:href="#i-doc"></use></svg></span><div><strong>Preventivo scritto</strong><span>Chiaro e voce per voce, prima di iniziare.</span></div></li>
       </ul>
+    </div>
+  </section>
+
+  <section class="sezione sezione--salvia progetto" id="progetto" aria-labelledby="titolo-progetto">
+    <div class="contenitore">
+      <header class="intestazione rivela">
+        <p class="occhiello">Progetto e render IA</p>
+        <h2 id="titolo-progetto">Vedi il tuo giardino prima di iniziare.</h2>
+        <p class="lead">La progettazione nasce dalla nostra competenza e dalla conoscenza delle piante. Per il render e per un preventivo rapido usiamo le nostre intelligenze artificiali, i nostri agenti IA: così vedi subito il risultato finito.</p>
+      </header>
+      <p class="confronti__aiuto rivela"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-sx" xlink:href="#i-sx"></use></svg><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-dx" xlink:href="#i-dx"></use></svg><span>Trascina il cursore sull'immagine: a sinistra il giardino di oggi, a destra il progetto.</span></p>
+      <div class="confronti">
+      <figure class="confronto-box rivela">
+        <div class="confronto" data-confronto data-dx="Progetto">
+          <picture><source type="image/webp" srcset="assets/img/render-aiuola-oggi-640.webp 640w, assets/img/render-aiuola-oggi-1086.webp 1086w" sizes="(min-width: 900px) 560px, 92vw"><img src="assets/img/render-aiuola-oggi-640.jpg" alt="Oggi: l&#x27;aiuola d&#x27;ingresso prima del progetto" width="1086" height="724" loading="lazy" decoding="async"></picture>
+          <div class="confronto__dopo"><picture><source type="image/webp" srcset="assets/img/render-aiuola-progetto-640.webp 640w, assets/img/render-aiuola-progetto-1086.webp 1086w" sizes="(min-width: 900px) 560px, 92vw"><img src="assets/img/render-aiuola-progetto-640.jpg" alt="Progetto: aiuola con bordura in corten, graminacee, fioriture e luci" width="1086" height="724" loading="lazy" decoding="async"></picture></div>
+          <input class="confronto__cursore" type="range" min="0" max="100" value="50" step="1" aria-label="Confronto: Aiuola con bordura in corten. Sposta per vedere: progetto">
+          <span class="confronto__linea" aria-hidden="true"><span class="confronto__maniglia"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-sx" xlink:href="#i-sx"></use></svg><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-dx" xlink:href="#i-dx"></use></svg></span></span>
+          <span class="confronto__etichetta confronto__etichetta--sx" aria-hidden="true">Oggi</span>
+          <span class="confronto__etichetta confronto__etichetta--dx" aria-hidden="true">Progetto</span>
+        </div>
+        <figcaption><span class="confronto__titolo">Aiuola con bordura in corten</span><span class="confronto__nota">Immagine di progetto · render realizzato con la nostra IA</span></figcaption>
+      </figure>
+      <figure class="confronto-box rivela">
+        <div class="confronto" data-confronto data-dx="Progetto">
+          <picture><source type="image/webp" srcset="assets/img/render-prato-oggi-640.webp 640w, assets/img/render-prato-oggi-946.webp 946w" sizes="(min-width: 900px) 560px, 92vw"><img src="assets/img/render-prato-oggi-640.jpg" alt="Oggi: il prato davanti a casa prima del progetto" width="946" height="631" loading="lazy" decoding="async"></picture>
+          <div class="confronto__dopo"><picture><source type="image/webp" srcset="assets/img/render-prato-progetto-640.webp 640w, assets/img/render-prato-progetto-946.webp 946w" sizes="(min-width: 900px) 560px, 92vw"><img src="assets/img/render-prato-progetto-640.jpg" alt="Progetto: prato nuovo con bordura in corten e fioriture" width="946" height="631" loading="lazy" decoding="async"></picture></div>
+          <input class="confronto__cursore" type="range" min="0" max="100" value="50" step="1" aria-label="Confronto: Prato nuovo con bordura in corten. Sposta per vedere: progetto">
+          <span class="confronto__linea" aria-hidden="true"><span class="confronto__maniglia"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-sx" xlink:href="#i-sx"></use></svg><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-dx" xlink:href="#i-dx"></use></svg></span></span>
+          <span class="confronto__etichetta confronto__etichetta--sx" aria-hidden="true">Oggi</span>
+          <span class="confronto__etichetta confronto__etichetta--dx" aria-hidden="true">Progetto</span>
+        </div>
+        <figcaption><span class="confronto__titolo">Prato nuovo con bordura in corten</span><span class="confronto__nota">Immagine di progetto · render realizzato con la nostra IA</span></figcaption>
+      </figure>
+      </div>
+      <div class="progetto__piede rivela">
+        <ul class="spunte spunte--chiare">
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Progetto pensato dalla nostra squadra di tecnici del verde</span></li>
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Render realistico del tuo giardino finito</span></li>
+          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Preventivo rapido, scritto e chiaro</span></li>
+        </ul>
+        <a class="btn btn--wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20progetto%20con%20render%20per%20il%20mio%20giardino." target="_blank" rel="noopener"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi il tuo render</span></a>
+      </div>
     </div>
   </section>
 
@@ -267,49 +310,6 @@
     </div>
   </section>
 
-  <section class="sezione progetto" id="progetto" aria-labelledby="titolo-progetto">
-    <div class="contenitore">
-      <header class="intestazione rivela">
-        <p class="occhiello">Progetto e render IA</p>
-        <h2 id="titolo-progetto">Vedi il tuo giardino prima di iniziare.</h2>
-        <p class="lead">La progettazione nasce dalla nostra competenza e dalla conoscenza delle piante. Per il render e per un preventivo rapido usiamo le nostre intelligenze artificiali, i nostri agenti IA: così vedi subito il risultato finito.</p>
-      </header>
-      <p class="confronti__aiuto rivela"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-sx" xlink:href="#i-sx"></use></svg><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-dx" xlink:href="#i-dx"></use></svg><span>Trascina il cursore sull'immagine: a sinistra il giardino di oggi, a destra il progetto.</span></p>
-      <div class="confronti">
-      <figure class="confronto-box rivela">
-        <div class="confronto" data-confronto>
-          <picture><source type="image/webp" srcset="assets/img/render-aiuola-oggi-640.webp 640w, assets/img/render-aiuola-oggi-1086.webp 1086w" sizes="(min-width: 900px) 560px, 92vw"><img src="assets/img/render-aiuola-oggi-640.jpg" alt="Oggi: l&#x27;aiuola d&#x27;ingresso prima del progetto" width="1086" height="724" loading="lazy" decoding="async"></picture>
-          <div class="confronto__dopo"><picture><source type="image/webp" srcset="assets/img/render-aiuola-progetto-640.webp 640w, assets/img/render-aiuola-progetto-1086.webp 1086w" sizes="(min-width: 900px) 560px, 92vw"><img src="assets/img/render-aiuola-progetto-640.jpg" alt="Progetto: aiuola con bordura in corten, graminacee, fioriture e luci" width="1086" height="724" loading="lazy" decoding="async"></picture></div>
-          <input class="confronto__cursore" type="range" min="0" max="100" value="50" step="1" aria-label="Confronto: Aiuola con bordura in corten. Sposta per vedere il progetto">
-          <span class="confronto__linea" aria-hidden="true"><span class="confronto__maniglia"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-sx" xlink:href="#i-sx"></use></svg><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-dx" xlink:href="#i-dx"></use></svg></span></span>
-          <span class="confronto__etichetta confronto__etichetta--sx" aria-hidden="true">Oggi</span>
-          <span class="confronto__etichetta confronto__etichetta--dx" aria-hidden="true">Progetto</span>
-        </div>
-        <figcaption><span class="confronto__titolo">Aiuola con bordura in corten</span><span class="confronto__nota">Immagine di progetto · render realizzato con la nostra IA</span></figcaption>
-      </figure>
-      <figure class="confronto-box rivela">
-        <div class="confronto" data-confronto>
-          <picture><source type="image/webp" srcset="assets/img/render-prato-oggi-640.webp 640w, assets/img/render-prato-oggi-946.webp 946w" sizes="(min-width: 900px) 560px, 92vw"><img src="assets/img/render-prato-oggi-640.jpg" alt="Oggi: il prato davanti a casa prima del progetto" width="946" height="631" loading="lazy" decoding="async"></picture>
-          <div class="confronto__dopo"><picture><source type="image/webp" srcset="assets/img/render-prato-progetto-640.webp 640w, assets/img/render-prato-progetto-946.webp 946w" sizes="(min-width: 900px) 560px, 92vw"><img src="assets/img/render-prato-progetto-640.jpg" alt="Progetto: prato nuovo con bordura in corten e fioriture" width="946" height="631" loading="lazy" decoding="async"></picture></div>
-          <input class="confronto__cursore" type="range" min="0" max="100" value="50" step="1" aria-label="Confronto: Prato nuovo con bordura in corten. Sposta per vedere il progetto">
-          <span class="confronto__linea" aria-hidden="true"><span class="confronto__maniglia"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-sx" xlink:href="#i-sx"></use></svg><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-dx" xlink:href="#i-dx"></use></svg></span></span>
-          <span class="confronto__etichetta confronto__etichetta--sx" aria-hidden="true">Oggi</span>
-          <span class="confronto__etichetta confronto__etichetta--dx" aria-hidden="true">Progetto</span>
-        </div>
-        <figcaption><span class="confronto__titolo">Prato nuovo con bordura in corten</span><span class="confronto__nota">Immagine di progetto · render realizzato con la nostra IA</span></figcaption>
-      </figure>
-      </div>
-      <div class="progetto__piede rivela">
-        <ul class="spunte spunte--chiare">
-          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Progetto pensato dalla nostra squadra di tecnici del verde</span></li>
-          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Render realistico del tuo giardino finito</span></li>
-          <li><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Preventivo rapido, scritto e chiaro</span></li>
-        </ul>
-        <a class="btn btn--wa" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vorrei%20un%20progetto%20con%20render%20per%20il%20mio%20giardino." target="_blank" rel="noopener"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-wa" xlink:href="#i-wa"></use></svg><span>Chiedi il tuo render</span></a>
-      </div>
-    </div>
-  </section>
-
   <section class="sezione sezione--salvia" id="come-lavoriamo" aria-labelledby="titolo-come">
     <div class="contenitore">
       <header class="intestazione rivela">
@@ -354,11 +354,23 @@
         <h2 id="titolo-lavori">Guarda i nostri lavori.</h2>
         <p class="lead">Foto e video veri dei nostri cantieri, girati dalla squadra. Tocca una foto per vederla grande.</p>
       </header>
-      <div class="prima-dopo rivela">
-        <p class="bollino-vero"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg><span>Lavoro realizzato · foto vere</span></p>
-        <figure><picture><source type="image/webp" srcset="assets/img/lavoro-prima-640.webp 640w, assets/img/lavoro-prima-900.webp 900w" sizes="(min-width: 720px) 560px, 92vw"><img src="assets/img/lavoro-prima-640.jpg" alt="Prima: il giardino con il terreno spoglio" width="900" height="600" loading="lazy" decoding="async"></picture><figcaption class="etichetta">Prima</figcaption></figure>
-        <figure><picture><source type="image/webp" srcset="assets/img/lavoro-dopo-640.webp 640w, assets/img/lavoro-dopo-900.webp 900w" sizes="(min-width: 720px) 560px, 92vw"><img src="assets/img/lavoro-dopo-640.jpg" alt="Dopo: prato, aiuola pacciamata, un ulivo e nuove piante" width="900" height="600" loading="lazy" decoding="async"></picture><figcaption class="etichetta etichetta--dopo">Dopo</figcaption></figure>
-        <p class="prima-dopo__testo"><strong>Da terreno spoglio a giardino finito</strong>Prato, aiuola pacciamata, un ulivo e nuove piante: foto scattate prima e dopo il nostro lavoro.</p>
+      <div class="prima-dopo">
+      <figure class="confronto-box rivela confronto-box--vero">
+        <div class="confronto" data-confronto data-dx="Dopo">
+          <picture><source type="image/webp" srcset="assets/img/lavoro-prima-640.webp 640w, assets/img/lavoro-prima-900.webp 900w, assets/img/lavoro-prima-1200.webp 1200w" sizes="(min-width: 1200px) 680px, (min-width: 960px) 56vw, 92vw"><img src="assets/img/lavoro-prima-640.jpg" alt="Prima: terreno spoglio e secco dietro la recinzione" width="1200" height="800" loading="lazy" decoding="async"></picture>
+          <div class="confronto__dopo"><picture><source type="image/webp" srcset="assets/img/lavoro-dopo-640.webp 640w, assets/img/lavoro-dopo-900.webp 900w, assets/img/lavoro-dopo-1200.webp 1200w" sizes="(min-width: 1200px) 680px, (min-width: 960px) 56vw, 92vw"><img src="assets/img/lavoro-dopo-640.jpg" alt="Dopo: aiuola pacciamata con nuove piante, prato e recinzione in ordine" width="1200" height="800" loading="lazy" decoding="async"></picture></div>
+          <input class="confronto__cursore" type="range" min="0" max="100" value="50" step="1" aria-label="Confronto: Da terreno spoglio a giardino finito. Sposta per vedere: dopo">
+          <span class="confronto__linea" aria-hidden="true"><span class="confronto__maniglia"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-sx" xlink:href="#i-sx"></use></svg><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-dx" xlink:href="#i-dx"></use></svg></span></span>
+          <span class="confronto__etichetta confronto__etichetta--sx" aria-hidden="true">Prima</span>
+          <span class="confronto__etichetta confronto__etichetta--dx" aria-hidden="true">Dopo</span>
+        </div>
+        <figcaption><span class="confronto__nota"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-check" xlink:href="#i-check"></use></svg>Lavoro realizzato · foto vere</span></figcaption>
+      </figure>
+        <div class="prima-dopo__testo rivela" data-ritardo="1">
+          <h3>Da terreno spoglio a giardino finito.</h3>
+          <p>Prato, aiuola pacciamata, un ulivo e nuove piante. Le due foto sono scattate prima e dopo il nostro lavoro, dallo stesso punto del giardino.</p>
+          <p class="confronti__aiuto"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-sx" xlink:href="#i-sx"></use></svg><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-dx" xlink:href="#i-dx"></use></svg><span>Trascina il cursore: a sinistra prima, a destra dopo.</span></p>
+        </div>
       </div>
       <div class="galleria" data-galleria>
       <figure class="rivela">
@@ -748,6 +760,6 @@
  }
 }
 </script>
-<script src="assets/js/main.js?v=20261005c" defer></script>
+<script src="assets/js/main.js?v=20261005d" defer></script>
 </body>
 </html>

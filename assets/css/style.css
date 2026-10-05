@@ -403,20 +403,12 @@ h1 em, h2 em { font-style: italic; font-weight: 500; }
 .passi__invito p { margin: 0; font-size: 1.1875rem; color: var(--testo-2); }
 
 /* ---------- Lavori ---------- */
-.prima-dopo { display: grid; gap: 16px; margin-bottom: 56px; }
-.prima-dopo figure { position: relative; margin: 0; border-radius: var(--raggio); overflow: hidden; box-shadow: var(--ombra); }
-.prima-dopo picture { aspect-ratio: 3 / 2; }
-.prima-dopo img { width: 100%; height: 100%; object-fit: cover; }
-.etichetta {
-  position: absolute; left: 14px; top: 14px; padding: 8px 16px; border-radius: 999px;
-  background: rgba(255, 255, 255, .95); color: var(--verde); font-weight: 800; font-size: 1rem; letter-spacing: .08em; text-transform: uppercase;
-}
-.etichetta--dopo { background: var(--verde); color: #fff; }
-.prima-dopo__testo { margin: 0; color: var(--testo-2); font-size: 1.125rem; }
-.prima-dopo__testo strong { color: var(--verde); font-family: var(--serif); font-size: 1.45rem; font-weight: 600; display: block; margin-bottom: 4px; }
-@media (min-width: 720px) {
-  .prima-dopo { grid-template-columns: 1fr 1fr; gap: 20px; }
-  .prima-dopo__testo { grid-column: 1 / -1; }
+.prima-dopo { display: grid; gap: 26px; align-items: center; margin-bottom: 64px; }
+.prima-dopo__testo h3 { font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.2rem); color: var(--verde); margin: 16px 0 10px; }
+.prima-dopo__testo p { color: var(--testo-2); font-size: 1.125rem; }
+.prima-dopo__testo .confronti__aiuto { margin: 4px 0 0; }
+@media (min-width: 960px) {
+  .prima-dopo { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 48px; margin-bottom: 80px; }
 }
 .galleria { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 14px; }
 @media (min-width: 960px) { .galleria { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 24px; } }
@@ -591,6 +583,12 @@ a.recapito:hover { background: rgba(255, 255, 255, .13); }
 .confronto-box figcaption { margin-top: 14px; display: grid; gap: 2px; }
 .confronto__titolo { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; line-height: 1.25; color: var(--verde); }
 .confronto__nota { font-size: 1rem; color: var(--testo-2); }
+.confronto-box--vero .confronto__nota {
+  display: inline-flex; align-items: center; gap: 8px; justify-self: start; padding: 8px 14px; border-radius: 999px;
+  background: var(--salvia-chiara); color: var(--verde); font-weight: 800; font-size: .9375rem; letter-spacing: .04em;
+}
+.confronto-box--vero .confronto__nota .icona { width: 18px; height: 18px; }
+.prima-dopo__testo h3 { margin-top: 0; }
 .progetto__piede { margin-top: 40px; display: grid; gap: 8px 40px; align-items: center; }
 .progetto__piede .spunte { margin: 0 0 22px; }
 @media (min-width: 960px) {
@@ -637,13 +635,6 @@ a.recapito:hover { background: rgba(255, 255, 255, .13); }
 }
 
 /* ---------- Lavoro realizzato e galleria con clip ---------- */
-.bollino-vero {
-  display: inline-flex; align-items: center; gap: 8px; justify-self: start; margin: 0;
-  padding: 8px 14px; border-radius: 999px; background: var(--salvia-chiara); color: var(--verde);
-  font-weight: 800; font-size: .9375rem; letter-spacing: .04em;
-}
-.bollino-vero .icona { width: 18px; height: 18px; }
-@media (min-width: 720px) { .bollino-vero { grid-column: 1 / -1; } }
 .galleria__clip .clip { border-radius: 18px; }
 
 /* ---------- Animazioni ---------- */
