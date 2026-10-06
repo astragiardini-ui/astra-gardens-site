@@ -4,7 +4,7 @@
   "dissolvenza": 0.25,
   "uscite": [
    {"file": "assets/video/astra-gardens-lavori.mp4", "larghezza": 720, "max_kb": 3000},
-   {"file": "assets/video/astra-gardens-lavori-telefono.mp4", "larghezza": 540, "max_kb": 1500}
+   {"file": "assets/video/astra-gardens-lavori-telefono.mp4", "larghezza": 720, "max_kb": 2200}
   ],
   "poster": "assets/video/astra-gardens-lavori-poster",
   "pezzi": [

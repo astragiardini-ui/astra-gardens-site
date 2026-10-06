@@ -19,8 +19,12 @@ Il file .json descrive il lavoro (vedi lavoro-01.json):
   "linee"           (facoltative) coppie di rette y = m x + q dello stesso bordo nelle due foto
                     (es. spigoli del cordolo): correggono il terreno, che sta su un altro piano,
                     con una deformazione morbida (thin plate spline) solo in perpendicolare al bordo
-  "ritaglio"        [x0, y0, x1, y1] nelle coordinate del DOPO (tenere lontane facciate e civici)
+  "linee_x"         (facoltativo) [x_min, x_max] nel DOPO: dove i bordi esistono davvero; fuori resta
+                    l'omografia pura (niente correzioni inventate dove il cordolo non c'e')
+  "ritaglio"        [x0, y0, x1, y1] nelle coordinate del DOPO: largo, in modo che si veda tutto il
+                    giardino (niente civici, targhe o volti leggibili)
   "tono"            0..1, quanto avvicinare colori e luce del PRIMA a quelli del DOPO
+  "tono_x_min/max"  (facoltativi) zona orizzontale usata per misurare il tono (pavimento e cordolo)
   "uscita"          nomi dei file in assets/img e larghezze da esportare
 
 Prima si prova l'automatico (SIFT + RANSAC sugli elementi fissi): con foto scattate in giorni,
@@ -105,7 +109,9 @@ def main():
     src = applica(Hi, Q)
     linee = cfg.get("linee", [])
     if linee:
-        xs = np.arange(x0 - 100, x1 + 101, 50.0)
+        lx0, lx1 = cfg.get("linee_x", [x0 - 100, x1 + 100])
+        xs_tutti = np.arange(x0 - 100, x1 + 101, 50.0)
+        xs = xs_tutti[(xs_tutti >= lx0) & (xs_tutti <= lx1)]
         ctrl, val = [], []
         corr = []
         for l in linee:
@@ -127,17 +133,30 @@ def main():
             y, d = corr[-1][i]
             for extra in cfg.get("sotto_ultima", [60, 220]):
                 ctrl.append([x, y + extra]); val.append(d)
+        # dove il cordolo non c'e' (fuori da linee_x) resta l'omografia pura
+        for x in xs_tutti:
+            if lx0 <= x <= lx1:
+                continue
+            for l in linee:
+                md_, qd_ = l["dopo"]
+                ctrl.append([x, md_ * x + qd_]); val.append([0.0, 0.0])
         # sopra la prima linea (recinzione e sfondo) resta l'omografia pura
         md, qd = linee[0]["dopo"]
         fascia = cfg.get("fascia", 60)
-        for x in xs:
+        for x in xs_tutti:
             ctrl.append([x, md * x + qd - fascia]); val.append([0.0, 0.0])
         for y in np.arange(y0 - 200, y1, 200.0):
             for x in np.arange(x0 - 200, x1 + 201, 250.0):
                 if y < md * x + qd - 150:
                     ctrl.append([x, y]); val.append([0.0, 0.0])
         f = tps(np.array(ctrl), np.array(val))
-        src = src + f(Q)
+        # la deformazione e' morbida: si calcola su una griglia rada e poi si interpola (molto piu' veloce)
+        passo = 8
+        gxs, gys = np.meshgrid(np.arange(x0, x1 + passo, passo, dtype=np.float64), np.arange(y0, y1 + passo, passo, dtype=np.float64))
+        d = f(np.c_[gxs.ravel(), gys.ravel()]).reshape(gxs.shape + (2,)).astype(np.float32)
+        dx = cv2.resize(d[..., 0], (x1 - x0, y1 - y0), interpolation=cv2.INTER_CUBIC)
+        dy = cv2.resize(d[..., 1], (x1 - x0, y1 - y0), interpolation=cv2.INTER_CUBIC)
+        src = src + np.c_[dx.ravel(), dy.ravel()]
         print("correzione terreno: %d punti di controllo, spostamento max %.1f px" % (len(ctrl), np.abs(val).max()))
     mx = src[:, 0].reshape(gx.shape).astype(np.float32)
     my = src[:, 1].reshape(gx.shape).astype(np.float32)
@@ -158,6 +177,8 @@ def main():
             maschera = gy > md * gx + qd + 10
             if "tono_x_max" in cfg:
                 maschera &= gx < cfg["tono_x_max"]
+            if "tono_x_min" in cfg:
+                maschera &= gx > cfg["tono_x_min"]
         ma, sa = la[maschera].mean(axis=0), la[maschera].std(axis=0)
         mb, sb = lb[maschera].mean(axis=0), lb[maschera].std(axis=0)
         for c in range(3):

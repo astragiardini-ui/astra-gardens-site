@@ -285,6 +285,43 @@ h1 em, h2 em { font-style: italic; font-weight: 500; }
   .hero__nota { justify-content: flex-start; }
 }
 
+/* ---------- Telefono: l'apertura come un Reel ----------
+   Il video riempie lo schermo in larghezza (8px di margine) e in altezza va da sotto la testata
+   (72px + 1px di bordo) a sopra la barra WhatsApp (81px), con 8px di respiro: 170px in tutto.
+   svh = altezza con le barre del browser aperte, quindi al primo caricamento si vedono il video
+   intero e il titolo intero. Occhiello e titolo stanno sopra il video, in basso, su una sfumatura
+   scura; sotto il video il testo e il pulsante grande WhatsApp. */
+@media (max-width: 767px) {
+  .hero { padding: 8px 0 40px; }
+  .hero__griglia { display: grid; grid-template-columns: minmax(0, 1fr); padding-inline: 8px; }
+  .hero__testo.contenitore { display: contents; }
+  .hero__media {
+    grid-row: 1; grid-column: 1;
+    width: auto; aspect-ratio: auto; margin: 0;
+    height: calc(100vh - 170px);
+    height: calc(100svh - 170px - env(safe-area-inset-bottom, 0px));
+    min-height: 360px; max-height: 860px;
+  }
+  .hero__media::after { display: none; }
+  .hero__alone { width: 112%; height: 106%; opacity: .6; }
+  .hero__cornice { border-radius: 22px; box-shadow: 0 20px 44px -24px rgba(3, 18, 12, .9); }
+  .hero__cornice::after {
+    background: linear-gradient(180deg, rgba(11, 46, 35, .42) 0%, rgba(11, 46, 35, 0) 18%,
+      rgba(8, 34, 25, 0) 38%, rgba(8, 34, 25, .6) 60%, rgba(6, 27, 20, .88) 82%, rgba(6, 27, 20, .94) 100%);
+  }
+  .hero h1 {
+    grid-row: 1; grid-column: 1; align-self: end; position: relative; z-index: 3;
+    margin: 0; padding: 0 18px 22px; text-align: left;
+    font-size: clamp(2.05rem, 1.25rem + 4vw, 2.6rem); line-height: 1.08;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, .35);
+  }
+  .hero h1 .occhiello { justify-content: flex-start; font-size: .8125rem; letter-spacing: .09em; margin-bottom: 10px; text-shadow: 0 1px 10px rgba(0, 0, 0, .5); }
+  .hero h1 .occhiello::after { display: none; }
+  .hero__lead { grid-row: 2; margin: 26px 12px 22px; }
+  .hero .btn--largo { grid-row: 3; width: auto; margin-inline: 12px; }
+  .hero__nota { grid-row: 4; margin-inline: 12px; }
+}
+
 /* ---------- Fiducia ---------- */
 .fiducia { background: var(--bianco); border-bottom: 1px solid var(--linea); }
 .fiducia ul { display: grid; gap: 4px; padding: 28px 0; }
@@ -593,11 +630,17 @@ a.recapito:hover { background: rgba(255, 255, 255, .13); }
 .confronti__aiuto .frecce .icona { width: 16px; height: 16px; stroke-width: 2.6; }
 @media (min-width: 720px) { .confronti__aiuto { display: inline-flex; padding: 10px 18px 10px 10px; border-radius: 999px; } }
 .confronti { display: grid; gap: 32px; }
-@media (min-width: 900px) { .confronti { grid-template-columns: 1fr 1fr; gap: 28px; } }
-.confronto-box { margin: 0; }
+/* sul computer i due render affiancati alla stessa altezza: colonne proporzionali (--colonne dalla pagina) */
+@media (min-width: 900px) { .confronti { grid-template-columns: var(--colonne, 1fr 1fr); gap: 28px; align-items: start; } }
+/* il riquadro prende le proporzioni della coppia (--ratio dalla pagina): la foto si vede intera;
+   se e' molto alta non supera i tre quarti dello schermo, e la didascalia resta allineata alla foto */
+.confronto-box {
+  margin: 0 auto; width: 100%;
+  max-width: calc(75vh * var(--ratio, 1.5)); max-width: calc(75svh * var(--ratio, 1.5));
+}
 .confronto {
   --pos: 50%;
-  position: relative; overflow: hidden; aspect-ratio: 3 / 2; border-radius: var(--raggio);
+  position: relative; overflow: hidden; aspect-ratio: var(--ratio, 3 / 2); border-radius: var(--raggio);
   background: var(--salvia-chiara); box-shadow: var(--ombra); cursor: ew-resize;
   touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
 }

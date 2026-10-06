@@ -1,0 +1,29 @@
+{
+ "_nota": "Coppie della sezione Progetto e render IA. Le omografie (foto ridotta -> render) vengono da SIFT + MAGSAC su tutta l'immagine e sono state controllate a strisce alterne: case, muri e pavimento combaciano. Le foto sorgente stanno in MEDIA/render_ia e NON vanno nel repository.",
+ "coppie": [
+  {
+   "oggi": "render_ia/aiuola-oggi.jpg",
+   "progetto": "render_ia/aiuola-progetto.png",
+   "zona": 1.0,
+   "omografia": [
+    [0.998139423, 9.505e-06, 0.216446537],
+    [0.001335512, 1.002594798, -3.0020973],
+    [-1.087e-06, -1.307e-06, 1.0]
+   ],
+   "uscita": ["render-aiuola-oggi", "render-aiuola-progetto"],
+   "larghezze": [640]
+  },
+  {
+   "oggi": "render_ia/prato-oggi.jpg",
+   "progetto": "render_ia/prato-progetto.png",
+   "zona": 1.0,
+   "omografia": [
+    [0.993437311, -0.06230724, 30.319123374],
+    [-0.032707281, 1.020260935, -11.948517194],
+    [-6.1553e-05, -6.338e-05, 1.0]
+   ],
+   "uscita": ["render-prato-oggi", "render-prato-progetto"],
+   "larghezze": [640, 1080]
+  }
+ ]
+}

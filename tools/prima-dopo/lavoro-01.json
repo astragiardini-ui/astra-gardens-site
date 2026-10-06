@@ -1,5 +1,5 @@
 {
- "_nota": "Prato, aiuola e ulivo dietro la recinzione (settembre 2026). Punti e linee letti a mano: l'automatico SIFT+RANSAC dava 5 punti buoni su 78.",
+ "_nota": "Prato, aiuola e ulivo dietro la recinzione (settembre 2026). Le due foto sono scattate da punti diversi: SIFT+RANSAC dava 5 punti buoni su 78 e la casa sullo sfondo ha una parallasse di molte centinaia di pixel rispetto alla recinzione, quindi una sola omografia per tutta la scena non esiste. Si allinea il piano della recinzione (pali) e si corregge il cordolo; il ritaglio quadrato mostra tutto il giardino.",
  "prima": "nuovi_05ott/IMG_7299.jpg",
  "dopo": "nuovi_05ott/IMG_4024.jpg",
  "punti": [
@@ -10,12 +10,30 @@
  ],
  "_punti": "cima e base del palo sinistro, cima e base del palo destro della recinzione",
  "linee": [
-  {"nome": "cordolo, spigolo verso la recinzione", "prima": [-0.580817, 4300.38], "dopo": [-0.298789, 3387.52]},
-  {"nome": "cordolo, spigolo davanti", "prima": [-0.637997, 4570.90], "dopo": [-0.323140, 3608.02]},
-  {"nome": "cordolo, piede sulla pavimentazione", "prima": [-0.732368, 4893.16], "dopo": [-0.372877, 3866.79]}
+  {
+   "nome": "cordolo, spigolo verso la recinzione",
+   "prima": [-0.580817, 4300.38],
+   "dopo": [-0.298789, 3387.52]
+  },
+  {
+   "nome": "cordolo, spigolo davanti",
+   "prima": [-0.637997, 4570.9],
+   "dopo": [-0.32314, 3608.02]
+  },
+  {
+   "nome": "cordolo, piede sulla pavimentazione",
+   "prima": [-0.732368, 4893.16],
+   "dopo": [-0.372877, 3866.79]
+  }
  ],
- "ritaglio": [1700, 1784, 3560, 3024],
+ "ritaglio": [600, 0, 3624, 3024],
  "tono": 0.6,
  "tono_x_max": 3500,
- "uscita": {"prima": "lavoro-prima", "dopo": "lavoro-dopo", "larghezze": [640, 900, 1200]}
+ "uscita": {
+  "prima": "lavoro-prima",
+  "dopo": "lavoro-dopo",
+  "larghezze": [640, 900, 1200]
+ },
+ "linee_x": [1200, 3800],
+ "tono_x_min": 1200
 }

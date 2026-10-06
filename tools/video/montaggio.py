@@ -9,9 +9,10 @@ Uso, dalla cartella del sito:
     python3 tools/video/montaggio.py poster     # solo le immagini d'attesa delle clip
     python3 tools/video/montaggio.py clip --solo antizanzare   # rifà una clip sola
 
-Ogni clip esce in due misure: 540x960 per il computer e 432x768 per il telefono (-telefono.mp4);
-il video d'apertura in 720x1280 (computer) e 540x960 (telefono). La pagina sceglie da sola
-con <source media="(max-width: 959px)">.
+Ogni clip esce in due misure: 540x960 per il computer e 432x768 per il telefono (-telefono.mp4).
+Il video d'apertura esce in 720x1280 in due pesi: sul telefono riempie lo schermo come un Reel,
+quindi anche la versione -telefono.mp4 resta a 720 di larghezza, solo un po' più compressa.
+La pagina sceglie da sola con <source media="(max-width: 959px)">.
 
 Cosa serve: ffmpeg (Homebrew) e, per i .mov dell'iPhone, avconvert (già dentro macOS).
 Pillow (PIL) per i poster.
