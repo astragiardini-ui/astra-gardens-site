@@ -98,14 +98,37 @@ def grande(nome):
     return "assets/img/%s-%d.webp" % (nome, max(m["webp"]))
 
 
-def clip(nome, alt, classe=""):
-    """Clip breve, muta, in loop, senza comandi: gira sempre quando si vede (main.js). Poster sempre presente."""
+# Regola fissa di Francesco (06/10/2026, ~/.claude/CLAUDE.md §65): i video si pubblicano solo alla massima
+# qualità e solo dagli originali. Una clip di cui manca l'originale ("sorgente": null in tools/video/video.json)
+# non ha il file in assets/video/clip/: al suo posto la pagina mostra questa foto, finché l'originale arriva.
+RIPIEGO_CLIP = {
+    "tree-climbing": ("srv-alberi", "Giardiniere in tree climbing tra i rami di una grande magnolia"),
+    "abbattimento": ("srv-abbattimenti", "Abbattimento controllato: il tronco viene ridotto a sezioni dall'alto"),
+    "movimento-terra": ("srv-movimento-terra", "Miniescavatore al lavoro e furgone Astra Gardens sullo sfondo"),
+    "robot": ("lav-zolle-siepe", "Prato rigoglioso lungo una siepe curata."),
+    "fioriture": ("lav-prato-fiorito", "Prato e aiuole fiorite in primavera."),
+}
+
+
+def ha_video(nome):
+    return os.path.exists(os.path.join(SITO, "assets", "video", "clip", nome + ".mp4"))
+
+
+def clip(nome, alt, classe="", sizes="(min-width: 960px) 360px, (min-width: 640px) 45vw, 124px"):
+    """Clip breve, muta, in loop, senza comandi, 1080x1920: si scarica e gira solo quando entra nello schermo
+    (preload="none" + main.js). Poster sempre presente. Senza il file video: la foto di RIPIEGO_CLIP."""
+    cl = (" " + classe) if classe else ""
+    if not ha_video(nome):
+        foto, alt_foto = RIPIEGO_CLIP[nome]
+        return '<div class="clip clip--foto%s">%s</div>' % (cl, picture(foto, alt_foto.rstrip("."), sizes))
     b = "assets/video/clip/" + nome
     return ('<div class="clip%s" data-clip>'
-            '<picture><source type="image/webp" srcset="%s-poster.webp"><img src="%s-poster.jpg" alt="%s" width="540" height="960" loading="lazy" decoding="async"></picture>'
-            '<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" poster="%s-poster.webp">'
-            '<source src="%s-telefono.mp4" type="video/mp4" media="(max-width: 959px)"><source src="%s.mp4" type="video/mp4"></video>'
-            '</div>') % ((" " + classe) if classe else "", b, b, e(alt), b, b, b)
+            '<picture><source type="image/webp" srcset="%s-poster.webp"><img src="%s-poster.jpg" alt="%s" width="1080" height="1920" loading="lazy" decoding="async"></picture>'
+            # niente attributo poster sul video: il browser lo scaricherebbe subito anche con preload="none";
+            # l'immagine d'attesa e' gia' la <picture> qui sopra, che si carica solo vicino allo schermo
+            '<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">'
+            '<source src="%s.mp4" type="video/mp4"></video>'
+            '</div>') % (cl, b, b, e(alt), b)
 
 
 def proporzione(nome):
@@ -432,6 +455,8 @@ def index():
 
     galleria_html = []
     for tipo, nome, didascalia, fuoco in GALLERIA:
+        if tipo == "clip" and not ha_video(nome):
+            tipo, (nome, didascalia), fuoco = "foto", RIPIEGO_CLIP[nome], None
         alt = didascalia.rstrip(".")
         if tipo == "clip":
             galleria_html.append("""      <figure class="rivela galleria__clip">
@@ -459,9 +484,8 @@ def index():
       <div class="hero__media">
         <canvas class="hero__alone" width="27" height="48" aria-hidden="true"></canvas>
         <div class="hero__cornice">
-          <picture><source type="image/webp" srcset="assets/video/astra-gardens-lavori-poster.webp"><img src="assets/video/astra-gardens-lavori-poster.jpg" alt="" width="720" height="1280" fetchpriority="high"></picture>
+          <picture><source type="image/webp" srcset="assets/video/astra-gardens-lavori-poster.webp"><img src="assets/video/astra-gardens-lavori-poster.jpg" alt="" width="1080" height="1920" fetchpriority="high"></picture>
           <video autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1" poster="assets/video/astra-gardens-lavori-poster.webp">
-            <source src="assets/video/astra-gardens-lavori-telefono.mp4" type="video/mp4" media="(max-width: 959px)">
             <source src="assets/video/astra-gardens-lavori.mp4" type="video/mp4">
           </video>
           <span class="hero__etichetta">Dai nostri cantieri</span>
