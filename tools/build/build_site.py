@@ -277,7 +277,7 @@ def jsonld():
         "@id": BASE + "#azienda",
         "name": "Astra Gardens",
         "legalName": "Astra Gardens di Francesco Guizzardi",
-        "description": "Impresa di giardinaggio e cura del verde a Flero (BS), nata nel 2025 da un gruppo di periti "
+        "description": "Impresa di giardinaggio e cura del verde a Flero (BS), nata nel 2023 da un gruppo di periti "
                        "agrari e laureati in agraria: manutenzione di giardini, potature, tree climbing, abbattimenti "
                        "controllati, cippatura, prato in zolle, irrigazione, impianti antizanzare, progetti con render e "
                        "realizzazione di giardini per privati, condomini e aziende del sud di Brescia.",
@@ -287,7 +287,7 @@ def jsonld():
         "telephone": TEL,
         "email": EMAIL,
         "vatID": "IT" + PIVA,
-        "foundingDate": "2025",
+        "foundingDate": "2023",
         "founder": {"@type": "Person", "name": "Francesco Guizzardi"},
         "address": {"@type": "PostalAddress", "addressLocality": "Flero", "postalCode": "25020",
                     "addressRegion": "BS", "addressCountry": "IT"},
@@ -555,12 +555,12 @@ def index():
     <div class="contenitore duo">
       <div class="duo__foto rivela">
         %(foto_furgone)s
-        <p class="bollo">Astra Gardens<small>Flero (BS) · dal 2025</small></p>
+        <p class="bollo">Astra Gardens<small>Flero (BS) · dal 2023</small></p>
       </div>
       <div class="rivela" data-ritardo="1">
         <p class="occhiello">Chi siamo</p>
         <h2 id="titolo-chi">Una squadra giovane, nata a Flero.</h2>
-        <p class="lead">Astra Gardens nasce nel 2025 da un gruppo di periti agrari e laureati in agraria. Siamo giovani, con una grande conoscenza tecnica del settore e una mentalità aperta, sempre rivolta al futuro.</p>
+        <p class="lead">Astra Gardens nasce nel 2023 da un gruppo di periti agrari e laureati in agraria. Siamo giovani, con una grande conoscenza tecnica del settore e una mentalità aperta, sempre rivolta al futuro.</p>
         <p>Nei giardini di Flero e del sud di Brescia portiamo competenza, mezzi professionali e tanta cura per i dettagli: ascoltiamo chi vive il giardino, scegliamo il momento giusto per ogni pianta e a fine lavoro lasciamo tutto pulito e in ordine.</p>
         <p class="citazione">«Pensato con la testa, realizzato con le mani.»</p>
         <ul class="mezzi" aria-label="I nostri mezzi">
