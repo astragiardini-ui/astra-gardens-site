@@ -187,62 +187,38 @@ h1 em, h2 em { font-style: italic; font-weight: 500; }
 .pannello .btn { margin-top: 28px; }
 .pannello__nota { margin-top: 18px; color: var(--salvia); font-size: 1.0625rem; }
 
-/* ---------- Hero ---------- */
-.hero { position: relative; background: var(--verde); color: #fff; overflow: hidden; padding: 20px 0 44px; }
+/* ---------- Hero ----------
+   In alto i due video del giardino con la piscina, uno dopo l'altro, nell'inquadratura ORIGINALE:
+   il riquadro ha le proporzioni del video (--ratio dalla pagina) e il video sta dentro con
+   object-fit: contain, quindi non si taglia niente (regola di Francesco, 13/10/2026).
+   Telefono: larghi quanto lo schermo, senza margini. Dal tablet: alti quanto lo schermo sotto la
+   testata, centrati. Il titolo e il pulsante WhatsApp vengono DOPO i video, mai sopra. */
+.hero { position: relative; background: var(--verde); color: #fff; overflow: hidden; padding: 0 0 48px; }
 .hero::before {
   content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none;
   background:
     radial-gradient(900px 520px at 88% 8%, rgba(168, 191, 163, .22), transparent 60%),
     radial-gradient(700px 480px at 0% 100%, rgba(37, 211, 102, .08), transparent 60%);
 }
-.hero__griglia { position: relative; }
+.hero__video { position: relative; display: grid; gap: 6px; }
+.video-intero {
+  position: relative; margin: 0; width: 100%; aspect-ratio: var(--ratio, 9 / 16);
+  background: var(--verde-scuro); overflow: hidden;
+}
+.video-intero picture, .video-intero img, .video-intero video {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none;
+}
+.video-intero video { opacity: 0; transition: opacity .6s ease; }
+.video-intero.in-play video { opacity: 1; }
+@media (min-width: 768px) {
+  .hero__video { gap: 14px; padding-top: 0; }
+  .video-intero {
+    width: auto; max-width: 100%; margin-inline: auto;
+    height: calc(100vh - 73px); height: calc(100svh - 73px);
+  }
+}
 
-/* la cornice-telefono: sempre intera, centrata, nelle proporzioni del video (9:16) */
-.hero__media {
-  position: relative; z-index: 1;
-  width: 64vw;
-  width: min(64vw, calc(52vh * .5625), 268px);
-  width: min(64vw, calc(52svh * .5625), 268px);
-  aspect-ratio: 9 / 16;
-  margin: 0 auto 28px;
-}
-/* l'alone sfocato: lo stesso video, ingrandito e sfumato dietro la cornice */
-.hero__alone {
-  position: absolute; left: 50%; top: 50%; width: 230%; height: 132%;
-  transform: translate(-50%, -50%);
-  filter: blur(30px) saturate(1.35) brightness(1.08); opacity: .95; pointer-events: none;
-  -webkit-mask-image: radial-gradient(closest-side, #000 42%, transparent 100%);
-  mask-image: radial-gradient(closest-side, #000 42%, transparent 100%);
-}
-.hero__cornice {
-  position: absolute; top: 0; right: 0; bottom: 0; left: 0;
-  border-radius: 28px; overflow: hidden; isolation: isolate;
-  -webkit-mask-image: -webkit-radial-gradient(white, black);
-  background: var(--verde-scuro);
-  box-shadow: 0 34px 60px -26px rgba(3, 18, 12, .8);
-}
-.hero__media::after {
-  content: ""; position: absolute; top: -9px; right: -9px; bottom: -9px; left: -9px; pointer-events: none;
-  border: 1px solid rgba(255, 255, 255, .22); border-radius: 36px;
-}
-.hero__cornice img, .hero__cornice video {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none;
-}
-.hero__cornice video { opacity: 0; transition: opacity .8s ease; }
-.hero__media.in-play video { opacity: 1; }
-.hero__cornice::after {
-  content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; z-index: 2;
-  background: linear-gradient(180deg, rgba(11, 46, 35, .4) 0%, rgba(11, 46, 35, 0) 24%);
-}
-.hero__etichetta {
-  position: absolute; z-index: 3; left: 12px; top: 12px;
-  display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px; border-radius: 999px;
-  background: rgba(11, 46, 35, .66); color: #fff; font-size: .9375rem; font-weight: 700; line-height: 1.2;
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-}
-.hero__etichetta::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--wa); box-shadow: 0 0 0 4px rgba(37, 211, 102, .25); }
-
-.hero__testo { position: relative; z-index: 2; text-align: center; }
+.hero__testo { position: relative; z-index: 2; text-align: center; padding-top: 40px; }
 .occhiello {
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--sans); font-style: normal; font-weight: 800; line-height: 1.4; font-size: .9375rem; letter-spacing: .12em; text-transform: uppercase;
@@ -263,63 +239,10 @@ h1 em, h2 em { font-style: italic; font-weight: 500; }
   box-shadow: 0 0 0 4px rgba(37, 211, 102, .22), 0 20px 38px -14px rgba(37, 211, 102, .85);
 }
 .hero .btn--wa .icona { width: 1.55em; height: 1.55em; }
-
 @media (min-width: 960px) {
-  .hero { padding: 64px 0 80px; }
-  .hero__griglia {
-    max-width: var(--contenitore); margin-inline: auto; padding-inline: var(--gutter);
-    display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: center; gap: 56px;
-  }
-  .hero__testo.contenitore { padding-inline: 0; max-width: none; }
-  .hero__media {
-    order: 2; justify-self: center; margin: 0;
-    width: auto; height: min(74vh, 720px); height: min(74svh, 720px); min-height: 520px;
-  }
-  .hero__alone { width: 200%; height: 124%; opacity: .75; }
-  .hero__cornice { border-radius: 30px; }
-  .hero__media::after { border-radius: 38px; top: -10px; right: -10px; bottom: -10px; left: -10px; }
-  .hero__testo { text-align: left; }
-  .hero h1 .occhiello { justify-content: flex-start; margin-bottom: 22px; letter-spacing: .12em; }
-  .hero h1 .occhiello::after { display: none; }
-  .hero__lead { font-size: 1.375rem; margin-left: 0; }
-  .hero__nota { justify-content: flex-start; }
-}
-
-/* ---------- Telefono: l'apertura come un Reel ----------
-   Il video riempie lo schermo in larghezza (8px di margine) e in altezza va da sotto la testata
-   (72px + 1px di bordo) a sopra la barra WhatsApp (81px), con 8px di respiro: 170px in tutto.
-   svh = altezza con le barre del browser aperte, quindi al primo caricamento si vedono il video
-   intero e il titolo intero. Occhiello e titolo stanno sopra il video, in basso, su una sfumatura
-   scura; sotto il video il testo e il pulsante grande WhatsApp. */
-@media (max-width: 767px) {
-  .hero { padding: 8px 0 40px; }
-  .hero__griglia { display: grid; grid-template-columns: minmax(0, 1fr); padding-inline: 8px; }
-  .hero__testo.contenitore { display: contents; }
-  .hero__media {
-    grid-row: 1; grid-column: 1;
-    width: auto; aspect-ratio: auto; margin: 0;
-    height: calc(100vh - 170px);
-    height: calc(100svh - 170px - env(safe-area-inset-bottom, 0px));
-    min-height: 360px; max-height: 860px;
-  }
-  .hero__media::after { display: none; }
-  .hero__alone { width: 112%; height: 106%; opacity: .6; }
-  .hero__cornice { border-radius: 22px; box-shadow: 0 20px 44px -24px rgba(3, 18, 12, .9); }
-  .hero__cornice::after {
-    background: linear-gradient(180deg, rgba(11, 46, 35, .42) 0%, rgba(11, 46, 35, 0) 18%,
-      rgba(8, 34, 25, 0) 38%, rgba(8, 34, 25, .6) 60%, rgba(6, 27, 20, .88) 82%, rgba(6, 27, 20, .94) 100%);
-  }
-  .hero h1 {
-    grid-row: 1; grid-column: 1; align-self: end; position: relative; z-index: 3;
-    margin: 0; padding: 0 18px 22px; text-align: left;
-    font-size: clamp(2.05rem, 1.25rem + 4vw, 2.6rem); line-height: 1.08;
-    text-shadow: 0 2px 16px rgba(0, 0, 0, .35);
-  }
-  .hero h1 .occhiello { justify-content: flex-start; font-size: .8125rem; letter-spacing: .09em; margin-bottom: 10px; text-shadow: 0 1px 10px rgba(0, 0, 0, .5); }
-  .hero h1 .occhiello::after { display: none; }
-  .hero__lead { grid-row: 2; margin: 26px 12px 22px; }
-  .hero .btn--largo { grid-row: 3; width: auto; margin-inline: 12px; }
-  .hero__nota { grid-row: 4; margin-inline: 12px; }
+  .hero { padding-bottom: 80px; }
+  .hero__testo { padding-top: 64px; }
+  .hero__lead { font-size: 1.375rem; }
 }
 
 /* ---------- Fiducia ---------- */
@@ -363,8 +286,8 @@ h1 em, h2 em { font-style: italic; font-weight: 500; }
   transition: transform .3s ease, box-shadow .3s ease;
 }
 .servizio > picture, .servizio > .clip { grid-area: media; }
-.servizio > picture { border-radius: var(--raggio-s); overflow: hidden; height: 100%; min-height: 150px; background: var(--salvia-chiara); }
-.servizio > picture img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.servizio > picture { border-radius: var(--raggio-s); overflow: hidden; aspect-ratio: var(--ratio); align-self: start; background: var(--salvia-chiara); }
+.servizio > picture img { width: 100%; height: 100%; object-fit: contain; }
 .servizio__testo { grid-area: testo; display: flex; flex-direction: column; padding: 2px 2px 0 0; }
 .servizio h3 { font-size: 1.3rem; line-height: 1.18; margin-bottom: 8px; color: var(--verde); }
 .servizio p { font-size: 1.0625rem; line-height: 1.5; color: var(--testo-2); margin: 0; }
@@ -381,14 +304,14 @@ h1 em, h2 em { font-style: italic; font-weight: 500; }
 }
 .servizio--invito h3 { color: #fff; font-size: 1.6rem; }
 .servizio--invito p { color: rgba(255, 255, 255, .9); font-size: 1.125rem; margin-bottom: 20px; }
-.servizio--invito .foglia { width: 54px; height: 40px; color: var(--salvia); margin-bottom: 14px; }
+.servizio--invito .foglia { width: 54px; height: auto; color: var(--salvia); margin-bottom: 14px; }
 @media (min-width: 640px) {
   .servizi { grid-template-columns: repeat(2, 1fr); gap: 20px; }
   .servizio {
     grid-template-columns: 1fr; grid-template-areas: "media" "testo" "wa"; grid-template-rows: auto 1fr auto;
     gap: 0; padding: 0; overflow: hidden;
   }
-  .servizio > picture { border-radius: 0; aspect-ratio: 1 / 1; height: auto; min-height: 0; }
+  .servizio > picture { border-radius: 0; }
   .servizio__testo { padding: 20px 22px 14px; }
   .servizio h3 { font-size: 1.45rem; }
   .servizio__wa { margin: 0 18px 18px; }
@@ -399,30 +322,32 @@ h1 em, h2 em { font-style: italic; font-weight: 500; }
 @media (min-width: 1200px) { .servizi { grid-template-columns: repeat(4, 1fr); } }
 @media (hover: hover) {
   .servizio:hover { transform: translateY(-4px); box-shadow: var(--ombra); }
-  .servizio:hover > picture img { transform: scale(1.04); }
 }
 
-/* schede con il video: sul telefono il video verticale a sinistra, alto quanto il testo; dal tablet in alto */
+/* schede con il video: il video verticale INTERO (9:16) a sinistra, il testo accanto, a ogni larghezza */
 .servizio--video { grid-template-columns: 124px minmax(0, 1fr); }
-.servizio--video .clip { border-radius: var(--raggio-s); aspect-ratio: auto; height: 100%; min-height: 220px; }
+.servizio--video .clip { border-radius: var(--raggio-s); align-self: start; }
 .servizi--video { margin-bottom: 44px; }
 .servizi__altri { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); color: var(--verde); margin: 0 0 20px; }
 @media (min-width: 640px) {
-  .servizio--video { grid-template-columns: 1fr; }
-  .servizio--video .clip { border-radius: 0; aspect-ratio: 4 / 5; height: auto; min-height: 0; }
+  .servizio--video {
+    grid-template-columns: minmax(0, 40%) minmax(0, 1fr); grid-template-areas: "media testo" "media wa";
+    grid-template-rows: 1fr auto; gap: 0 18px; padding: 14px;
+  }
+  .servizio--video .servizio__testo { padding: 6px 4px 12px 0; }
+  .servizio--video .servizio__wa { margin: 0; align-self: end; }
 }
-@media (min-width: 960px) { .servizi--video { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 960px) { .servizi--video { grid-template-columns: repeat(2, 1fr); } }
 
 /* ---------- Clip brevi ---------- */
-.clip { position: relative; overflow: hidden; aspect-ratio: 9 / 16; background: var(--verde-scuro); }
+.clip { position: relative; overflow: hidden; aspect-ratio: var(--ratio, 9 / 16); background: var(--verde-scuro); }
 .clip picture, .clip img, .clip video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-.clip img, .clip video { object-fit: cover; }
+.clip img, .clip video { object-fit: contain; }
 .clip video { opacity: 0; transition: opacity .5s ease; }
 .clip.in-play video { opacity: 1; }
 .clip video { pointer-events: none; }
 @media (hover: hover) {
   .servizio:hover { transform: translateY(-4px); box-shadow: var(--ombra); }
-  .servizio:hover > picture img { transform: scale(1.04); }
 }
 
 /* ---------- Chi siamo ---------- */
@@ -433,8 +358,8 @@ h1 em, h2 em { font-style: italic; font-weight: 500; }
   .duo--inverso .duo__foto { order: 2; }
 }
 .duo__foto { position: relative; }
-.duo__foto picture { border-radius: 28px; overflow: hidden; box-shadow: var(--ombra); aspect-ratio: 4 / 5; }
-.duo__foto img { width: 100%; height: 100%; object-fit: cover; }
+.duo__foto picture { border-radius: 28px; overflow: hidden; box-shadow: var(--ombra); aspect-ratio: var(--ratio); }
+.duo__foto img { width: 100%; height: 100%; object-fit: contain; }
 .duo__foto .bollo {
   position: absolute; left: 18px; top: 18px; right: 18px; max-width: 300px; margin: 0;
   background: rgba(255, 255, 255, .95); color: var(--verde); border-radius: 18px; padding: 16px 20px;
@@ -484,22 +409,20 @@ h1 em, h2 em { font-style: italic; font-weight: 500; }
 @media (min-width: 960px) {
   .prima-dopo { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 48px; margin-bottom: 80px; }
 }
-.galleria { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 14px; }
+.galleria { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 14px; align-items: start; }
 @media (min-width: 960px) { .galleria { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 24px; } }
 .galleria figure { margin: 0; }
-.galleria figure > button picture, .galleria__clip .clip { aspect-ratio: 4 / 5; }
-.galleria figure > button img { width: 100%; height: 100%; object-fit: cover; }
+.galleria figure > button picture, .galleria__clip .clip { aspect-ratio: var(--ratio); }
+.galleria figure > button img { width: 100%; height: 100%; object-fit: contain; }
 .galleria figure > button {
   display: block; width: 100%; padding: 0; border: 0; background: var(--salvia-chiara); cursor: zoom-in;
   border-radius: 18px; overflow: hidden; position: relative;
 }
-.galleria figure > button img { transition: transform .6s ease; }
 .galleria figure > button::after {
   content: ""; position: absolute; right: 10px; bottom: 10px; width: 38px; height: 38px; border-radius: 50%;
   background: rgba(255, 255, 255, .92) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23114232' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4 4M11 8.5v5M8.5 11h5'/%3E%3C/svg%3E") center / 22px no-repeat;
   opacity: .92;
 }
-@media (hover: hover) { .galleria figure > button:hover img { transform: scale(1.04); } }
 .galleria figcaption { padding: 10px 4px 0; font-size: 1.0625rem; line-height: 1.45; color: var(--testo-2); }
 @media (max-width: 420px) { .galleria figcaption { font-size: 1rem; } }
 .instagram-invito { margin: 22px 0 0; display: flex; align-items: flex-start; gap: 12px; color: var(--testo-2); font-size: 1.125rem; }
@@ -533,9 +456,8 @@ h1 em, h2 em { font-style: italic; font-weight: 500; }
 /* ---------- Zone ---------- */
 .zone { display: grid; gap: 32px; align-items: center; }
 .zone__foto { position: relative; margin: 0; border-radius: 28px; overflow: hidden; box-shadow: var(--ombra); }
-.zone__foto picture { aspect-ratio: 4 / 3; }
-@media (min-width: 960px) { .zone__foto picture { aspect-ratio: 4 / 5; } }
-.zone__foto img { width: 100%; height: 100%; object-fit: cover; }
+.zone__foto picture { aspect-ratio: var(--ratio); }
+.zone__foto img { width: 100%; height: 100%; object-fit: contain; }
 .zone__foto figcaption {
   position: absolute; left: 16px; bottom: 16px; padding: 8px 14px; border-radius: 999px;
   background: rgba(255, 255, 255, .94); color: var(--verde); font-weight: 700; font-size: .9375rem;
@@ -645,7 +567,7 @@ a.recapito:hover { background: rgba(255, 255, 255, .13); }
   touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
 }
 .confronto picture, .confronto img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-.confronto img { object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
+.confronto img { object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
 .confronto__dopo {
   position: absolute; top: 0; right: 0; bottom: 0; left: 0;
   -webkit-clip-path: inset(0 0 0 var(--pos)); clip-path: inset(0 0 0 var(--pos));
@@ -710,15 +632,15 @@ a.recapito:hover { background: rgba(255, 255, 255, .13); }
 .cantiere__piano figcaption { margin-top: 12px; font-size: 1.0625rem; line-height: 1.5; color: var(--testo-2); }
 .cantiere__media { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
 .cantiere__media figure {
-  display: grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: center; margin: 0;
+  display: grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: start; margin: 0;
   padding: 10px; background: var(--bianco); border: 1px solid var(--linea); border-radius: var(--raggio);
 }
-.cantiere__media picture, .cantiere__media .clip { border-radius: var(--raggio-s); overflow: hidden; aspect-ratio: 4 / 5; }
-.cantiere__media figure > picture img { width: 100%; height: 100%; object-fit: cover; }
+.cantiere__media picture, .cantiere__media .clip { border-radius: var(--raggio-s); overflow: hidden; aspect-ratio: var(--ratio); }
+.cantiere__media figure > picture img { width: 100%; height: 100%; object-fit: contain; }
 .cantiere__media figcaption { font-size: 1.0625rem; line-height: 1.45; color: var(--testo-2); }
 @media (min-width: 720px) {
-  .cantiere__media { grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  .cantiere__media figure { grid-template-columns: 1fr; gap: 0; align-items: start; padding: 0; overflow: hidden; height: 100%; }
+  .cantiere__media { grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: start; }
+  .cantiere__media figure { grid-template-columns: 1fr; gap: 0; align-items: start; padding: 0; overflow: hidden; }
   .cantiere__media picture, .cantiere__media .clip { border-radius: 0; }
   .cantiere__media figcaption { padding: 14px 18px 18px; }
 }

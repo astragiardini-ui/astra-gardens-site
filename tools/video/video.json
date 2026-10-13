@@ -17,6 +17,16 @@
    {"nome": "Impianto antizanzare", "sorgente": "nuovi_05ott/impianto-antizanzare.mov", "inizio": 2.0, "durata": 2.2, "ritaglio": null}
   ]
  },
+ "interi": {
+  "_nota": "In cima alla pagina, uno dopo l'altro, nell'inquadratura ORIGINALE dell'iPhone: niente ritagli (Francesco 13/10/2026, «voglio l'inquadratura originale, così come per eventuali altri video che ti manderò in verticale»). Il montaggio «apertura» qui sopra resta per la scheda Google ma non è più nella pagina.",
+  "cartella": "assets/video",
+  "crf": 18,
+  "preset": "slow",
+  "video": [
+   {"nome": "giardino-piscina-1", "descrizione": "giardino con piscina e colline, originale 4K (IMG_1859)", "sorgente": "nuovi_05ott/casa-piscina-1.mov", "larghezza": 1440},
+   {"nome": "giardino-piscina-2", "descrizione": "giardino con piscina, agavi e ulivi, originale 1080 (IMG_1864)", "sorgente": "nuovi_05ott/casa-piscina-2.mov", "larghezza": 1080}
+  ]
+ },
  "cartella_clip": "assets/video/clip",
  "clip": [
   {"nome": "manutenzione", "descrizione": "giardino di pregio, alberi e rose", "sorgente": "originali/IMG_8650.MOV", "inizio": 0.25, "durata": 4.0, "ritaglio": null},

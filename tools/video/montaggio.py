@@ -16,6 +16,7 @@ Uso, dalla cartella del sito (Pillow serve per i poster: stesso venv di tools/pr
     /private/tmp/claude-501/allinea/bin/python tools/video/montaggio.py apertura   # apertura + poster + copia per Google
     /private/tmp/claude-501/allinea/bin/python tools/video/montaggio.py clip       # clip delle sezioni + poster
     /private/tmp/claude-501/allinea/bin/python tools/video/montaggio.py clip --solo antizanzare
+    /private/tmp/claude-501/allinea/bin/python tools/video/montaggio.py interi     # i due video interi dell'apertura
     /private/tmp/claude-501/allinea/bin/python tools/video/montaggio.py tutto
     python3 tools/video/montaggio.py controlla   # ffprobe di tutti i video pubblicati
 
@@ -152,7 +153,7 @@ def codifica(src, out, q):
     os.makedirs(os.path.dirname(out), exist_ok=True)
     esegui(["ffmpeg", "-v", "error", "-y", "-i", src, "-an", "-map_metadata", "-1", "-map_chapters", "-1",
             "-vf", "scale=%d:%d:flags=lanczos,setsar=1" % (w, h),
-            "-c:v", "libx264", "-profile:v", "high", "-level", "4.1", "-preset", q["preset"],
+            "-c:v", "libx264", "-profile:v", "high", "-level", "5.1" if w > 1080 else "4.1", "-preset", q["preset"],
             "-crf", str(q["crf"]), "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709",
             "-color_trc", "bt709", "-color_range", "tv", "-movflags", "+faststart", out])
     W, H, br, dur, size = descrivi(out)
@@ -220,6 +221,36 @@ def apertura(cfg):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def interi(cfg):
+    """Video INTERI, nell'inquadratura originale dell'iPhone (nessun ritaglio, nessun ingrandimento):
+    sono i due video in cima alla pagina (Francesco 13/10/2026: «voglio l'inquadratura originale»).
+    Stessa conversione HDR -> SDR di avconvert, poi H.264 col CRF di "interi" (18), preset slow."""
+    v_cfg = cfg["interi"]
+    for v in v_cfg["video"]:
+        src = sorgente_sdr(v["sorgente"])
+        w, h, _ = info(src)
+        if abs(w / h - 9 / 16) > 0.005:
+            raise SystemExit("%s non è 9:16 (%dx%d): l'inquadratura originale non entra nel riquadro" % (v["nome"], w, h))
+        ow = int(v["larghezza"])
+        oh = ow * 16 // 9 // 2 * 2
+        if ow > w:
+            raise SystemExit("%s: %d px chiesti ma l'originale è largo %d: niente ingrandimenti" % (v["nome"], ow, w))
+        out = os.path.join(SITO, v_cfg["cartella"], v["nome"] + ".mp4")
+        print("  video intero: %s (%dx%d -> %dx%d)" % (v["nome"], w, h, ow, oh))
+        q = {"larghezza": ow, "crf": v_cfg["crf"], "preset": v_cfg["preset"]}
+        tmp = tempfile.mkdtemp(prefix="astra-intero-")
+        try:
+            grezzo = os.path.join(tmp, "grezzo.mp4")
+            durata = ["-t", str(v["durata"])] if v.get("durata") else []
+            esegui(["ffmpeg", "-v", "error", "-y", "-ss", str(v.get("inizio", 0))] + durata + ["-i", src,
+                    "-vf", "setsar=1,fps=30,format=yuv420p", "-an", "-map_metadata", "-1",
+                    "-c:v", "libx264", "-preset", "fast", "-crf", "6", grezzo])
+            codifica(grezzo, out, q)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+        poster(out, os.path.join(SITO, v_cfg["cartella"], v["nome"] + "-poster"), ow)
+
+
 def clip(cfg, solo=None):
     q = cfg["qualita"]
     w = int(q["larghezza"])
@@ -267,6 +298,9 @@ def main():
     if cosa in ("apertura", "tutto"):
         print("Video d'apertura")
         apertura(cfg)
+    if cosa in ("interi", "tutto"):
+        print("Video interi dell'apertura")
+        interi(cfg)
     if cosa in ("clip", "tutto"):
         print("Clip delle sezioni")
         clip(cfg, solo)

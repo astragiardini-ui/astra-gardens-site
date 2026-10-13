@@ -97,14 +97,20 @@
   /* le clip partono quando entrano nello schermo e si fermano quando escono */
   var clip = Array.prototype.slice.call(document.querySelectorAll("[data-clip] video"));
   if (haIO) {
-    var osserva = new IntersectionObserver(function (voci) {
+    var accendi = function (voci) {
       voci.forEach(function (voce) {
         var v = voce.target.matches("video") ? voce.target : voce.target.querySelector("video");
         if (!v) return;
         if (voce.isIntersecting) parti(v); else ferma(v);
       });
-    }, { rootMargin: "160px 0px 160px 0px", threshold: 0 });
-    clip.forEach(function (v) { osserva.observe(scatola(v)); });
+    };
+    var osserva = new IntersectionObserver(accendi, { rootMargin: "160px 0px 160px 0px", threshold: 0 });
+    /* il secondo video intero in cima (pesante) si scarica solo quando entra davvero nello schermo */
+    var osservaVicino = new IntersectionObserver(accendi, { rootMargin: "0px", threshold: 0 });
+    clip.forEach(function (v) {
+      var box = scatola(v);
+      (box.classList.contains("video-intero") ? osservaVicino : osserva).observe(box);
+    });
     if (hero) osserva.observe(scatola(hero));
   } else {
     clip.forEach(parti);

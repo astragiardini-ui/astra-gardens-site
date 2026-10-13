@@ -67,7 +67,7 @@ EMAIL = "astragiardini@gmail.com"
 IG = "https://www.instagram.com/astra.gardens/"
 FB = "https://www.facebook.com/profile.php?id=61587199321572"
 PIVA = "04489190985"
-VERSIONE = "20261006b"
+VERSIONE = "20261013a"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 
 
@@ -88,9 +88,10 @@ def picture(nome, alt, sizes, classe="", loading="lazy", priorita=None):
     jpg = "assets/img/%s-%d.jpg" % (nome, m["jpg"])
     extra = ' fetchpriority="%s"' % priorita if priorita else ""
     cl = ' class="%s"' % classe if classe else ""
-    return ('<picture><source type="image/webp" srcset="%s" sizes="%s">'
+    # --ratio: il riquadro prende le proporzioni del file, cosi' la foto si vede intera (mai ritagli)
+    return ('<picture style="--ratio: %d / %d"><source type="image/webp" srcset="%s" sizes="%s">'
             '<img src="%s" alt="%s" width="%d" height="%d" loading="%s" decoding="async"%s%s></picture>'
-            % (webp, sizes, jpg, e(alt), m["w"], m["h"], loading, extra, cl))
+            % (m["w"], m["h"], webp, sizes, jpg, e(alt), m["w"], m["h"], loading, extra, cl))
 
 
 def grande(nome):
@@ -120,15 +121,37 @@ def clip(nome, alt, classe="", sizes="(min-width: 960px) 360px, (min-width: 640p
     cl = (" " + classe) if classe else ""
     if not ha_video(nome):
         foto, alt_foto = RIPIEGO_CLIP[nome]
-        return '<div class="clip clip--foto%s">%s</div>' % (cl, picture(foto, alt_foto.rstrip("."), sizes))
+        m = MAN[foto]
+        return '<div class="clip clip--foto%s" style="--ratio: %d / %d">%s</div>' % (
+            cl, m["w"], m["h"], picture(foto, alt_foto.rstrip("."), sizes))
     b = "assets/video/clip/" + nome
-    return ('<div class="clip%s" data-clip>'
-            '<picture><source type="image/webp" srcset="%s-poster.webp"><img src="%s-poster.jpg" alt="%s" width="1080" height="1920" loading="lazy" decoding="async"></picture>'
+    w, h = misura_webp(os.path.join(SITO, b + "-poster.webp"))
+    return ('<div class="clip%s" data-clip style="--ratio: %d / %d">'
+            '<picture><source type="image/webp" srcset="%s-poster.webp"><img src="%s-poster.jpg" alt="%s" width="%d" height="%d" loading="lazy" decoding="async"></picture>'
             # niente attributo poster sul video: il browser lo scaricherebbe subito anche con preload="none";
             # l'immagine d'attesa e' gia' la <picture> qui sopra, che si carica solo vicino allo schermo
             '<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">'
             '<source src="%s.mp4" type="video/mp4"></video>'
-            '</div>') % (cl, b, b, e(alt), b)
+            '</div>') % (cl, w, h, b, b, e(alt), w, h, b)
+
+
+# I video in cima alla pagina, uno dopo l'altro, nell'inquadratura ORIGINALE (tools/video/video.json, "interi").
+VIDEO_APERTURA = ["giardino-piscina-1", "giardino-piscina-2"]
+
+
+def video_intero(nome, primo):
+    """Video intero: il riquadro ha le proporzioni del video (lette dal poster) e il video sta dentro senza
+    ritagli. Il primo si scarica subito; il secondo solo quando si avvicina allo schermo (data-clip, main.js)."""
+    b = "assets/video/" + nome
+    w, h = misura_webp(os.path.join(SITO, b + "-poster.webp"))
+    if primo:
+        box, img, vid = "video-intero hero__media", ' fetchpriority="high"', 'autoplay muted loop playsinline preload="auto"'
+    else:
+        box, img, vid = "video-intero", ' loading="lazy"', 'muted loop playsinline preload="none"'
+    return ('      <div class="%s"%s style="--ratio: %d / %d">\n'
+            '        <picture><source type="image/webp" srcset="%s-poster.webp"><img src="%s-poster.jpg" alt="" width="%d" height="%d"%s decoding="async"></picture>\n'
+            '        <video %s aria-hidden="true" tabindex="-1"><source src="%s.mp4" type="video/mp4"></video>\n'
+            '      </div>') % (box, "" if primo else " data-clip", w, h, b, b, w, h, img, vid, b)
 
 
 def proporzione(nome):
@@ -468,8 +491,7 @@ def index():
         <button type="button" data-grande="%s" data-didascalia="%s" aria-label="Ingrandisci la foto: %s">%s</button>
         <figcaption>%s</figcaption>
       </figure>""" % (grande(nome), e(didascalia), e(alt),
-                      picture(nome, alt, "(min-width: 960px) 360px, 46vw").replace(
-                          "<img ", '<img style="object-position: %s" ' % fuoco if fuoco else "<img ", 1),
+                      picture(nome, alt, "(min-width: 960px) 360px, 46vw"),
                       e(didascalia)))
 
     comuni_html = "\n".join('          <li%s>%s</li>' % (' class="casa"' if c == "Flero" else "", e(c)) for c in COMUNI)
@@ -480,23 +502,14 @@ def index():
 <main id="contenuto">
 
   <section class="hero" id="inizio" aria-labelledby="titolo-hero">
-    <div class="hero__griglia">
-      <div class="hero__media">
-        <canvas class="hero__alone" width="27" height="48" aria-hidden="true"></canvas>
-        <div class="hero__cornice">
-          <picture><source type="image/webp" srcset="assets/video/astra-gardens-lavori-poster.webp"><img src="assets/video/astra-gardens-lavori-poster.jpg" alt="" width="1080" height="1920" fetchpriority="high"></picture>
-          <video autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1" poster="assets/video/astra-gardens-lavori-poster.webp">
-            <source src="assets/video/astra-gardens-lavori.mp4" type="video/mp4">
-          </video>
-          <span class="hero__etichetta">Dai nostri cantieri</span>
-        </div>
-      </div>
-      <div class="hero__testo contenitore">
-        <h1 id="titolo-hero"><span class="occhiello">Giardinieri a Flero e nel sud di Brescia</span> Il tuo giardino sempre bello. <em>Ci pensiamo noi.</em></h1>
-        <p class="hero__lead">Manutenzione, potature, alberi alti e giardini nuovi: scrivici su WhatsApp e veniamo a vedere il tuo verde.</p>
-        <a class="btn btn--wa btn--largo" href="%(wa)s" target="_blank" rel="noopener">%(icwa)s<span>Scrivici su WhatsApp</span></a>
-        <p class="hero__nota">%(icchat)s<span>Ti rispondiamo direttamente noi.</span></p>
-      </div>
+    <div class="hero__video">
+%(video_apertura)s
+    </div>
+    <div class="hero__testo contenitore">
+      <h1 id="titolo-hero"><span class="occhiello">Giardinieri a Flero e nel sud di Brescia</span> Il tuo giardino sempre bello. <em>Ci pensiamo noi.</em></h1>
+      <p class="hero__lead">Manutenzione, potature, alberi alti e giardini nuovi: scrivici su WhatsApp e veniamo a vedere il tuo verde.</p>
+      <a class="btn btn--wa btn--largo" href="%(wa)s" target="_blank" rel="noopener">%(icwa)s<span>Scrivici su WhatsApp</span></a>
+      <p class="hero__nota">%(icchat)s<span>Ti rispondiamo direttamente noi.</span></p>
     </div>
   </section>
 
@@ -718,6 +731,7 @@ def index():
 </html>
 """ % {
         "sprite": SPRITE, "testata": testata(True), "piede": piede(True),
+        "video_apertura": "\n".join(video_intero(n, i == 0) for i, n in enumerate(VIDEO_APERTURA)),
         "wa": WA_GENERALE, "wa_cond": wa("vorrei un sopralluogo per il verde di un condominio o di un'azienda."),
         "icwa": icona("i-wa"), "icchat": icona("i-chat"), "icperito": icona("i-perito"), "icscudo": icona("i-scudo"),
         "icmezzi": icona("i-mezzi"), "icdoc": icona("i-doc"), "icfoglia": icona("i-foglia"), "iccheck": icona("i-check"),
@@ -746,12 +760,8 @@ def index():
                                 "(min-width: 960px) 480px, 92vw"),
         "foto_condomini": picture("condomini-siepe", "Potatura di una siepe lungo la strada con il cantiere segnalato",
                                   "(min-width: 960px) 520px, 92vw"),
-        "foto_zone": ('<picture>'
-                      '<source media="(min-width: 960px)" type="image/webp" srcset="assets/img/zone-brescia-alta-600.webp 600w, assets/img/zone-brescia-alta-1080.webp 1080w" sizes="560px">'
-                      '<source media="(min-width: 960px)" srcset="assets/img/zone-brescia-alta-640.jpg 640w" sizes="560px">'
-                      '<source type="image/webp" srcset="assets/img/zone-brescia-640.webp 640w, assets/img/zone-brescia-1080.webp 1080w" sizes="92vw">'
-                      '<img src="assets/img/zone-brescia-640.jpg" alt="Tetti del centro storico di Brescia con la cupola del Duomo" width="1080" height="810" loading="lazy" decoding="async">'
-                      '</picture>'),
+        "foto_zone": picture("zone-brescia", "Tetti del centro storico di Brescia con la cupola del Duomo",
+                             "(min-width: 960px) 560px, 92vw"),
         "confronto_vero": confronto("lavoro-prima", "lavoro-dopo",
                                     "Prima: terreno spoglio e secco dietro la recinzione",
                                     "Dopo: aiuola pacciamata con nuove piante, prato e recinzione in ordine",
