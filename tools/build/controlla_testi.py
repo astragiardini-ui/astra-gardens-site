@@ -8,25 +8,35 @@ Uso, dalla radice del repository:
 
 Regole dei testi di Astra Gardens: stile Paolo Borzacchiello, parole che nutrono, frasi in positivo;
 niente negazioni, niente prezzi, niente garanzie, niente emoji. Il risultato giusto e' «segnalazioni: 0».
+I blocchi con l'attributo data-legale (informativa privacy, testo scritto con la verifica legale) si saltano:
+li' le negazioni servono e il testo va tenuto com'e'.
 """
 import re, html, sys, json
 from html.parser import HTMLParser
+VUOTI = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
 class T(HTMLParser):
     def __init__(self):
-        super().__init__(); self.out = []; self.skip = 0
+        super().__init__(); self.out = []; self.skip = 0; self.legale = []
     def handle_starttag(self, tag, attrs):
-        if tag in ("script", "style", "svg"): self.skip += 1
         a = dict(attrs)
+        if self.legale and tag not in VUOTI: self.legale[-1] += 1
+        if "data-legale" in a: self.legale.append(1)
+        if self.legale: return
+        if tag in ("script", "style", "svg"): self.skip += 1
         for k in ("alt", "aria-label", "title", "content", "data-didascalia"):
             if a.get(k) and not a[k].startswith(("http", "assets", "#", "width=", "IE=")): self.out.append("[%s] %s" % (k, a[k]))
         if tag == "a" and a.get("href", "").startswith("https://wa.me/"):
             from urllib.parse import unquote
             self.out.append("[wa] " + unquote(a["href"].split("text=", 1)[1]))
     def handle_endtag(self, tag):
+        if self.legale:
+            self.legale[-1] -= 1
+            if not self.legale[-1]: self.legale.pop()
+            return
         if tag in ("script", "style", "svg"): self.skip -= 1
     def handle_data(self, d):
-        if not self.skip and d.strip(): self.out.append(d.strip())
-BAN = r"\b(non|né|senza|niente|nessun[oa]?|mai|meno|problem\w*|difficil\w*|prov\w+|costo|costi|cost\w*|error\w*|guast\w*|sper\w+|disturb\w*|prezz\w*|tariff\w*|€|garanti\w*|anni di esperienza|come promesso)\b"
+        if not self.skip and not self.legale and d.strip(): self.out.append(d.strip())
+BAN = r"\b(non|né|senza|niente|nessun[oa]?|mai|meno|problem\w*|difficil\w*|prov(?!inc)\w+|costo|costi|cost(?!ru)\w*|error\w*|guast\w*|sper\w+|disturb\w*|prezz\w*|tariff\w*|€|garanti\w*|anni di esperienza|come promesso)\b"
 tot = 0
 for f in sys.argv[1:]:
     p = T(); p.feed(open(f, encoding="utf-8").read())

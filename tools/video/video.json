@@ -39,5 +39,18 @@
   {"nome": "robot", "descrizione": "robot rasaerba tra gli ulivi", "sorgente": null, "_manca": "originale: c'e' solo la copia di Instagram instagram_storie/robot-rasaerba_02.mp4 (720x1280), dal secondo 1", "inizio": 1.0, "durata": 4.0, "ritaglio": null},
   {"nome": "fioriture", "descrizione": "messa a dimora di nuove fioriture", "sorgente": null, "_manca": "originale: c'e' solo la copia di Instagram instagram_storie/aiuole_01.mp4 (720x1280), dal secondo 2", "inizio": 2.0, "durata": 4.0, "ritaglio": null},
   {"nome": "irrigazione", "descrizione": "irrigatore a scomparsa in funzione sul prato", "sorgente": "originali/IMG_7604.MOV", "inizio": 0.5, "durata": 4.0, "ritaglio": null}
- ]
+ ],
+ "hd": {
+  "_nota": "Video HD del sito nuovo (14/10/2026), già pronti in H.264 SDR dentro MEDIA/video_hd_14ott: si COPIANO così come sono (ricodificarli toglierebbe qualità). In cima alla pagina: sul telefono tre verticali interi (verticale-fiori, giardino-piscina-1, giardino-piscina-2), sul computer due orizzontali interi (hero-furgone, hero-fiori). La targa del furgone è SFOCATA fotogramma per fotogramma nel master hero-furgone-4k-sfocata.mp4: MAI usare l'originale non sfocato IMG_4312.",
+  "cartella": "assets/video",
+  "vietati": ["IMG_4312"],
+  "copia": [
+   {"nome": "hero-furgone", "file": "video_hd_14ott/hero-furgone-1920.mp4", "descrizione": "furgone Astra Gardens nel giardino con piscina, 1920x1080, targa sfocata", "poster": 1920},
+   {"nome": "hero-fiori", "file": "video_hd_14ott/hero-fiori-1920.mp4", "descrizione": "verbena, doccia e piscina sulle colline, 1920x1080", "poster": 1920},
+   {"nome": "verticale-fiori", "file": "video_hd_14ott/verticale-fiori-1080.mp4", "descrizione": "verbena e piscina, verticale 1080x1920", "poster": 1080}
+  ],
+  "rendi": [
+   {"nome": "hero-furgone-2560", "file": "video_hd_14ott/hero-furgone-4k-sfocata.mp4", "descrizione": "furgone per gli schermi grandi (larghezza per densità oltre 2000 px): 2560x1440 dal master 4K con la targa sfocata", "larghezza": 2560, "crf": 20, "preset": "slow"}
+  ]
+ }
 }

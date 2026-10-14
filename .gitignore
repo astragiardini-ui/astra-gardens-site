@@ -1,0 +1,4 @@
+# cache di Python: si rigenera da sola, non va nel sito
+__pycache__/
+*.pyc
+.DS_Store
