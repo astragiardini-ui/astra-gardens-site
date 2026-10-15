@@ -304,7 +304,68 @@ def _sorgente_hd(c, rel):
     return src
 
 
+def _liscia(chiavi, t):
+    """Valore a tempo t lungo i punti chiave [[t, valore...], ...], con passaggi smoothstep (niente scatti)."""
+    if t <= chiavi[0][0]:
+        return list(chiavi[0][1:])
+    for a, b in zip(chiavi[:-1], chiavi[1:]):
+        if t <= b[0]:
+            u = (t - a[0]) / (b[0] - a[0]) if b[0] > a[0] else 1.0
+            u = u * u * (3 - 2 * u)
+            return [x + (y - x) * u for x, y in zip(a[1:], b[1:])]
+    return list(chiavi[-1][1:])
+
+
+def _rendi_zoom(src, v, out, crf, preset, tetto=None):
+    """Ritaglio verticale con ZOOM (Francesco 15/10/2026, «il fiore mettilo centrale»): la finestra 9:16
+    cambia altezza e posizione a ogni fotogramma, con coordinate decimali (niente scatti da arrotondamento).
+    Serve OpenCV: si lancia col python dell'ambiente con opencv (vedi tools/prima-dopo/allinea.py).
+    "zoom": [[secondo, altezza finestra in px del master, centro y], ...]; "pan": centro x come prima."""
+    import numpy as np
+    import cv2
+    w, h, _ = info(src)
+    rv = v["ritaglio_verticale"]
+    ow = int(v["larghezza"]); oh = ow * 16 // 9 // 2 * 2
+    fps = 30.0
+    dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", src, "-an", "-vf",
+                            "scale=in_color_matrix=bt709:in_range=full,format=bgr24", "-f", "rawvideo", "-"],
+                           stdout=subprocess.PIPE)
+    extra = ["-maxrate", tetto[0], "-bufsize", tetto[1]] if tetto else []
+    enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", "%dx%d" % (ow, oh),
+                            "-r", "30", "-i", "-", "-an", "-map_metadata", "-1",
+                            "-vf", "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p",
+                            "-c:v", "libx264", "-profile:v", "high", "-preset", preset, "-crf", str(crf)] + extra +
+                           ["-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
+                            "-color_range", "tv", "-movflags", "+faststart", out], stdin=subprocess.PIPE)
+    dim = w * h * 3
+    i = 0
+    while True:
+        buf = dec.stdout.read(dim)
+        if len(buf) < dim:
+            break
+        fr = np.frombuffer(buf, np.uint8).reshape(h, w, 3)
+        t = i / fps
+        cx = _liscia(rv["pan"], t)[0] * w
+        H, cy = _liscia(rv["zoom"], t)
+        H = min(H, h)
+        W = H * 9 / 16
+        x0 = min(max(cx - W / 2, 0), w - W)
+        y0 = min(max(cy - H / 2, 0), h - H)
+        k = ow / W
+        M = np.float32([[k, 0, -x0 * k], [0, k, -y0 * k]])
+        enc.stdin.write(cv2.warpAffine(fr, M, (ow, oh), flags=cv2.INTER_LANCZOS4, borderMode=cv2.BORDER_REPLICATE).tobytes())
+        i += 1
+    enc.stdin.close(); enc.wait(); dec.wait()
+    if enc.returncode:
+        raise SystemExit("codifica con zoom fallita")
+    W_, H_, br, dur, size = descrivi(out)
+    print("  rendi %s  %dx%d  crf %s %s%s zoom  %.1f s  %.1f Mbit/s  %.1f MB"
+          % (os.path.relpath(out, SITO), W_, H_, crf, preset, (" tetto %s" % tetto[0]) if tetto else "", dur, br / 1e6, size / 1048576))
+
+
 def _rendi(src, v, out, crf, preset, tetto=None):
+    if v.get("ritaglio_verticale", {}).get("zoom"):
+        return _rendi_zoom(src, v, out, crf, preset, tetto)
     """Una codifica H.264 alla larghezza v["larghezza"] (mai ingrandita), con il ritaglio verticale se c'è.
     tetto = (maxrate, bufsize): solo per le versioni del telefono."""
     w, h, _ = info(src)

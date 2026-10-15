@@ -88,7 +88,7 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261015m"
+VERSIONE = "20261015o"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 900px), (orientation: landscape)"
@@ -156,16 +156,16 @@ def tel(nome):
 
 def video_box(nome, alt, sizes, classe="", tag="div"):
     """Video muto in loop, senza comandi, INTERO (il riquadro ha le proporzioni del video).
-    Si scarica e gira solo quando entra nello schermo (preload="none" + data-clip in main.js).
+    Si scarica e gira solo quando entra nello schermo: nessuna sorgente nell'HTML, l'indirizzo sta in data-src
+    (data-src-tel sul telefono) e main.js lo mette solo quando serve (dopo il primo video in cima).
     Niente attributo poster: lo scaricherebbe subito; l'attesa e' la <picture> qui sotto, pigra."""
     w, h = misura_video(nome)
     b = "assets/video/" + nome
     return ('<%s class="video-box%s" data-clip style="--ratio: %d / %d">'
             '<picture><source type="image/webp" srcset="%s" sizes="%s"><img src="%s-poster.jpg" alt="%s" width="%d" height="%d" loading="lazy" decoding="async" draggable="false"></picture>'
-            '<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"%s>'
-            '<source src="%s.mp4" type="video/mp4"></video></%s>'
+            '<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-src="%s.mp4"%s></video></%s>'
             % (tag, (" " + classe) if classe else "", w, h, poster_srcset(nome), sizes, b, e(alt), w, h,
-               (' data-src-tel="%s"' % tel(nome)) if tel(nome) else "", b, tag))
+               b, (' data-src-tel="%s"' % tel(nome)) if tel(nome) else "", tag))
 
 
 def icona(id_, classe="icona"):
@@ -207,6 +207,7 @@ HERO_PC = [
 # Striscia «Dai nostri cantieri»: foto e video verticali, nell'ordine della bozza approvata.
 GALLERIA = [
     ("video", "verticale-fiori", "Verbena e piscina in un giardino curato da noi"),
+    ("foto", "lav-uliveto-collina", "Uliveto in collina: prato nuovo, rose e ulivi messi a dimora"),
     ("foto", "lav-ulivo-ponpon", "Ulivo ornamentale potato a pon pon"),
     ("foto", "lav-cedro", "Tree climbing su un grande cedro"),
     ("video", "gerani-villa", "Gerani, ulivo e graminacee nel giardino di una villa"),
@@ -217,6 +218,8 @@ GALLERIA = [
     ("video", "fico-verbene-verticale", "Giovane fico tra verbene e graminacee"),
     ("foto", "foto-furgone", "Il furgone Astra Gardens in un giardino con piscina curato da noi"),
     ("video", "giardino-piscina-1", "Giardino con piscina e vista sulle colline"),
+    ("video", "terrazzo-fioriera", "Fioriera alta sul terrazzo con un rampicante e succulente fiorite"),
+    ("foto", "lav-erba-sintetica", "Erba sintetica e ciottoli di marmo bianco con un acero giapponese"),
     ("foto", "lav-aiuola-ombra", "Aiuola per la mezz'ombra con pacciamatura e bordo netto"),
     ("foto", "lav-zolle-siepe", "Prato in zolla lungo la siepe"),
     ("video", "giro-giardino-fontana", "Il giardino con la fontana e le aiuole rialzate in pietra"),
@@ -254,7 +257,7 @@ SERVIZI = [
      "srv-prato", "Prato in zolla appena posato tra bossi e vialetti", None),
     ("sintetico", "Erba sintetica",
      "Posa di erba sintetica di qualità dove il prato vero fatica: terrazzi, zone d'ombra, bordi piscina.",
-     "srv-sintetico", "Prato sintetico con bordura in corten davanti a casa", None),
+     "lav-erba-buddha", "Prato sintetico dal bordo curvo, ghiaia rosa e un'aiuola di ciottoli bianchi con succulente", None),
     ("irrigazione", "Irrigazione automatica",
      "Impianti a goccia e irrigatori a scomparsa, studiati zona per zona: l'acqua giusta, al momento giusto.",
      "srv-irrigazione", "Scavo stretto e preciso con la catenaria per l'impianto di irrigazione", None),
@@ -285,6 +288,12 @@ SERVIZI = [
 ]
 
 PROGETTI = [
+    ("lav-uliveto-collina", "Uliveto in collina",
+     "Prato nuovo, un'aiuola di rose e ulivi messi a dimora con i tutori: un giardino che si apre sul paesaggio.",
+     "Giardino in collina con prato nuovo, rose e ulivi con i tutori, e il furgone Astra Gardens"),
+    ("lav-erba-sintetica", "Prato sintetico e aiuola minerale",
+     "Ciottoli di marmo bianco, un acero giapponese e una siepe di tassi: verde tutto l'anno e facile da curare.",
+     "Erba sintetica e ciottoli di marmo bianco con un acero giapponese e una siepe di tassi"),
     ("lav-aiuola-ghiaia", "Aiuola minerale",
      "Graminacee, echinacee e rosmarino strisciante su ghiaia bianca, con il bordo in tufo: colore per tutta l'estate, pensata per il sole pieno.",
      "Aiuola su ghiaia bianca con graminacee, echinacee, rosmarino strisciante e bordo in tufo"),

@@ -100,7 +100,8 @@ def locandine_piccole():
     """Locandine leggere per la striscia dei cantieri: 540 px per i video verticali, 960 per gli orizzontali
     (il video resta alla sua risoluzione piena)."""
     for nome, w in (("verticale-fiori", 540), ("giardino-piscina-1", 540), ("giardino-piscina-2", 540),
-                    ("fico-verbene-verticale", 540), ("gerani-villa", 960), ("giro-giardino-fontana", 960)):
+                    ("fico-verbene-verticale", 540), ("terrazzo-fioriera", 540),
+                    ("gerani-villa", 960), ("giro-giardino-fontana", 960)):
         src = os.path.join(SITO, "assets", "video", nome + "-poster.jpg")
         im = Image.open(src).convert("RGB")
         r = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
@@ -125,13 +126,25 @@ NITIDE = [
 # bordo sinistro e il programmatore nero dell'irrigazione in basso a destra; resta l'aiuola (4:5).
 RITAGLI = [
     ("lav-aiuola-ghiaia", "nuove_foto_15ott/aiuola-ghiaia.jpg", (345, 880, 1449, 2260), (400, 560, 800, 1104)),
+    # tolti a sinistra le biciclette, un attrezzo arancione, un secchio e un gioco (x 0-450), sotto un po' di
+    # pavimento e sopra il bordo della tenda: restano prato, ghiaia rosa, aiuola di ciottoli e alberi (3:4)
+    ("lav-erba-buddha", "nuove_foto_15ott/erba-sintetica-ghiaia-buddha.jpg", (450, 380, 1512, 1796), (360, 560, 800, 1062)),
+    # tolto il cortile del vicino che si vede sotto la pergola (y 480-800): restano prato, ciottoli, acero e tassi
+    ("lav-erba-sintetica", "nuove_foto_15ott/erba-sintetica-giardino.jpg", (0, 820, 1512, 2016), (400, 560, 800, 1080, 1512)),
+]
+# Foto pubblicate intere, alla misura dell'originale (15/10/2026)
+INTERE = [
+    ("lav-uliveto-collina", "nuove_foto_15ott/uliveto-collina.jpg", (640, 960, 1440, 2000)),
 ]
 
 
 def ritagli():
     from PIL import ImageOps
-    for nome, rel, box, larghezze in RITAGLI:
-        im = ImageOps.exif_transpose(Image.open(os.path.join(MEDIA, rel))).convert("RGB").crop(box)
+    voci = [(n, r, b, l) for n, r, b, l in RITAGLI] + [(n, r, None, l) for n, r, l in INTERE]
+    for nome, rel, box, larghezze in voci:
+        im = ImageOps.exif_transpose(Image.open(os.path.join(MEDIA, rel))).convert("RGB")
+        if box:
+            im = im.crop(box)
         tmp = os.path.join(tempfile.mkdtemp(prefix="astra-ritaglio-"), "foto.jpg")
         im.save(tmp, "JPEG", quality=95)
         varianti(tmp, nome, larghezze)
