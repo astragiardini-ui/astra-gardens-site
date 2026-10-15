@@ -41,7 +41,7 @@
   {"nome": "irrigazione", "descrizione": "irrigatore a scomparsa in funzione sul prato", "sorgente": "originali/IMG_7604.MOV", "inizio": 0.5, "durata": 4.0, "ritaglio": null}
  ],
  "hd": {
-  "_nota": "Video HD del sito nuovo (14/10/2026), già pronti in H.264 SDR dentro MEDIA/video_hd_14ott: si COPIANO così come sono (ricodificarli toglierebbe qualità). In cima alla pagina: sul telefono tre verticali interi (verticale-fiori, giardino-piscina-1, giardino-piscina-2), sul computer due orizzontali interi (hero-furgone, hero-fiori). La targa del furgone è SFOCATA fotogramma per fotogramma nel master hero-furgone-4k-sfocata.mp4: MAI usare l'originale non sfocato IMG_4312.",
+  "_nota": "Video HD del sito nuovo (14/10/2026; il 15/10 aggiunti gerani-villa, giro-giardino-fontana e fico-verbene-verticale, rifatti dagli ORIGINALI dell'iPhone in MEDIA/nuovi_15ott). I file copia sono già pronti in H.264 SDR dentro MEDIA/video_hd_14ott: si COPIANO così come sono (ricodificarli toglierebbe qualità). In cima alla pagina: sul telefono tre verticali interi (verticale-fiori, giardino-piscina-1, giardino-piscina-2), sul computer due orizzontali interi (hero-furgone, hero-fiori). La targa del furgone è SFOCATA fotogramma per fotogramma nel master hero-furgone-4k-sfocata.mp4: MAI usare l'originale non sfocato IMG_4312.",
   "cartella": "assets/video",
   "vietati": ["IMG_4312"],
   "copia": [
@@ -50,7 +50,11 @@
    {"nome": "verticale-fiori", "file": "video_hd_14ott/verticale-fiori-1080.mp4", "descrizione": "verbena e piscina, verticale 1080x1920", "poster": 1080}
   ],
   "rendi": [
-   {"nome": "hero-furgone-2560", "file": "video_hd_14ott/hero-furgone-4k-sfocata.mp4", "descrizione": "furgone per gli schermi grandi (larghezza per densità oltre 2000 px): 2560x1440 dal master 4K con la targa sfocata", "larghezza": 2560, "crf": 20, "preset": "slow"}
+   {"nome": "hero-furgone-2560", "file": "video_hd_14ott/hero-furgone-4k-sfocata.mp4", "descrizione": "furgone per gli schermi grandi (larghezza per densità oltre 2000 px): 2560x1440 dal master 4K con la targa sfocata", "larghezza": 2560, "crf": 20, "preset": "slow"},
+   {"nome": "gerani-villa", "file": "nuovi_15ott/IMG_4330.mov", "descrizione": "gerani, ulivo e graminacee, poi il giardino della villa col vialetto di pietra (IMG_4330, originale 4K, 15,9 s)", "larghezza": 1920, "crf": 18, "preset": "slow", "poster": 1920},
+   {"nome": "gerani-villa-2560", "file": "nuovi_15ott/IMG_4330.mov", "descrizione": "lo stesso per gli schermi grandi, dall'originale 4K", "larghezza": 2560, "crf": 20, "preset": "slow"},
+   {"nome": "giro-giardino-fontana", "file": "nuovi_15ott/IMG_4332.MOV", "descrizione": "giro largo dello stesso giardino con la fontana e le aiuole rialzate in pietra (IMG_4332, originale 1080, 18,7 s)", "larghezza": 1920, "crf": 18, "preset": "slow", "poster": 1920},
+   {"nome": "fico-verbene-verticale", "file": "nuovi_15ott/IMG_4326.MOV", "descrizione": "giovane fico tra verbene e graminacee, verticale (IMG_4326, originale 1080x1920, 5 s)", "larghezza": 1080, "crf": 18, "preset": "slow", "poster": 1080}
   ]
  }
 }

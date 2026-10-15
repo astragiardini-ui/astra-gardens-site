@@ -86,7 +86,7 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261015d"
+VERSIONE = "20261015e"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 700px), (orientation: landscape)"
@@ -130,12 +130,34 @@ def misura_video(nome):
 
 
 def poster_srcset(nome):
-    """Locandina del video: la 540 px (striscia) se c'e', piu' quella grande."""
+    """Locandina del video: quella piccola (540 px i verticali, 960 gli orizzontali) se c'e', piu' quella grande."""
     w, _ = misura_video(nome)
     b = "assets/video/" + nome
-    if os.path.exists(os.path.join(SITO, b + "-poster-540.webp")):
-        return "%s-poster-540.webp 540w, %s-poster.webp %dw" % (b, b, w)
+    for piccola in (540, 960):
+        if os.path.exists(os.path.join(SITO, "%s-poster-%d.webp" % (b, piccola))):
+            return "%s-poster-%d.webp %dw, %s-poster.webp %dw" % (b, piccola, piccola, b, w)
     return "%s-poster.webp %dw" % (b, w)
+
+
+def durata_mp4(nome):
+    """Durata in secondi dall'atomo mvhd del file (i nostri mp4 hanno il moov in testa: +faststart)."""
+    with open(os.path.join(SITO, "assets", "video", nome + ".mp4"), "rb") as f:
+        dati = f.read(4 * 1024 * 1024)
+    i = dati.find(b"mvhd")
+    if i < 0:
+        raise SystemExit("mvhd non trovato in " + nome)
+    if dati[i + 4] == 1:
+        scala, durata = int.from_bytes(dati[i + 24:i + 28], "big"), int.from_bytes(dati[i + 28:i + 36], "big")
+    else:
+        scala, durata = int.from_bytes(dati[i + 16:i + 20], "big"), int.from_bytes(dati[i + 20:i + 24], "big")
+    return durata / scala
+
+
+def dati_video(nome, senza_testo):
+    """Attributi per il giro dei video in cima: durata (il video resta in onda per intero se e' lungo), peso
+    (quanto prima scaricarlo) e se nascondere logo e scritte mentre e' in onda."""
+    peso = os.path.getsize(os.path.join(SITO, "assets", "video", nome + ".mp4"))
+    return ' data-durata="%.1f" data-peso="%d"%s' % (durata_mp4(nome), peso, " data-senza-testo" if senza_testo else "")
 
 
 def video_box(nome, alt, sizes, classe="", tag="div"):
@@ -171,14 +193,19 @@ SPRITE = """<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.o
 # ---------------------------------------------------------------- contenuti
 
 # In cima alla pagina, interi. Telefono: tre verticali. Computer: due orizzontali (furgone con targa sfocata).
+# Terzo campo (quarto per il computer): True = mentre il video e' in onda logo e scritte si nascondono, perche'
+# in alto non c'e' cielo ma il soggetto (le fronde del fico, la facciata della villa). Misurato sui fotogrammi.
 HERO_TEL = [
-    ("verticale-fiori", "Verbena e piscina in un giardino curato da noi"),
-    ("giardino-piscina-1", "Giardino con piscina e vista sulle colline"),
-    ("giardino-piscina-2", "Giardino con piscina, agavi e ulivi"),
+    ("verticale-fiori", "Verbena e piscina in un giardino curato da noi", False),
+    ("giardino-piscina-1", "Giardino con piscina e vista sulle colline", False),
+    ("giardino-piscina-2", "Giardino con piscina, agavi e ulivi", False),
+    ("fico-verbene-verticale", "Giovane fico tra verbene e graminacee", True),
 ]
 HERO_PC = [
-    ("hero-furgone", "Il furgone Astra Gardens nel giardino con piscina", "hero-furgone-2560"),
-    ("hero-fiori", "Verbena, doccia e piscina affacciate sulle colline", None),
+    ("hero-furgone", "Il furgone Astra Gardens nel giardino con piscina", "hero-furgone-2560", False),
+    ("gerani-villa", "Gerani, ulivo e graminacee nel giardino di una villa", "gerani-villa-2560", True),
+    ("hero-fiori", "Verbena, doccia e piscina affacciate sulle colline", None, False),
+    ("giro-giardino-fontana", "Il giardino con la fontana e le aiuole rialzate in pietra", None, True),
 ]
 
 # Striscia «Dai nostri cantieri»: foto e video verticali, nell'ordine della bozza approvata.
@@ -186,13 +213,16 @@ GALLERIA = [
     ("video", "verticale-fiori", "Verbena e piscina in un giardino curato da noi"),
     ("foto", "lav-ulivo-ponpon", "Ulivo ornamentale potato a pon pon"),
     ("foto", "lav-cedro", "Tree climbing su un grande cedro"),
+    ("video", "gerani-villa", "Gerani, ulivo e graminacee nel giardino di una villa"),
     ("video", "giardino-piscina-2", "Giardino con piscina, agavi e ulivi"),
     ("foto", "lav-ulivi-rose", "Ulivi, rose e un prato curato"),
     ("foto", "lav-corten-ghiaia", "Bordura in corten tra ghiaia, piante e prato"),
+    ("video", "fico-verbene-verticale", "Giovane fico tra verbene e graminacee"),
     ("foto", "foto-furgone", "Il furgone Astra Gardens in un giardino con piscina curato da noi"),
     ("video", "giardino-piscina-1", "Giardino con piscina e vista sulle colline"),
     ("foto", "lav-aiuola-ombra", "Aiuola per la mezz'ombra con pacciamatura e bordo netto"),
     ("foto", "lav-zolle-siepe", "Prato in zolla lungo la siepe"),
+    ("video", "giro-giardino-fontana", "Il giardino con la fontana e le aiuole rialzate in pietra"),
     ("foto", "lav-ghiaia-pergola", "Ghiaia bianca, prato e pergola: un giardino facile da vivere"),
     ("foto", "lav-chioma", "Ricostruzione della chioma di un albero"),
 ]
@@ -448,15 +478,15 @@ def hero():
     wt, ht = misura_video(HERO_TEL[0][0])
     wp, hp = misura_video(HERO_PC[0][0])
     video = []
-    for nome, alt in HERO_TEL:
+    for nome, alt, senza in HERO_TEL:
         b = "assets/video/" + nome
-        video.append('      <video class="hero__v" data-set="tel" data-src="%s.mp4" data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
-                     % (b, b, e(alt)))
-    for nome, alt, hd in HERO_PC:
+        video.append('      <video class="hero__v" data-set="tel" data-src="%s.mp4" data-poster="%s-poster.webp"%s muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
+                     % (b, b, dati_video(nome, senza), e(alt)))
+    for nome, alt, hd, senza in HERO_PC:
         b = "assets/video/" + nome
         extra = ' data-src-hd="assets/video/%s.mp4"' % hd if hd else ""
-        video.append('      <video class="hero__v" data-set="pc" data-src="%s.mp4"%s data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
-                     % (b, extra, b, e(alt)))
+        video.append('      <video class="hero__v" data-set="pc" data-src="%s.mp4"%s data-poster="%s-poster.webp"%s muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
+                     % (b, extra, b, dati_video(nome, senza), e(alt)))
     avvio = ("<script>(function(){var b=document.querySelector('[data-hero]');if(!b)return;"
              "var s=matchMedia(b.getAttribute('data-mq')).matches?'pc':'tel';"
              "var v=b.querySelector('video[data-set='+s+']');if(!v)return;"
@@ -524,12 +554,15 @@ def galleria():
                 stile = "--ratio: %d / %d" % (MAN[nome]["w"], MAN[nome]["h"])
             else:
                 w, h = misura_video(nome)
-                media = video_box(nome, alt, "(min-width: 900px) %dpx, %dpx" % (round(hp * w / h), round(ht * w / h)), tag="span")
+                larga = w > h
+                media = video_box(nome, alt, ("(min-width: 900px) %dpx, 88vw" % round(hp * w / h)) if larga else
+                                  "(min-width: 900px) %dpx, %dpx" % (round(hp * w / h), round(ht * w / h)), tag="span")
                 dati = 'data-media="video" data-src="assets/video/%s.mp4" data-poster="assets/video/%s-poster.jpg" data-w="%d" data-h="%d"' % (nome, nome, w, h)
                 etichetta = "Apri il video: " + alt
                 stile = "--ratio: %d / %d" % (w, h)
-            voci.append('        <li class="striscia__voce" style="%s"%s><button class="striscia__btn" type="button" %s data-indice="%d" data-alt="%s" aria-label="%s"%s>%s</button></li>'
-                        % (stile, nascosta, dati, i, e(alt), e(etichetta), tab, media))
+            classe = "striscia__voce striscia__voce--larga" if tipo == "video" and larga else "striscia__voce"
+            voci.append('        <li class="%s" style="%s"%s><button class="striscia__btn" type="button" %s data-indice="%d" data-alt="%s" aria-label="%s"%s>%s</button></li>'
+                        % (classe, stile, nascosta, dati, i, e(alt), e(etichetta), tab, media))
     return """  <section class="cantieri sezione--chiara" id="cantieri" aria-labelledby="titolo-cantieri">
     <div class="contenitore cantieri__testa">
       <div class="rivela">
@@ -632,7 +665,7 @@ def progetti():
 """ % {"schede": "\n".join(schede), "icsx": icona("i-sx"), "icdx": icona("i-dx")}
 
 
-def confronto(oggi, progetto, alt_oggi, alt_progetto, titolo, sx, dx, nota, sizes):
+def confronto(oggi, progetto, alt_oggi, alt_progetto, titolo, sx, dx, nota, sizes, didascalia=""):
     """Confronto con cursore da trascinare (mouse, dito e frecce della tastiera).
     Regola fissa di Francesco (§58): ogni prima e dopo del sito si mostra cosi', mai solo affiancato.
     Il riquadro prende le proporzioni della coppia (--ratio): la composizione si vede intera."""
@@ -648,9 +681,10 @@ def confronto(oggi, progetto, alt_oggi, alt_progetto, titolo, sx, dx, nota, size
           <span class="confronto__etichetta confronto__etichetta--sx" aria-hidden="true">%s</span>
           <span class="confronto__etichetta confronto__etichetta--dx" aria-hidden="true">%s</span>
         </div>
-        <figcaption><span class="confronto__titolo">%s</span><span class="confronto__nota">%s</span>%s</figcaption>
+        <figcaption><span class="confronto__titolo">%s</span>%s<span class="confronto__nota">%s</span>%s</figcaption>
       </figure>""" % (a["w"], a["h"], e(dx), picture(oggi, alt_oggi, sizes), picture(progetto, alt_progetto, sizes),
-                       e(titolo), e(dx.lower()), icona("i-cursore", "icona icona--cursore"), e(sx), e(dx), e(titolo), e(nota),
+                       e(titolo), e(dx.lower()), icona("i-cursore", "icona icona--cursore"), e(sx), e(dx), e(titolo),
+                       ('<span class="confronto__didascalia">%s</span>' % e(didascalia)) if didascalia else "", e(nota),
                        '<span class="avviso-render">%s</span>' % e(AVVISO_RENDER) if "render" in nota else "")
 
 
@@ -664,29 +698,44 @@ CONFRONTI = [
     ("render-prato-oggi", "render-prato-progetto", "Oggi: il prato davanti a casa prima del progetto",
      "Progetto: prato nuovo con bordura in corten e fioriture",
      "Prato nuovo con bordura in corten", "Oggi", "Progetto", "Immagine di progetto · render IA"),
+    # 15/10/2026: progetto di un cliente (mai il nome ne' il comune), render IA allineati con tools/prima-dopo/render.py
+    ("render-giardino-oggi", "render-giardino-progetto", "Oggi: il prato con l'ulivo e la porta da calcio",
+     "Progetto: prato nuovo in zolla, l'ulivo al centro e una lagerstroemia in fiore",
+     "Un giardino da vivere", "Oggi", "Progetto", "Immagine di progetto · render IA",
+     "Prato nuovo in zolla, l'ulivo valorizzato al centro e una lagerstroemia che fiorisce per tutta l'estate: "
+     "uno spazio pensato per giocare e stare all'aperto."),
+    ("render-piscina-oggi", "render-piscina-progetto", "Oggi: l'angolo del prato accanto alla casa",
+     "Progetto: piano livellato, bordura in corten e spaccato bianco di Botticino intorno alla piscina",
+     "L'angolo della piscina", "Oggi", "Progetto", "Immagine di progetto · render IA",
+     "Piano livellato, bordura in acciaio corten e spaccato bianco di Botticino: un fondo drenante e luminoso, "
+     "con le lastre per arrivare comodi fino all'acqua."),
 ]
 
 
 def prima_dopo():
-    """Sul computer i tre confronti stanno in fila alla stessa altezza: colonne proporzionali."""
-    tot = sum(proporzione(c[0]) for c in CONFRONTI)
-    colonne = " ".join("minmax(0, %.4ffr)" % proporzione(c[0]) for c in CONFRONTI)
-    figure = []
-    for c in CONFRONTI:
-        quota = proporzione(c[0]) / tot
-        sizes = "(min-width: 1000px) %dpx, (min-width: 600px) 80vw, calc(100vw - 40px)" % round(1200 * quota)
-        figure.append(confronto(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], sizes))
+    """Sul computer i confronti stanno in fila alla stessa altezza (colonne proporzionali): i primi tre in una
+    riga, i due progetti nuovi nella riga sotto. Sul telefono uno sotto l'altro, larghi quanto lo schermo."""
+    righe = []
+    for gruppo in (CONFRONTI[:3], CONFRONTI[3:]):
+        if not gruppo:
+            continue
+        tot = sum(proporzione(c[0]) for c in gruppo)
+        colonne = " ".join("minmax(0, %.4ffr)" % proporzione(c[0]) for c in gruppo)
+        figure = []
+        for c in gruppo:
+            quota = proporzione(c[0]) / tot
+            sizes = "(min-width: 1000px) %dpx, (min-width: 600px) 80vw, calc(100vw - 40px)" % round(1200 * quota)
+            figure.append(confronto(*c[:8], sizes=sizes, didascalia=c[8] if len(c) > 8 else ""))
+        righe.append('    <div class="contenitore confronti" style="--colonne: %s">\n%s\n    </div>' % (colonne, "\n".join(figure)))
     return """  <section class="primadopo sezione--chiara" id="prima-e-dopo" aria-labelledby="titolo-primadopo">
     <div class="contenitore primadopo__testa rivela">
       <p class="pillola">Prima e dopo</p>
       <h2 id="titolo-primadopo">Com'era. Com'è adesso.</h2>
       <p class="primadopo__aiuto">Trascina il cursore e guarda il giardino cambiare.</p>
     </div>
-    <div class="contenitore confronti" style="--colonne: %s">
 %s
-    </div>
   </section>
-""" % (colonne, "\n".join(figure))
+""" % "\n".join(righe)
 
 
 def zona():

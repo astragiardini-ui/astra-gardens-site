@@ -7,7 +7,7 @@ spostata di qualche pixel. Sotto il cursore le due immagini devono combaciare, e
 si vede INTERA (niente ritagli fissi 3:2): la pagina dà al riquadro le proporzioni della coppia.
 
 Uso (stesso ambiente OpenCV di allinea.py, fuori dal repo):
-    /private/tmp/claude-501/allinea/bin/python tools/prima-dopo/render.py tools/prima-dopo/render.json [--ricalcola] [--controllo cartella]
+    /private/tmp/claude-501/allinea/bin/python tools/prima-dopo/render.py tools/prima-dopo/render.json [--ricalcola] [--controllo cartella] [--solo NOME]
 
 render.json, per ogni coppia:
   "oggi", "progetto"  foto di oggi e render, relativi a MEDIA (~/Documents/AstraMarketing, o ASTRA_MEDIA)
@@ -15,6 +15,17 @@ render.json, per ogni coppia:
                       ogni giro); null = le due immagini coincidono già
   "zona"              frazione alta dell'immagine dove cercare i punti comuni con --ricalcola
                       (1.0 = tutta l'immagine; 0.45 = solo case e muri, che il render non cambia)
+  "punti"             (facoltativo) coppie di punti scelti a mano [[x foto, y foto], [x render, y render]],
+                      in pixel della foto ridotta alla misura del render: quando il render IA è uscito da un
+                      punto di vista diverso e SIFT non trova abbastanza punti comuni, con --ricalcola
+                      l'omografia si calcola da questi (spigoli di recinzione, pavimento, pozzetti, muri)
+  "linee"             (facoltativo, con "punti") [{"nome", "foto": [[x, y]...], "render": [[x, y]...], "peso"}]:
+                      punti presi lungo una stessa linea nelle due immagini (bordo del pavimento, base di un
+                      muretto). La linea del render scorre oltre i punti scelti, quindi conta solo che i punti
+                      della foto, raddrizzati, ci cadano sopra: utile quando il render IA ha spostato le
+                      piastrelle o l'erba ma non i bordi
+  "sfoca"             (facoltativo) rettangoli [x0, y0, x1, y1] in pixel del render da sfocare in tutte e due
+                      le immagini (numeri civici o scritte sullo sfondo)
   "uscita"            [nome oggi, nome progetto] in assets/img
   "larghezze"         larghezze WebP oltre a quella piena; il JPEG di riserva è sempre a 640
 
@@ -65,12 +76,80 @@ def stima_omografia(foto_ridotta, render, zona):
     return H
 
 
+def _applica(H, p):
+    q = np.c_[np.asarray(p, float), np.ones(len(p))] @ H.T
+    return q[:, :2] / q[:, 2:3]
+
+
+def _retta(punti):
+    """Retta che passa meglio per i punti: (centro, normale)."""
+    pt = np.asarray(punti, float)
+    c = pt.mean(axis=0)
+    return c, np.linalg.svd(pt - c)[2][1]
+
+
+def omografia_da_punti(punti, linee=()):
+    """Omografia dai punti scelti a mano e, se ci sono, dalle linee (i punti della foto devono cadere sulla
+    retta del render). Minimi quadrati robusti (Levenberg-Marquardt, perdita morbida oltre 3 px), solo numpy."""
+    p1 = np.float64([a for a, _ in punti])
+    p2 = np.float64([b for _, b in punti])
+    H0, _ = cv2.findHomography(p1.astype(np.float32), p2.astype(np.float32), 0)
+    rette = [(np.asarray(L["foto"], float), _retta(L["render"]), float(L.get("peso", 1.0))) for L in linee]
+
+    def residui(h):
+        H = np.append(h, 1.0).reshape(3, 3)
+        r = [(_applica(H, p1) - p2).ravel()]
+        for f, (c, n), w in rette:
+            r.append(w * ((_applica(H, f) - c) @ n))
+        r = np.concatenate(r)
+        return np.sign(r) * np.sqrt(2 * 3.0 * (np.sqrt(1 + (r / 3.0) ** 2) - 1) * 3.0)  # soft L1
+
+    h = (H0 / H0[2, 2]).ravel()[:8]
+    lam = 1e-3
+    for _ in range(200):
+        r = residui(h)
+        J = np.empty((len(r), 8))
+        for k in range(8):
+            d = np.zeros(8)
+            d[k] = 1e-6 * max(1.0, abs(h[k]))
+            J[:, k] = (residui(h + d) - r) / d[k]
+        A, g = J.T @ J, J.T @ r
+        passo = np.linalg.solve(A + lam * np.diag(np.diag(A) + 1e-12), -g)
+        if (residui(h + passo) ** 2).sum() < (r ** 2).sum():
+            h, lam = h + passo, lam / 3
+            if np.abs(passo).max() < 1e-10:
+                break
+        else:
+            lam *= 4
+    H = np.append(h, 1.0).reshape(3, 3)
+    err = np.hypot(*(_applica(H, p1) - p2).T)
+    print("    punti a mano %d: errore medio %.2f px, massimo %.2f px (senza raddrizzare: %.2f px)"
+          % (len(punti), err.mean(), err.max(), np.hypot(*(p1 - p2).T).mean()))
+    for L, (f, (c, n), _) in zip(linee, rette):
+        d = np.abs((_applica(H, f) - c) @ n)
+        print("    linea %s: scarto medio %.2f px, massimo %.2f px" % (L.get("nome", "?"), d.mean(), d.max()))
+    return H
+
+
 def rettangolo_pieno(valido):
-    """Colonne piene, poi righe piene dentro quelle colonne: il rettangolo senza bordi vuoti."""
-    col = np.where(valido.all(axis=0))[0]
-    x0, x1 = col.min(), col.max() + 1
-    rig = np.where(valido[:, x0:x1].all(axis=1))[0]
-    return int(x0), int(rig.min()), int(x1), int(rig.max() + 1)
+    """Il rettangolo più grande senza bordi vuoti (istogramma per righe): toglie solo i cunei vuoti lasciati
+    dal raddrizzamento, mai la composizione."""
+    h, w = valido.shape
+    alt = np.zeros(w, int)
+    migliore, area = (0, 0, w, h), -1
+    for y in range(h):
+        alt = np.where(valido[y], alt + 1, 0)
+        pila = []
+        for x in range(w + 1):
+            hx = alt[x] if x < w else 0
+            inizio = x
+            while pila and pila[-1][1] >= hx:
+                i, hi = pila.pop()
+                if hi * (x - i) > area:
+                    area, migliore = hi * (x - i), (i, y - hi + 1, x, y + 1)
+                inizio = i
+            pila.append((inizio, hx))
+    return tuple(int(v) for v in migliore)
 
 
 def esporta(img, nome, larghezze):
@@ -91,7 +170,10 @@ def main():
     cfg = json.load(open(percorso, encoding="utf-8"))
     ricalcola = "--ricalcola" in sys.argv
     controllo = sys.argv[sys.argv.index("--controllo") + 1] if "--controllo" in sys.argv else None
+    solo = sys.argv[sys.argv.index("--solo") + 1] if "--solo" in sys.argv else None
     for c in cfg["coppie"]:
+        if solo and solo not in c["uscita"]:
+            continue
         print("coppia:", c["uscita"][1])
         foto = cv2.imread(os.path.join(MEDIA, c["oggi"]))
         rend = cv2.imread(os.path.join(MEDIA, c["progetto"]))
@@ -104,7 +186,8 @@ def main():
             raise SystemExit("foto e render hanno proporzioni diverse: %s contro %s" % (foto.shape, rend.shape))
         if ricalcola:
             ridotta = cv2.resize(foto, (wr, hr), interpolation=cv2.INTER_AREA)
-            H = stima_omografia(ridotta, rend, float(c.get("zona", 1.0)))
+            H = (omografia_da_punti(c["punti"], c.get("linee", ())) if c.get("punti")
+                 else stima_omografia(ridotta, rend, float(c.get("zona", 1.0))))
             c["omografia"] = [[round(float(v), 9) for v in riga] for riga in H]
         H = np.array(c["omografia"], float) if c.get("omografia") else np.eye(3)
         # raddrizzo a piena risoluzione (coordinate del render ingrandite a quelle della foto), poi riduco
@@ -116,6 +199,10 @@ def main():
         valido = cv2.resize(piena, (wr, hr), interpolation=cv2.INTER_AREA) >= 254
         x0, y0, x1, y1 = rettangolo_pieno(valido)
         print("    tengo %d..%d x %d..%d di %dx%d" % (x0, x1, y0, y1, wr, hr))
+        oggi, rend = oggi.copy(), rend.copy()
+        for a0, b0, a1, b1 in c.get("sfoca", []):  # numeri civici o scritte: sfocati in tutte e due
+            for im in (oggi, rend):
+                im[b0:b1, a0:a1] = cv2.GaussianBlur(im[b0:b1, a0:a1], (0, 0), 4)
         oggi, prog = oggi[y0:y1, x0:x1], rend[y0:y1, x0:x1]
         esporta(oggi, c["uscita"][0], c["larghezze"])
         esporta(prog, c["uscita"][1], c["larghezze"])

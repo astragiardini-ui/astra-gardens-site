@@ -130,15 +130,25 @@
   }
 
   /* ---------- Apertura: i video interi che si danno il cambio ----------
-     Telefono: tre verticali ogni 6,5 s. Computer: due orizzontali ogni 7 s. Il primo l'ha già avviato lo
-     script dentro la pagina; il successivo si scarica solo quando quello in onda ha finito di scaricarsi,
-     poco prima del suo turno: mai tre download insieme. */
+     Telefono: i verticali, ognuno almeno 6,5 s. Computer: gli orizzontali, ognuno almeno 7 s; quelli lunghi
+     restano in onda per intero (data-durata). Il primo l'ha già avviato lo script dentro la pagina; il
+     successivo si scarica solo quando quello in onda ha finito di scaricarsi, e non prima di quanto serve a
+     scaricarlo in tempo (data-peso): mai due download insieme. Durante i video con data-senza-testo logo e
+     scritte si nascondono, perché in alto c'è il soggetto e non il cielo. */
   var hero = doc.querySelector("[data-hero]");
   if (hero) (function () {
     var mq = window.matchMedia(hero.getAttribute("data-mq"));
     var punti = hero.querySelector(".hero__punti");
     var lista = [], i = 0, tCambio = null, tCarica = null, tScarico = null, attesa = 0, inVista = true, sospeso = false;
-    function intervallo() { return mq.matches ? 7000 : 6500; }
+    function intervallo(v) {
+      var base = mq.matches ? 7000 : 6500;
+      var d = parseFloat(v && v.getAttribute("data-durata")) || 0;
+      return Math.max(base, d * 1000 - 1200);
+    }
+    function anticipo(v) {
+      var peso = parseFloat(v && v.getAttribute("data-peso")) || 0;
+      return Math.max(3200, peso * 8 / 40e6 * 1000 + 1500); /* tempo per scaricarlo a circa 40 Mbit/s */
+    }
     function sorgente(v) {
       var hd = v.getAttribute("data-src-hd");
       return hd && window.innerWidth * (window.devicePixelRatio || 1) > 2000 ? hd : v.getAttribute("data-src");
@@ -163,11 +173,11 @@
     function programma() {
       clearTimeout(tCambio); clearTimeout(tCarica); clearTimeout(tScarico);
       if (lista.length < 2) return;
-      var corrente = lista[i], prossimo = lista[(i + 1) % lista.length], durata = intervallo(), t0 = adesso();
+      var corrente = lista[i], prossimo = lista[(i + 1) % lista.length], durata = intervallo(corrente), t0 = adesso();
       tCarica = setTimeout(function controlla() {
         if (scaricato(corrente) || adesso() - t0 > durata + 6000) carica(prossimo);
         else tScarico = setTimeout(controlla, 400);
-      }, Math.max(0, durata - 3200));
+      }, Math.max(0, durata - anticipo(prossimo)));
       tCambio = setTimeout(prova, durata);
     }
     function prova() {
@@ -184,6 +194,7 @@
       carica(v);
       if (prec && prec !== v) { try { v.currentTime = 0; } catch (_) {} }
       v.classList.add("attivo");
+      hero.classList.toggle("senza-testo", v.hasAttribute("data-senza-testo"));
       if (inVista) parti(v);
       if (prec && prec !== v) {
         prec.classList.remove("attivo");

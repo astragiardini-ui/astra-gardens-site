@@ -219,6 +219,9 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
   gap: 10px; padding: 0 16px; pointer-events: none; text-align: center;
 }
 .hero__marchio > * { animation: entra 1.2s .3s var(--curva) both; }
+.hero__marchio { transition: opacity .8s ease; }
+/* video con il soggetto in alto (fronde, facciata): logo e scritte si fanno da parte finché è in onda */
+.hero__schermo.senza-testo .hero__marchio { opacity: 0; }
 .hero__marchio img { width: 176px; height: auto; filter: drop-shadow(0 1px 8px rgba(0, 0, 0, .55)); }
 /* «Progettazione • Realizzazione • Manutenzione» e la frase sotto: niente fasce scure, solo l'ombra morbida del logo */
 .hero__pillola {
@@ -303,8 +306,10 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 .striscia::-webkit-scrollbar { display: none; }
 .striscia.trascina { cursor: grabbing; }
 .striscia:focus-visible { outline-offset: -2px; }
-.striscia__lista { display: flex; width: max-content; }
+.striscia__lista { display: flex; align-items: center; width: max-content; }
 .striscia__voce { flex: none; height: var(--h-tel); aspect-ratio: var(--ratio); margin-right: 10px; }
+/* video orizzontali: interi, ma mai più larghi dello schermo del telefono */
+.striscia__voce--larga { height: min(var(--h-tel), calc(88vw * 9 / 16)); }
 .striscia__btn {
   -webkit-appearance: none; appearance: none; position: relative; display: block; width: 100%; height: 100%; padding: 0; margin: 0;
   border: 0; border-radius: 4px; overflow: hidden; background: var(--linea); cursor: zoom-in; -webkit-tap-highlight-color: transparent;
@@ -320,6 +325,7 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
   .cantieri__testa > div { gap: 18px; }
   .cantieri__aiuto { max-width: 360px; font-size: 16px; }
   .striscia__voce { height: var(--h-pc); margin-right: 14px; }
+  .striscia__voce--larga { height: min(var(--h-pc), calc(88vw * 9 / 16)); }
 }
 
 /* ---------- chi siamo ---------- */
@@ -476,6 +482,8 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 .confronto-box figcaption { margin-top: 10px; display: grid; gap: 4px; }
 .confronto__titolo { font-family: var(--serif); font-size: 24px; line-height: 1.1; color: var(--inchiostro); }
 .confronto__nota { font-size: 12px; color: var(--grigio); }
+.confronto__didascalia { margin: 2px 0 4px; font-size: 14px; line-height: 1.55; color: var(--inchiostro); }
+.confronti + .confronti { margin-top: 36px; }
 @media (min-width: 900px) {
   .primadopo { padding-block: 96px 88px; }
   .primadopo__testa { align-items: center; text-align: center; margin-bottom: 44px; }
@@ -489,6 +497,8 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
   .confronto-box figcaption { margin-top: 12px; }
   .confronto__titolo { font-size: 30px; }
   .confronto__nota { font-size: 13px; }
+  .confronto__didascalia { font-size: 15px; }
+  .confronti + .confronti { margin-top: 48px; }
 }
 @media (min-width: 1000px) { .confronti { grid-template-columns: var(--colonne); gap: 28px; align-items: start; } }
 

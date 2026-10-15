@@ -7,7 +7,7 @@ Immagini del sito nuovo (14/10/2026) che non escono da tools/prima-dopo né da t
   3138x641 del gestionale (fatture_Cloud/assets);
 - srv-antizanzare: la locandina della vecchia clip antizanzare (tolta dal sito il 14/10/2026), ripresa dalla
   storia git (commit 56579bf) e usata come foto del servizio «Impianto antizanzare»;
-- le locandine piccole (540 px) dei video verticali, per la striscia dei cantieri (il video resta 1080);
+- le locandine piccole dei video della striscia dei cantieri (540 px i verticali, 960 gli orizzontali);
 - l'immagine di anteprima per WhatsApp e social (og-astra-gardens.jpg, 1200x675 = 16:9, il fotogramma
   intero, senza ritagli): un fotogramma del video dei fiori con il logo bianco in alto al centro.
 
@@ -97,12 +97,15 @@ def da_storia_git(commit, percorso, nome, larghezze):
 
 
 def locandine_piccole():
-    for nome in ("verticale-fiori", "giardino-piscina-1", "giardino-piscina-2"):
+    """Locandine leggere per la striscia dei cantieri: 540 px per i video verticali, 960 per gli orizzontali
+    (il video resta alla sua risoluzione piena)."""
+    for nome, w in (("verticale-fiori", 540), ("giardino-piscina-1", 540), ("giardino-piscina-2", 540),
+                    ("fico-verbene-verticale", 540), ("gerani-villa", 960), ("giro-giardino-fontana", 960)):
         src = os.path.join(SITO, "assets", "video", nome + "-poster.jpg")
         im = Image.open(src).convert("RGB")
-        r = im.resize((540, round(im.height * 540 / im.width)), Image.LANCZOS)
-        r.save(os.path.join(SITO, "assets", "video", nome + "-poster-540.webp"), "WEBP", quality=80, method=6)
-    print("  locandine 540 px dei video verticali")
+        r = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+        r.save(os.path.join(SITO, "assets", "video", "%s-poster-%d.webp" % (nome, w)), "WEBP", quality=80, method=6)
+    print("  locandine piccole dei video della striscia")
 
 
 if __name__ == "__main__":

@@ -274,11 +274,12 @@ def clip(cfg, solo=None):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
-def hd(cfg):
-    """Video HD del 14/10/2026 ("hd" in video.json). I file "copia" sono già l'uscita finale (H.264 SDR,
-    faststart): si copiano senza ricodificarli. I file "rendi" si portano alla larghezza chiesta dal
-    master (furgone 2560 dal 4K con la targa sfocata). Poster: primo fotogramma, WebP e JPEG.
-    Il nome dell'originale non sfocato del furgone ("vietati") fa fermare tutto."""
+def hd(cfg, solo=None):
+    """Video HD del sito ("hd" in video.json). I file "copia" sono già l'uscita finale (H.264 SDR,
+    faststart): si copiano senza ricodificarli. I file "rendi" si portano alla larghezza chiesta partendo
+    dal master (furgone 2560 dal 4K con la targa sfocata) o dall'ORIGINALE dell'iPhone (.mov HDR: passa
+    da avconvert come le clip). Poster ("poster": larghezza): primo fotogramma, WebP e JPEG.
+    Il nome dell'originale non sfocato del furgone ("vietati") fa fermare tutto. --solo NOME = una voce."""
     c = cfg["hd"]
     cartella = os.path.join(SITO, c["cartella"])
     def sorgente(rel):
@@ -291,9 +292,13 @@ def hd(cfg):
         if min(w, h) < LATO_MINIMO:
             raise SystemExit("%s è %dx%d: sotto i %d px non si pubblica" % (rel, w, h, LATO_MINIMO))
         if trc in ("arib-std-b67", "smpte2084"):
+            if rel.lower().endswith(".mov"):
+                return sorgente_sdr(rel)  # originale dell'iPhone: HDR -> SDR con avconvert
             raise SystemExit("%s è HDR (%s): serve la versione SDR" % (rel, trc))
         return src
     for v in c["copia"]:
+        if solo and v["nome"] != solo:
+            continue
         src = sorgente(v["file"])
         out = os.path.join(cartella, v["nome"] + ".mp4")
         shutil.copyfile(src, out)
@@ -301,6 +306,8 @@ def hd(cfg):
         print("  copia %s  %dx%d  %.1f s  %.1f Mbit/s  %.1f MB" % (os.path.relpath(out, SITO), W, H, dur, br / 1e6, size / 1048576))
         poster(out, os.path.join(cartella, v["nome"] + "-poster"), int(v["poster"]))
     for v in c["rendi"]:
+        if solo and v["nome"] != solo:
+            continue
         src = sorgente(v["file"])
         w, h, _ = info(src)
         ow = int(v["larghezza"])
@@ -316,6 +323,8 @@ def hd(cfg):
         W, H, br, dur, size = descrivi(out)
         print("  rendi %s  %dx%d  crf %s %s  %.1f s  %.1f Mbit/s  %.1f MB"
               % (os.path.relpath(out, SITO), W, H, v["crf"], v["preset"], dur, br / 1e6, size / 1048576))
+        if v.get("poster"):
+            poster(out, os.path.join(cartella, v["nome"] + "-poster"), int(v["poster"]))
 
 
 def controlla():
@@ -351,7 +360,7 @@ def main():
         clip(cfg, solo)
     if cosa in ("hd", "tutto"):
         print("Video HD del sito (14/10/2026)")
-        hd(cfg)
+        hd(cfg, solo)
     if cosa in ("controlla", "tutto"):
         print("Controllo dei video pubblicati")
         controlla()

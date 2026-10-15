@@ -1,5 +1,5 @@
 {
- "_nota": "Coppie della sezione Progetto e render IA. Le omografie (foto ridotta -> render) vengono da SIFT + MAGSAC su tutta l'immagine e sono state controllate a strisce alterne: case, muri e pavimento combaciano. Le foto sorgente stanno in MEDIA/render_ia e NON vanno nel repository.",
+ "_nota": "Coppie della sezione Progetto e render IA. Le omografie (foto ridotta -> render) vengono da SIFT + MAGSAC su tutta l'immagine e sono state controllate a strisce alterne: case, muri e pavimento combaciano. Le foto sorgente stanno in MEDIA/render_ia e NON vanno nel repository. Le coppie del 15/10/2026 (giardino da vivere, angolo della piscina) vengono da un render IA uscito da un punto di vista diverso: l'omografia si calcola dai punti e dalle linee scelti a mano (pozzetto, porta da calcio, bordo del pavimento, base dei muretti, casa), con --ricalcola --solo NOME.",
  "coppie": [
   {
    "oggi": "render_ia/aiuola-oggi.jpg",
@@ -24,6 +24,158 @@
    ],
    "uscita": ["render-prato-oggi", "render-prato-progetto"],
    "larghezze": [640, 1080]
+  },
+  {
+   "oggi": "render_ia/giardino-gioco-oggi.jpg",
+   "progetto": "render_ia/giardino-gioco-progetto.jpg",
+   "zona": 1.0,
+   "punti": [
+    [
+     [107.5, 528.75],
+     [93.75, 586.25]
+    ],
+    [
+     [203.75, 521.25],
+     [198.75, 578.75]
+    ],
+    [
+     [64.5, 553.75],
+     [57, 617]
+    ],
+    [
+     [350, 911.7],
+     [389.3, 1055]
+    ],
+    [
+     [394, 977.3],
+     [449.3, 1131.7]
+    ],
+    [
+     [266.7, 978.3],
+     [284.3, 1111.7]
+    ],
+    [
+     [360, 950],
+     [401, 1096.7]
+    ]
+   ],
+   "linee": [
+    {
+     "nome": "bordo pavimento",
+     "foto": [
+      [200, 900],
+      [240, 996.7],
+      [276.7, 1093],
+      [323, 1193]
+     ],
+     "render": [
+      [176, 930],
+      [199.3, 1013.3],
+      [229.3, 1093.3],
+      [267.7, 1193]
+     ]
+    },
+    {
+     "nome": "base del muretto",
+     "foto": [
+      [500, 580],
+      [600, 605],
+      [750, 655],
+      [850, 681],
+      [890, 691]
+     ],
+     "render": [
+      [550, 625],
+      [650, 647.5],
+      [750, 662],
+      [850, 684],
+      [900, 699.5]
+     ]
+    }
+   ],
+   "omografia": [
+    [1.105243458, 0.002484312, -23.931599967],
+    [-0.327673292, 1.228312356, -18.833648097],
+    [-0.000459407, 0.000109849, 1.0]
+   ],
+   "uscita": ["render-giardino-oggi", "render-giardino-progetto"],
+   "larghezze": [640]
+  },
+  {
+   "oggi": "render_ia/angolo-piscina-oggi.jpg",
+   "progetto": "render_ia/angolo-piscina-progetto.jpg",
+   "zona": 1.0,
+   "punti": [
+    [
+     [747.5, 327.5],
+     [794, 267.5]
+    ],
+    [
+     [807.5, 210],
+     [854, 160]
+    ],
+    [
+     [163.3, 491.7],
+     [191, 433]
+    ],
+    [
+     [181.7, 600],
+     [202.7, 551.7]
+    ]
+   ],
+   "linee": [
+    {
+     "nome": "cima del muretto",
+     "foto": [
+      [0, 643.3],
+      [120, 614],
+      [240, 585]
+     ],
+     "render": [
+      [0, 600],
+      [100, 576],
+      [202.7, 551.7]
+     ]
+    },
+    {
+     "nome": "base del muretto",
+     "foto": [
+      [33.3, 720],
+      [140, 677],
+      [240, 636.7]
+     ],
+     "render": [
+      [0, 676.7],
+      [90, 640],
+      [172.7, 606.7]
+     ]
+    },
+    {
+     "nome": "bordo pavimento / corten",
+     "foto": [
+      [0, 732.5],
+      [150, 812],
+      [300, 892.5]
+     ],
+     "render": [
+      [0, 717.5],
+      [150, 789],
+      [300, 860]
+     ],
+     "peso": 0.7
+    }
+   ],
+   "omografia": [
+    [1.180836362, -0.184814008, 97.164549805],
+    [0.07323791, 1.093451274, -100.083957286],
+    [0.000222144, -1.105e-06, 1.0]
+   ],
+   "uscita": ["render-piscina-oggi", "render-piscina-progetto"],
+   "larghezze": [640],
+   "sfoca": [
+    [172, 415, 193, 436],
+    [204, 409, 228, 432]
+   ]
   }
  ]
 }
