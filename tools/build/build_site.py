@@ -86,7 +86,7 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261015c"
+VERSIONE = "20261015d"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 700px), (orientation: landscape)"
@@ -216,15 +216,27 @@ SERVIZI = [
     ("realizzazione", "Realizzazione e movimento terra",
      "Scavi, terra nuova, aiuole, bordure e piantagioni: costruiamo il giardino con mezzi nostri e la nostra squadra.",
      "srv-movimento-terra", "Miniescavatore al lavoro e furgone Astra Gardens sullo sfondo", None),
+    ("corten", "Bordure in corten",
+     "Bordure in acciaio corten su misura, fatte dai nostri fabbri di fiducia: linee nette tra prato, aiuole e ghiaia.",
+     "srv-corten", "Bordura circolare in corten saldata su misura intorno a un albero", None),
+    ("opere", "Opere in ferro e lavori edili",
+     "Recinzioni, cancelli, muretti, scalini e vialetti: con i nostri artigiani di fiducia portiamo a termine anche le opere intorno al verde.",
+     None, None, None),
     ("prati", "Prati in zolla",
      "Terreno preparato e livellato, zolle posate con cura: un prato verde e uniforme.",
      "srv-prato", "Prato in zolla appena posato tra bossi e vialetti", None),
+    ("sintetico", "Erba sintetica",
+     "Posa di erba sintetica di qualità dove il prato vero fatica: terrazzi, zone d'ombra, bordi piscina.",
+     "srv-sintetico", "Prato sintetico con bordura in corten davanti a casa", None),
     ("irrigazione", "Irrigazione automatica",
      "Impianti a goccia e irrigatori a scomparsa, studiati zona per zona: l'acqua giusta, al momento giusto.",
      "srv-irrigazione", "Scavo stretto e preciso con la catenaria per l'impianto di irrigazione", None),
     ("illuminazione", "Illuminazione",
      "Luci per vialetti, alberi e aiuole: il giardino si vive anche la sera.",
      None, None, None),
+    ("antizanzare", "Impianto antizanzare",
+     "Impianti a nebulizzazione per vivere il giardino la sera: progettati e installati da noi, con la manutenzione nel tempo.",
+     "srv-antizanzare", "Impianto antizanzare: la nebulizzazione lungo la siepe", None),
     ("arredo", "Arredo e complementi",
      "Fioriere, vasi, bordure e complementi scelti insieme a te per completare il progetto.",
      "lav-ghiaia-pergola", "Ghiaia bianca, prato, pergola e piante in vaso a completare il giardino", None),
@@ -285,9 +297,12 @@ def jsonld():
         "name": "Astra Gardens",
         "legalName": DENOMINAZIONE,
         "description": "Giardinieri a Flero (BS), nati nel 2023 da un gruppo di diplomati e laureati in agraria e guidati "
-                       "da un perito agrario iscritto all'albo: progettiamo, realizziamo e curiamo giardini in tutta la provincia di Brescia, con sopralluogo, "
-                       "progetto e render, realizzazione e movimento terra, prati in zolla, irrigazione automatica, "
-                       "potature e tree climbing, abbattimenti controllati, cura degli ulivi, robot rasaerba e manutenzione.",
+                       "da un perito agrario iscritto all'albo: progettiamo, realizziamo e curiamo giardini chiavi in mano "
+                       "in tutta la provincia di Brescia, dal sopralluogo con progetto, render e studio botanico alla "
+                       "realizzazione, con la nostra squadra e artigiani di fiducia: movimento terra, bordure in corten, "
+                       "opere in ferro e lavori edili, prati in zolla ed erba sintetica, irrigazione automatica, "
+                       "illuminazione, impianti antizanzare, arredo, potature e tree climbing, abbattimenti controllati, "
+                       "cura degli ulivi, robot rasaerba e manutenzione.",
         "url": BASE,
         "logo": BASE + "assets/img/logo-quadrato-512.png",
         "image": BASE + "assets/img/og-astra-gardens.jpg",
@@ -391,8 +406,8 @@ def testata(home=True):
 
 def piede(home=True):
     p = "" if home else "./"
-    servizi = [("Manutenzione", "manutenzione"), ("Potature", "potature"), ("Abbattimenti", "abbattimenti"),
-               ("Prati in zolla", "prati"), ("Irrigazione", "irrigazione")]
+    servizi = [("Manutenzione", "manutenzione"), ("Realizzazioni chiavi in mano", "realizzazione"),
+               ("Potature e abbattimenti", "potature"), ("Prati e irrigazione", "prati"), ("Antizanzare", "antizanzare")]
     lista_servizi = "".join('<li><a href="%s#servizio-%s">%s</a></li>' % (p, a, e(t)) for t, a in servizi)
     return """<footer class="piede" id="contatti">
   <div class="contenitore">
@@ -577,8 +592,8 @@ def servizi():
     <div class="contenitore servizi__griglia">
       <div class="servizi__testa rivela">
         <p class="pillola">Servizi</p>
-        <h2 id="titolo-servizi">Seguiamo il tuo giardino dalla prima visita a ogni stagione.</h2>
-        <p class="servizi__sotto">Un solo referente per progettare, realizzare e curare il tuo verde.</p>
+        <h2 id="titolo-servizi">Il tuo giardino dalla A alla Z, chiavi in mano.</h2>
+        <p class="servizi__sotto">Dal sopralluogo alla manutenzione, con la nostra squadra e gli artigiani di fiducia per ferro, opere edili e luci: ti consegniamo il giardino finito.</p>
       </div>
       <ol class="fisarmonica rivela" role="list" data-fisarmonica style="--ritardo: .1s">
 %(voci)s

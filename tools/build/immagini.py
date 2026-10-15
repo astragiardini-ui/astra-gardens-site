@@ -5,6 +5,8 @@ Immagini del sito nuovo (14/10/2026) che non escono da tools/prima-dopo né da t
   in WebP a più larghezze più un JPEG di riserva, SEMPRE intera (mai ritagliata);
 - il logo bianco (sopra i video) e il logo verde (testata) ad alta definizione, dal logo originale
   3138x641 del gestionale (fatture_Cloud/assets);
+- srv-antizanzare: la locandina della vecchia clip antizanzare (tolta dal sito il 14/10/2026), ripresa dalla
+  storia git (commit 56579bf) e usata come foto del servizio «Impianto antizanzare»;
 - le locandine piccole (540 px) dei video verticali, per la striscia dei cantieri (il video resta 1080);
 - l'immagine di anteprima per WhatsApp e social (og-astra-gardens.jpg, 1200x675 = 16:9, il fotogramma
   intero, senza ritagli): un fotogramma del video dei fiori con il logo bianco in alto al centro.
@@ -83,6 +85,17 @@ def anteprima(alfa):
     print("  og-astra-gardens.jpg 1200x675")
 
 
+def da_storia_git(commit, percorso, nome, larghezze):
+    """Una foto tolta dal sito ma ancora nella storia git: la si riprende senza toccare l'albero di lavoro."""
+    import io
+    dati = subprocess.run(["git", "-C", SITO, "show", "%s:%s" % (commit, percorso)], check=True, capture_output=True).stdout
+    tmp = os.path.join(tempfile.mkdtemp(prefix="astra-git-"), "foto.jpg")
+    Image.open(io.BytesIO(dati)).convert("RGB").save(tmp, "JPEG", quality=95)
+    varianti(tmp, nome, larghezze)
+    os.remove(tmp)
+    os.rmdir(os.path.dirname(tmp))
+
+
 def locandine_piccole():
     for nome in ("verticale-fiori", "giardino-piscina-1", "giardino-piscina-2"):
         src = os.path.join(SITO, "assets", "video", nome + "-poster.jpg")
@@ -97,3 +110,4 @@ if __name__ == "__main__":
     alfa = loghi()
     anteprima(alfa)
     locandine_piccole()
+    da_storia_git("56579bf", "assets/video/clip/antizanzare-poster.jpg", "srv-antizanzare", (360, 720, 1080))

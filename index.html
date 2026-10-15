@@ -25,7 +25,7 @@
 <link rel="manifest" href="site.webmanifest">
 <link rel="preload" href="assets/fonts/dm-sans-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=20261015c">
+<link rel="stylesheet" href="assets/css/style.css?v=20261015d">
 <script>document.documentElement.className += " js";</script>
 </head>
 <body>
@@ -181,8 +181,8 @@
     <div class="contenitore servizi__griglia">
       <div class="servizi__testa rivela">
         <p class="pillola">Servizi</p>
-        <h2 id="titolo-servizi">Seguiamo il tuo giardino dalla prima visita a ogni stagione.</h2>
-        <p class="servizi__sotto">Un solo referente per progettare, realizzare e curare il tuo verde.</p>
+        <h2 id="titolo-servizi">Il tuo giardino dalla A alla Z, chiavi in mano.</h2>
+        <p class="servizi__sotto">Dal sopralluogo alla manutenzione, con la nostra squadra e gli artigiani di fiducia per ferro, opere edili e luci: ti consegniamo il giardino finito.</p>
       </div>
       <ol class="fisarmonica rivela" role="list" data-fisarmonica style="--ritardo: .1s">
         <li class="fisarmonica__voce aperta" id="servizio-sopralluogo">
@@ -230,12 +230,39 @@
             </div>
           </div>
         </li>
+        <li class="fisarmonica__voce" id="servizio-corten">
+          <h3><button class="fisarmonica__btn" type="button" id="srv-corten-btn" aria-expanded="false" aria-controls="srv-corten"><svg class="icona fisarmonica__icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg><span class="fisarmonica__titolo">Bordure in corten</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
+          <div class="fisarmonica__pannello" id="srv-corten" role="region" aria-labelledby="srv-corten-btn">
+            <div class="fisarmonica__interno">
+              <div class="fisarmonica__testo"><p>Bordure in acciaio corten su misura, fatte dai nostri fabbri di fiducia: linee nette tra prato, aiuole e ghiaia.</p></div>
+              <figure class="fisarmonica__foto"><picture style="--ratio: 720 / 900"><source type="image/webp" srcset="assets/img/srv-corten-360.webp 360w, assets/img/srv-corten-720.webp 720w" sizes="(min-width: 900px) 260px, calc(100vw - 74px)"><img src="assets/img/srv-corten-640.jpg" alt="Bordura circolare in corten saldata su misura intorno a un albero" width="720" height="900" loading="lazy" decoding="async" draggable="false"></picture></figure>
+            </div>
+          </div>
+        </li>
+        <li class="fisarmonica__voce" id="servizio-opere">
+          <h3><button class="fisarmonica__btn" type="button" id="srv-opere-btn" aria-expanded="false" aria-controls="srv-opere"><svg class="icona fisarmonica__icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg><span class="fisarmonica__titolo">Opere in ferro e lavori edili</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
+          <div class="fisarmonica__pannello" id="srv-opere" role="region" aria-labelledby="srv-opere-btn">
+            <div class="fisarmonica__interno">
+              <div class="fisarmonica__testo"><p>Recinzioni, cancelli, muretti, scalini e vialetti: con i nostri artigiani di fiducia portiamo a termine anche le opere intorno al verde.</p></div>
+              
+            </div>
+          </div>
+        </li>
         <li class="fisarmonica__voce" id="servizio-prati">
           <h3><button class="fisarmonica__btn" type="button" id="srv-prati-btn" aria-expanded="false" aria-controls="srv-prati"><svg class="icona fisarmonica__icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg><span class="fisarmonica__titolo">Prati in zolla</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
           <div class="fisarmonica__pannello" id="srv-prati" role="region" aria-labelledby="srv-prati-btn">
             <div class="fisarmonica__interno">
               <div class="fisarmonica__testo"><p>Terreno preparato e livellato, zolle posate con cura: un prato verde e uniforme.</p></div>
               <figure class="fisarmonica__foto"><picture style="--ratio: 720 / 900"><source type="image/webp" srcset="assets/img/srv-prato-360.webp 360w, assets/img/srv-prato-720.webp 720w" sizes="(min-width: 900px) 260px, calc(100vw - 74px)"><img src="assets/img/srv-prato-640.jpg" alt="Prato in zolla appena posato tra bossi e vialetti" width="720" height="900" loading="lazy" decoding="async" draggable="false"></picture></figure>
+            </div>
+          </div>
+        </li>
+        <li class="fisarmonica__voce" id="servizio-sintetico">
+          <h3><button class="fisarmonica__btn" type="button" id="srv-sintetico-btn" aria-expanded="false" aria-controls="srv-sintetico"><svg class="icona fisarmonica__icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg><span class="fisarmonica__titolo">Erba sintetica</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
+          <div class="fisarmonica__pannello" id="srv-sintetico" role="region" aria-labelledby="srv-sintetico-btn">
+            <div class="fisarmonica__interno">
+              <div class="fisarmonica__testo"><p>Posa di erba sintetica di qualità dove il prato vero fatica: terrazzi, zone d&#x27;ombra, bordi piscina.</p></div>
+              <figure class="fisarmonica__foto"><picture style="--ratio: 720 / 900"><source type="image/webp" srcset="assets/img/srv-sintetico-360.webp 360w, assets/img/srv-sintetico-720.webp 720w" sizes="(min-width: 900px) 260px, calc(100vw - 74px)"><img src="assets/img/srv-sintetico-640.jpg" alt="Prato sintetico con bordura in corten davanti a casa" width="720" height="900" loading="lazy" decoding="async" draggable="false"></picture></figure>
             </div>
           </div>
         </li>
@@ -254,6 +281,15 @@
             <div class="fisarmonica__interno">
               <div class="fisarmonica__testo"><p>Luci per vialetti, alberi e aiuole: il giardino si vive anche la sera.</p></div>
               
+            </div>
+          </div>
+        </li>
+        <li class="fisarmonica__voce" id="servizio-antizanzare">
+          <h3><button class="fisarmonica__btn" type="button" id="srv-antizanzare-btn" aria-expanded="false" aria-controls="srv-antizanzare"><svg class="icona fisarmonica__icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg><span class="fisarmonica__titolo">Impianto antizanzare</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
+          <div class="fisarmonica__pannello" id="srv-antizanzare" role="region" aria-labelledby="srv-antizanzare-btn">
+            <div class="fisarmonica__interno">
+              <div class="fisarmonica__testo"><p>Impianti a nebulizzazione per vivere il giardino la sera: progettati e installati da noi, con la manutenzione nel tempo.</p></div>
+              <figure class="fisarmonica__foto"><picture style="--ratio: 1080 / 1920"><source type="image/webp" srcset="assets/img/srv-antizanzare-360.webp 360w, assets/img/srv-antizanzare-720.webp 720w, assets/img/srv-antizanzare-1080.webp 1080w" sizes="(min-width: 900px) 260px, calc(100vw - 74px)"><img src="assets/img/srv-antizanzare-640.jpg" alt="Impianto antizanzare: la nebulizzazione lungo la siepe" width="1080" height="1920" loading="lazy" decoding="async" draggable="false"></picture></figure>
             </div>
           </div>
         </li>
@@ -450,7 +486,7 @@
     </div>
     <p class="piede__gigante" aria-hidden="true">Astra <br class="solo-tel">Gardens</p>
     <div class="piede__colonne">
-      <div><p class="piede__titoletto">Servizi</p><ul role="list"><li><a href="#servizio-manutenzione">Manutenzione</a></li><li><a href="#servizio-potature">Potature</a></li><li><a href="#servizio-abbattimenti">Abbattimenti</a></li><li><a href="#servizio-prati">Prati in zolla</a></li><li><a href="#servizio-irrigazione">Irrigazione</a></li></ul></div>
+      <div><p class="piede__titoletto">Servizi</p><ul role="list"><li><a href="#servizio-manutenzione">Manutenzione</a></li><li><a href="#servizio-realizzazione">Realizzazioni chiavi in mano</a></li><li><a href="#servizio-potature">Potature e abbattimenti</a></li><li><a href="#servizio-prati">Prati e irrigazione</a></li><li><a href="#servizio-antizanzare">Antizanzare</a></li></ul></div>
       <div><p class="piede__titoletto">Dove lavoriamo</p><ul role="list"><li>Sede a Flero</li><li>Brescia città</li><li>Tutta la provincia</li></ul></div>
       <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:+393341865764">334 186 5764</a></li><li><a href="mailto:astragiardini@gmail.com">astragiardini<wbr>@gmail.com</a></li></ul></div>
       <div><p class="piede__titoletto">Social</p><ul role="list"><li><a href="https://www.instagram.com/astra.gardens/" target="_blank" rel="noopener">Instagram</a></li><li><a href="https://www.facebook.com/profile.php?id=61587199321572" target="_blank" rel="noopener">Facebook</a></li><li><a href="https://www.google.com/maps?cid=2402155065646157496" target="_blank" rel="noopener">Google</a></li></ul></div>
@@ -482,7 +518,7 @@
  "@id": "https://astragardens.it/#azienda",
  "name": "Astra Gardens",
  "legalName": "Astra Gardens di Guizzardi Francesco",
- "description": "Giardinieri a Flero (BS), nati nel 2023 da un gruppo di diplomati e laureati in agraria e guidati da un perito agrario iscritto all'albo: progettiamo, realizziamo e curiamo giardini in tutta la provincia di Brescia, con sopralluogo, progetto e render, realizzazione e movimento terra, prati in zolla, irrigazione automatica, potature e tree climbing, abbattimenti controllati, cura degli ulivi, robot rasaerba e manutenzione.",
+ "description": "Giardinieri a Flero (BS), nati nel 2023 da un gruppo di diplomati e laureati in agraria e guidati da un perito agrario iscritto all'albo: progettiamo, realizziamo e curiamo giardini chiavi in mano in tutta la provincia di Brescia, dal sopralluogo con progetto, render e studio botanico alla realizzazione, con la nostra squadra e artigiani di fiducia: movimento terra, bordure in corten, opere in ferro e lavori edili, prati in zolla ed erba sintetica, irrigazione automatica, illuminazione, impianti antizanzare, arredo, potature e tree climbing, abbattimenti controllati, cura degli ulivi, robot rasaerba e manutenzione.",
  "url": "https://astragardens.it/",
  "logo": "https://astragardens.it/assets/img/logo-quadrato-512.png",
  "image": "https://astragardens.it/assets/img/og-astra-gardens.jpg",
@@ -516,9 +552,13 @@
   "Studio botanico",
   "Preventivo",
   "Realizzazione e movimento terra",
+  "Bordure in corten",
+  "Opere in ferro e lavori edili",
   "Prati in zolla",
+  "Erba sintetica",
   "Irrigazione automatica",
   "Illuminazione",
+  "Impianto antizanzare",
   "Arredo e complementi",
   "Potature e tree climbing",
   "Abbattimenti controllati",
@@ -574,8 +614,32 @@
     "@type": "Offer",
     "itemOffered": {
      "@type": "Service",
+     "name": "Bordure in corten",
+     "description": "Bordure in acciaio corten su misura, fatte dai nostri fabbri di fiducia: linee nette tra prato, aiuole e ghiaia."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Opere in ferro e lavori edili",
+     "description": "Recinzioni, cancelli, muretti, scalini e vialetti: con i nostri artigiani di fiducia portiamo a termine anche le opere intorno al verde."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
      "name": "Prati in zolla",
      "description": "Terreno preparato e livellato, zolle posate con cura: un prato verde e uniforme."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Erba sintetica",
+     "description": "Posa di erba sintetica di qualità dove il prato vero fatica: terrazzi, zone d'ombra, bordi piscina."
     }
    },
    {
@@ -592,6 +656,14 @@
      "@type": "Service",
      "name": "Illuminazione",
      "description": "Luci per vialetti, alberi e aiuole: il giardino si vive anche la sera."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Impianto antizanzare",
+     "description": "Impianti a nebulizzazione per vivere il giardino la sera: progettati e installati da noi, con la manutenzione nel tempo."
     }
    },
    {
@@ -646,6 +718,6 @@
  }
 }
 </script>
-<script src="assets/js/main.js?v=20261015c" defer></script>
+<script src="assets/js/main.js?v=20261015d" defer></script>
 </body>
 </html>
