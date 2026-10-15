@@ -287,6 +287,8 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
 .intro__griglia { display: flex; flex-direction: column; gap: 24px; }
 .intro__testo { display: flex; flex-direction: column; gap: 20px; }
 .intro h1 { font-size: clamp(56px, 7.8vw + 32px, 112px); line-height: .92; }
+/* schermi strettissimi: «Ci pensiamo» resta su una riga senza uscire dallo schermo */
+@media (max-width: 359.98px) { .intro h1 { font-size: 46px; } }
 .intro__lead { font-size: 17px; line-height: 1.55; }
 .intro__azioni { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
 .intro__nota { font-size: 13px; color: var(--grigio); }
