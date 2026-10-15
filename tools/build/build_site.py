@@ -88,7 +88,7 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261015l"
+VERSIONE = "20261015m"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 900px), (orientation: landscape)"
@@ -178,7 +178,6 @@ SPRITE = """<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.o
   <symbol id="i-foglia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19l7-7"/></g></symbol>
   <symbol id="i-freccia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></g></symbol>
   <symbol id="i-giu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12l7 7 7-7"/></symbol>
-  <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></symbol>
   <symbol id="i-dx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></symbol>
   <symbol id="i-sx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M5 5l14 14M19 5L5 19"/></symbol>
@@ -214,6 +213,7 @@ GALLERIA = [
     ("video", "giardino-piscina-2", "Giardino con piscina, agavi e ulivi"),
     ("foto", "lav-ulivi-rose", "Ulivi, rose e un prato curato"),
     ("foto", "lav-corten-ghiaia", "Bordura in corten tra ghiaia, piante e prato"),
+    ("foto", "lav-aiuola-ghiaia", "Aiuola minerale: graminacee, echinacee e rosmarino strisciante su ghiaia bianca con il bordo in tufo"),
     ("video", "fico-verbene-verticale", "Giovane fico tra verbene e graminacee"),
     ("foto", "foto-furgone", "Il furgone Astra Gardens in un giardino con piscina curato da noi"),
     ("video", "giardino-piscina-1", "Giardino con piscina e vista sulle colline"),
@@ -285,6 +285,9 @@ SERVIZI = [
 ]
 
 PROGETTI = [
+    ("lav-aiuola-ghiaia", "Aiuola minerale",
+     "Graminacee, echinacee e rosmarino strisciante su ghiaia bianca, con il bordo in tufo: colore per tutta l'estate, pensata per il sole pieno.",
+     "Aiuola su ghiaia bianca con graminacee, echinacee, rosmarino strisciante e bordo in tufo"),
     ("foto-furgone", "Vista sulle colline",
      "Un giardino con piscina che si apre sul paesaggio: prato, graminacee e bordure curate per valorizzare la vista.",
      "Giardino con piscina, prato e graminacee affacciato sulle colline, con il furgone Astra Gardens"),
@@ -552,16 +555,10 @@ def galleria():
             else:
                 w, h = misura_video(nome)
                 larga = w > h
-                if larga:
-                    # video orizzontali (pesanti): nella striscia solo la locandina con il segno «play»,
-                    # il video si scarica e parte solo nella finestra a schermo intero
-                    b = "assets/video/" + nome
-                    media = ('<span class="locandina" style="--ratio: %d / %d"><picture><source type="image/webp" srcset="%s" sizes="(min-width: 900px) %dpx, 88vw">'
-                             '<img src="%s-poster.jpg" alt="%s" width="%d" height="%d" loading="lazy" decoding="async" draggable="false"></picture>'
-                             '<span class="locandina__play" aria-hidden="true">%s</span></span>'
-                             % (w, h, poster_srcset(nome), round(hp * w / h), b, e(alt), w, h, icona("i-play")))
-                else:
-                    media = video_box(nome, alt, "(min-width: 900px) %dpx, %dpx" % (round(hp * w / h), round(ht * w / h)), tag="span")
+                # tutti i video della striscia partono da soli quando entrano nello schermo, anche gli
+                # orizzontali (Francesco 15/10/2026 21:51); sul telefono le versioni leggere NOME-tel.mp4
+                media = video_box(nome, alt, ("(min-width: 900px) %dpx, 88vw" % round(hp * w / h)) if larga else
+                                  "(min-width: 900px) %dpx, %dpx" % (round(hp * w / h), round(ht * w / h)), tag="span")
                 dati = 'data-media="video" data-src="assets/video/%s.mp4"%s data-poster="assets/video/%s-poster.jpg" data-w="%d" data-h="%d"' % (
                     nome, (' data-src-tel="%s"' % tel(nome)) if tel(nome) else "", nome, w, h)
                 etichetta = "Apri il video: " + alt
@@ -678,7 +675,8 @@ def confronto(oggi, progetto, alt_oggi, alt_progetto, titolo, sx, dx, nota, size
     a, b = MAN[oggi], MAN[progetto]
     if (a["w"], a["h"]) != (b["w"], b["h"]):
         raise SystemExit("confronto con misure diverse: %s %dx%d, %s %dx%d" % (oggi, a["w"], a["h"], progetto, b["w"], b["h"]))
-    return """      <figure class="confronto-box rivela" style="--ratio: %d / %d">
+    vero = "foto vere" in nota
+    return """      <figure class="confronto-box rivela%s" style="--ratio: %d / %d">
         <div class="confronto" data-confronto data-dx="%s">
           %s
           <div class="confronto__dopo">%s</div>
@@ -688,13 +686,19 @@ def confronto(oggi, progetto, alt_oggi, alt_progetto, titolo, sx, dx, nota, size
           <span class="confronto__etichetta confronto__etichetta--dx" aria-hidden="true">%s</span>
         </div>
         <figcaption><span class="confronto__titolo">%s</span>%s<span class="confronto__nota">%s</span>%s</figcaption>
-      </figure>""" % (a["w"], a["h"], e(dx), picture(oggi, alt_oggi, sizes), picture(progetto, alt_progetto, sizes),
+      </figure>""" % (" confronto-box--vero" if vero else "", a["w"], a["h"], e(dx), picture(oggi, alt_oggi, sizes), picture(progetto, alt_progetto, sizes),
                        e(titolo), e(dx.lower()), icona("i-cursore", "icona icona--cursore"), e(sx), e(dx), e(titolo),
                        ('<span class="confronto__didascalia">%s</span>' % e(didascalia)) if didascalia else "", e(nota),
                        '<span class="avviso-render">%s</span>' % e(AVVISO_RENDER) if "render" in nota else "")
 
 
 CONFRONTI = [
+    ("lavoro2-prima", "lavoro2-dopo",
+     "Prima: prato secco e spelacchiato, una vecchia siepe di fotinia cresciuta a dismisura e l'albero da frutto al centro",
+     "Dopo: prato nuovo in zolla, bordura in acciaio corten e un'aiuola pacciamata con una siepe giovane lungo la recinzione",
+     "Un giardino rinato", "Prima", "Dopo", "Lavoro realizzato · foto vere",
+     "Prato nuovo in zolla, bordura in acciaio corten e una siepe giovane al posto di quella vecchia: lo stesso spazio, "
+     "finalmente da vivere."),
     ("lavoro-prima", "lavoro-dopo", "Prima: un grande fico piegato sul giardino, terra spoglia e oggetti accatastati dietro la recinzione",
      "Dopo: aiuola pacciamata con nuove piante, prato e recinzione in ordine",
      "Un giardino trasformato", "Prima", "Dopo", "Lavoro realizzato · foto vere"),
@@ -719,10 +723,13 @@ CONFRONTI = [
 
 
 def prima_dopo():
-    """Sul computer i confronti stanno in fila alla stessa altezza (colonne proporzionali): i primi tre in una
-    riga, i due progetti nuovi nella riga sotto. Sul telefono uno sotto l'altro, larghi quanto lo schermo."""
+    """Prima i LAVORI VERI (foto prima e dopo), poi i progetti con il render. Sul computer i confronti stanno
+    in fila alla stessa altezza (colonne proporzionali), due per riga; sul telefono uno sotto l'altro."""
+    veri = [c for c in CONFRONTI if "foto vere" in c[7]]
+    render = [c for c in CONFRONTI if "foto vere" not in c[7]]
+    gruppi = [veri] + [render[k:k + 2] for k in range(0, len(render), 2)]
     righe = []
-    for gruppo in (CONFRONTI[:3], CONFRONTI[3:]):
+    for gruppo in gruppi:
         if not gruppo:
             continue
         tot = sum(proporzione(c[0]) for c in gruppo)
@@ -730,7 +737,7 @@ def prima_dopo():
         figure = []
         for c in gruppo:
             quota = proporzione(c[0]) / tot
-            sizes = "(min-width: 1000px) %dpx, (min-width: 600px) 80vw, calc(100vw - 40px)" % round(1200 * quota)
+            sizes = "(min-width: 1000px) %dpx, (min-width: 600px) 80vw, calc(100vw - 40px)" % round(1100 * quota)
             figure.append(confronto(*c[:8], sizes=sizes, didascalia=c[8] if len(c) > 8 else ""))
         righe.append('    <div class="contenitore confronti" style="--colonne: %s">\n%s\n    </div>' % (colonne, "\n".join(figure)))
     return """  <section class="primadopo sezione--chiara" id="prima-e-dopo" aria-labelledby="titolo-primadopo">

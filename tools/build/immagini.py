@@ -121,6 +121,24 @@ NITIDE = [
 ]
 
 
+# Ritagli AUTORIZZATI da Francesco (15/10/2026, «foto tagliate bene»): si tolgono il piede di un operaio sul
+# bordo sinistro e il programmatore nero dell'irrigazione in basso a destra; resta l'aiuola (4:5).
+RITAGLI = [
+    ("lav-aiuola-ghiaia", "nuove_foto_15ott/aiuola-ghiaia.jpg", (345, 880, 1449, 2260), (400, 560, 800, 1104)),
+]
+
+
+def ritagli():
+    from PIL import ImageOps
+    for nome, rel, box, larghezze in RITAGLI:
+        im = ImageOps.exif_transpose(Image.open(os.path.join(MEDIA, rel))).convert("RGB").crop(box)
+        tmp = os.path.join(tempfile.mkdtemp(prefix="astra-ritaglio-"), "foto.jpg")
+        im.save(tmp, "JPEG", quality=95)
+        varianti(tmp, nome, larghezze)
+        os.remove(tmp)
+        os.rmdir(os.path.dirname(tmp))
+
+
 def nitide():
     from PIL import ImageOps
     for nome, rel, larghezze in NITIDE:
@@ -140,3 +158,4 @@ if __name__ == "__main__":
     locandine_piccole()
     da_storia_git("56579bf", "assets/video/clip/antizanzare-poster.jpg", "srv-antizanzare", (360, 720, 1080))
     nitide()
+    ritagli()

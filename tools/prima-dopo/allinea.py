@@ -13,6 +13,9 @@ Uso (OpenCV in un ambiente temporaneo FUORI dal repo, niente pip di sistema):
 
 Il file .json descrive il lavoro (vedi lavoro-01.json):
   "prima", "dopo"   foto sorgente, relative a MEDIA (~/Documents/AstraMarketing, o ASTRA_MEDIA)
+  "omografia"       (facoltativa) matrice 3x3 PRIMA -> DOPO già calcolata: si usa al posto dei "punti"
+                    (lavoro-02: foto da posizioni diverse, adattata a minimi quadrati robusti su punti
+                    lontani e vicini più il bordo del sentiero; i punti restano nel file come documento)
   "punti"           almeno 4 coppie [x_prima, y_prima, x_dopo, y_dopo] su elementi FISSI e sullo
                     stesso piano (es. cima e base dei due pali della recinzione): danno l'omografia
                     che porta il PRIMA nella prospettiva del DOPO
@@ -98,10 +101,13 @@ def main():
 
     # 1) omografia dai punti fissi (PRIMA -> DOPO), poi la sua inversa per campionare
     pts = np.float32(cfg["punti"])
-    H, _ = cv2.findHomography(pts[:, :2], pts[:, 2:], 0)
+    if cfg.get("omografia"):
+        H = np.array(cfg["omografia"], float)
+    else:
+        H, _ = cv2.findHomography(pts[:, :2], pts[:, 2:], 0)
     Hi = np.linalg.inv(H)
     res = np.hypot(*(applica(H, pts[:, :2]) - pts[:, 2:]).T)
-    print("omografia: residuo sui punti (px) max %.1f" % res.max())
+    print("omografia: residuo sui punti (px) medio %.1f, max %.1f" % (res.mean(), res.max()))
 
     # 2) correzione del terreno lungo i bordi indicati
     gx, gy = np.meshgrid(np.arange(x0, x1, dtype=np.float64), np.arange(y0, y1, dtype=np.float64))

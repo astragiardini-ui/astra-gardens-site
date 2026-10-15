@@ -1,0 +1,83 @@
+{
+ "_nota": "Giardino rinato (foto di Francesco, 15/10/2026): PRIMA orizzontale 2016x1512, DOPO verticale 1512x2016, scattate da punti diversi. SIFT non regge (6 punti buoni su 14). Omografia a minimi quadrati robusti (soft L1) su punti lontani (punta del cipresso, lampione, spigoli della casa bianca), di mezzo (base dell'albero da frutto e dell'ulivo, lampada a muro, quasi scartata) e vicini (angolo del sentiero) più il bordo del sentiero come linea. Residui: albero 5 px, ulivo 0,4, angolo sentiero 4, bordo sentiero 16 medio, casa 15-19, cipresso 26 (parallasse dello sfondo, accettata). Il ritaglio è il rettangolo più grande dove le due foto ci sono entrambe: 61% del DOPO, 37% del PRIMA (la siepe vecchia a destra del PRIMA è fuori dall'inquadratura del DOPO).",
+ "prima": "prima_dopo/giardino-rinato-prima.jpg",
+ "dopo": "prima_dopo/giardino-rinato-dopo.jpg",
+ "omografia": [
+  [
+   0.33811163,
+   -0.270253074,
+   380.706704733
+  ],
+  [
+   -0.275165469,
+   0.561046552,
+   309.000463157
+  ],
+  [
+   -0.000358732,
+   -0.000174604,
+   1.0
+  ]
+ ],
+ "punti": [
+  [
+   967,
+   280,
+   1044,
+   305
+  ],
+  [
+   760,
+   435,
+   798,
+   537
+  ],
+  [
+   445,
+   552,
+   516,
+   682
+  ],
+  [
+   530,
+   542,
+   579,
+   672
+  ],
+  [
+   735,
+   785,
+   700,
+   910
+  ],
+  [
+   112,
+   775,
+   254,
+   865
+  ],
+  [
+   200,
+   806,
+   289,
+   895
+  ]
+ ],
+ "_punti": "punta del cipresso, lampione, casa bianca spigolo sinistro e destro, base dell'albero da frutto, base dell'ulivo, angolo del sentiero",
+ "ritaglio": [
+  383,
+  308,
+  1512,
+  1947
+ ],
+ "tono": 0,
+ "uscita": {
+  "prima": "lavoro2-prima",
+  "dopo": "lavoro2-dopo",
+  "larghezze": [
+   640,
+   900,
+   1129
+  ]
+ }
+}
