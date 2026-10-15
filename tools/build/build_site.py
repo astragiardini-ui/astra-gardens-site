@@ -77,17 +77,16 @@ GOOGLE = "https://www.google.com/maps?cid=2402155065646157496"
 PIVA = "04489190985"
 REA = "BS-618970"
 PEC = "astra.gardens@pec.it"
-# Sede: da mostrare (Francesco 15/10/2026, «fai in modo che le persone possano raggiungermi con l'indirizzo»).
-# Solo un link a Google Maps, mai una mappa incorporata: zero richieste a terzi e zero cookie.
+# Sede: SOLO dove lo chiede la legge, cioe' la riga legale in fondo a ogni pagina e la privacy (Francesco
+# 15/10/2026 10:34: la sede non e' ancora pronta per ricevere, niente indicazioni ne' indirizzo in vista).
+# Nessun link a Google Maps, nessuna via nei dati strutturati, finche' Francesco non dice che la sede e' pronta.
 INDIRIZZO = "Via Passere 2, 25020 Flero (BS)"
-INDICAZIONI = "https://www.google.com/maps/dir/?api=1&destination=Via+Passere+2%2C+25020+Flero+BS"
-GEO = (45.4911464, 10.1800140)  # Onzato di Flero, da OpenStreetMap
 # Denominazione nell'ordine del registro VIES (verifica legale del 14/10/2026)
 DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261015b"
+VERSIONE = "20261015c"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 700px), (orientation: landscape)"
@@ -161,7 +160,6 @@ SPRITE = """<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.o
   <symbol id="i-tel" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
   <symbol id="i-foglia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19l7-7"/></g></symbol>
   <symbol id="i-freccia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></g></symbol>
-  <symbol id="i-luogo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></g></symbol>
   <symbol id="i-giu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12l7 7 7-7"/></symbol>
   <symbol id="i-dx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></symbol>
   <symbol id="i-sx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
@@ -298,11 +296,9 @@ def jsonld():
         "vatID": "IT" + PIVA,
         "foundingDate": "2023",
         "founder": {"@type": "Person", "name": "Francesco Guizzardi"},
-        "address": {"@type": "PostalAddress", "streetAddress": "Via Passere 2", "postalCode": "25020",
-                    "addressLocality": "Flero", "addressRegion": "BS", "addressCountry": "IT"},
-        "geo": {"@type": "GeoCoordinates", "latitude": GEO[0], "longitude": GEO[1]},
+        "address": {"@type": "PostalAddress", "postalCode": "25020", "addressLocality": "Flero",
+                    "addressRegion": "BS", "addressCountry": "IT"},
         "areaServed": {"@type": "AdministrativeArea", "name": "Provincia di Brescia"},
-        "hasMap": INDICAZIONI,
         "sameAs": [IG, FB, GOOGLE],
         "knowsAbout": [s[1] for s in SERVIZI],
         "hasOfferCatalog": {
@@ -353,7 +349,7 @@ def testa(titolo, descrizione, percorso, extra=""):
 
 MENU_VOCI = [("cantieri", "Dai nostri cantieri"), ("chi-siamo", "Chi siamo"), ("servizi", "Servizi"),
              ("lavori", "I nostri lavori"), ("prima-e-dopo", "Prima e dopo"), ("zone", "Dove lavoriamo"),
-             ("dove-siamo", "Dove siamo"), ("contatti", "Contatti")]
+             ("contatti", "Contatti")]
 
 
 def testata(home=True):
@@ -408,7 +404,7 @@ def piede(home=True):
     <div class="piede__colonne">
       <div><p class="piede__titoletto">Servizi</p><ul role="list">%(servizi)s</ul></div>
       <div><p class="piede__titoletto">Dove lavoriamo</p><ul role="list"><li>Sede a Flero</li><li>Brescia città</li><li>Tutta la provincia</li></ul></div>
-      <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:%(tel)s">%(tel_breve)s</a></li><li><a href="mailto:%(email)s">%(email_capo)s</a></li><li class="piede__indirizzo"><a href="%(indicazioni)s" target="_blank" rel="noopener"><span class="intero">Via Passere 2,</span> <span class="intero">25020 Flero (BS)</span></a> <span class="intero">(su appuntamento)</span></li></ul></div>
+      <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:%(tel)s">%(tel_breve)s</a></li><li><a href="mailto:%(email)s">%(email_capo)s</a></li></ul></div>
       <div><p class="piede__titoletto">Social</p><ul role="list"><li><a href="%(ig)s" target="_blank" rel="noopener">Instagram</a></li><li><a href="%(fb)s" target="_blank" rel="noopener">Facebook</a></li><li><a href="%(google)s" target="_blank" rel="noopener">Google</a></li></ul></div>
     </div>
     <div class="piede__legale">
@@ -418,8 +414,7 @@ def piede(home=True):
   </div>
 </footer>
 """ % {"wa": WA_GENERALE, "tel": TEL_LINK, "tel_breve": TEL_BREVE, "servizi": lista_servizi, "email": EMAIL,
-       "email_capo": EMAIL.replace("@", "<wbr>@"), "ig": IG, "fb": FB, "google": GOOGLE, "legale": riga_legale("privacy.html"),
-       "indicazioni": e(INDICAZIONI)}
+       "email_capo": EMAIL.replace("@", "<wbr>@"), "ig": IG, "fb": FB, "google": GOOGLE, "legale": riga_legale("privacy.html")}
 
 
 def riga_legale(privacy_href):
@@ -693,12 +688,7 @@ def zona():
       <div class="zona__corpo rivela" style="--ritardo: .15s">
         <p>Raccontaci il tuo giardino con una foto su WhatsApp: ti rispondiamo con un'idea e fissiamo un sopralluogo.</p>
         <a class="link-freccia" href="%(wa)s" target="_blank" rel="noopener">Scrivici su WhatsApp%(icfreccia)s</a>
-        <div class="zona__dove" id="dove-siamo">
-          <span class="zona__pin">%(icluogo)s</span>
-          <p class="zona__via">Ci trovi in <span class="intero">Via Passere 2,</span> <span class="intero">25020 Flero (BS)</span></p>
-          <p class="zona__appuntamento">Riceviamo in sede solo su appuntamento: scrivici prima su WhatsApp.</p>
-          <a class="btn btn--vuoto zona__indicazioni" href="%(indicazioni)s" target="_blank" rel="noopener">Indicazioni%(icfreccia)s</a>
-        </div>
+        <p class="zona__appuntamento">Riceviamo solo su appuntamento: scrivici su WhatsApp e fissiamo un sopralluogo.</p>
       </div>
     </div>
     <div class="nastro" aria-hidden="true" style="--h-tel: %(ht)dpx; --h-pc: %(hp)dpx">
@@ -708,7 +698,6 @@ def zona():
     </div>
   </section>
 """ % {"wa": wa("vi mando una foto del mio giardino."), "icfreccia": icona("i-freccia"),
-       "icluogo": icona("i-luogo"), "indicazioni": e(INDICAZIONI),
        "foto": "\n".join(foto), "ht": ht, "hp": hp}
 
 
