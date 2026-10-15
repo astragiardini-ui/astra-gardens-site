@@ -25,7 +25,7 @@
 <link rel="manifest" href="site.webmanifest">
 <link rel="preload" href="assets/fonts/dm-sans-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=20261014c">
+<link rel="stylesheet" href="assets/css/style.css?v=20261015a">
 <script>document.documentElement.className += " js";</script>
 </head>
 <body>
@@ -34,6 +34,7 @@
   <symbol id="i-tel" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
   <symbol id="i-foglia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19l7-7"/></g></symbol>
   <symbol id="i-freccia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></g></symbol>
+  <symbol id="i-luogo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></g></symbol>
   <symbol id="i-dx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></symbol>
   <symbol id="i-sx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M5 5l14 14M19 5L5 19"/></symbol>
@@ -66,6 +67,7 @@
       <li><a href="#lavori">I nostri lavori</a></li>
       <li><a href="#prima-e-dopo">Prima e dopo</a></li>
       <li><a href="#zone">Dove lavoriamo</a></li>
+      <li><a href="#dove-siamo">Dove siamo</a></li>
       <li><a href="#contatti">Contatti</a></li>
     </ul>
   </nav>
@@ -373,6 +375,11 @@
       <div class="zona__corpo rivela" style="--ritardo: .15s">
         <p>Raccontaci il tuo giardino con una foto su WhatsApp: ti rispondiamo con un'idea e fissiamo un sopralluogo.</p>
         <a class="link-freccia" href="https://wa.me/393341865764?text=Buongiorno%2C%20vi%20scrivo%20dal%20sito%20Astra%20Gardens%3A%20vi%20mando%20una%20foto%20del%20mio%20giardino." target="_blank" rel="noopener">Scrivici su WhatsApp<svg class="icona" aria-hidden="true" focusable="false"><use href="#i-freccia" xlink:href="#i-freccia"></use></svg></a>
+        <div class="zona__dove" id="dove-siamo">
+          <span class="zona__pin"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-luogo" xlink:href="#i-luogo"></use></svg></span>
+          <p class="zona__via">Ci trovi in <span class="intero">Via Passere 2,</span> <span class="intero">25020 Flero (BS)</span></p>
+          <a class="btn btn--vuoto zona__indicazioni" href="https://www.google.com/maps/dir/?api=1&amp;destination=Via+Passere+2%2C+25020+Flero+BS" target="_blank" rel="noopener">Indicazioni<svg class="icona" aria-hidden="true" focusable="false"><use href="#i-freccia" xlink:href="#i-freccia"></use></svg></a>
+        </div>
       </div>
     </div>
     <div class="nastro" aria-hidden="true" style="--h-tel: 200px; --h-pc: 300px">
@@ -412,12 +419,12 @@
     <div class="piede__colonne">
       <div><p class="piede__titoletto">Servizi</p><ul role="list"><li><a href="#servizio-manutenzione">Manutenzione</a></li><li><a href="#servizio-potature">Potature</a></li><li><a href="#servizio-abbattimenti">Abbattimenti</a></li><li><a href="#servizio-prati">Prati in zolla</a></li><li><a href="#servizio-irrigazione">Irrigazione</a></li></ul></div>
       <div><p class="piede__titoletto">Dove lavoriamo</p><ul role="list"><li>Sede a Flero</li><li>Brescia città</li><li>Tutta la provincia</li></ul></div>
-      <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:+393341865764">334 186 5764</a></li><li><a href="mailto:astragiardini@gmail.com">astragiardini<wbr>@gmail.com</a></li></ul></div>
+      <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:+393341865764">334 186 5764</a></li><li><a href="mailto:astragiardini@gmail.com">astragiardini<wbr>@gmail.com</a></li><li class="piede__indirizzo"><a href="https://www.google.com/maps/dir/?api=1&amp;destination=Via+Passere+2%2C+25020+Flero+BS" target="_blank" rel="noopener"><span class="intero">Via Passere 2,</span> <span class="intero">25020 Flero (BS)</span></a></li></ul></div>
       <div><p class="piede__titoletto">Social</p><ul role="list"><li><a href="https://www.instagram.com/astra.gardens/" target="_blank" rel="noopener">Instagram</a></li><li><a href="https://www.facebook.com/profile.php?id=61587199321572" target="_blank" rel="noopener">Facebook</a></li><li><a href="https://www.google.com/maps?cid=2402155065646157496" target="_blank" rel="noopener">Google</a></li></ul></div>
     </div>
     <div class="piede__legale">
       <picture><source type="image/webp" srcset="assets/img/logo-bianco-640.webp"><img src="assets/img/logo-bianco-640.png" alt="Astra Gardens" width="640" height="131" loading="lazy"></picture>
-      <p><span class="intero">Astra Gardens di Guizzardi Francesco ·</span> <span class="intero">P.IVA 04489190985 ·</span> <span class="intero">REA BS-618970 ·</span> <a class="intero" href="privacy.html">Privacy</a></p>
+      <p><span class="intero">Astra Gardens di Guizzardi Francesco ·</span> <span class="intero">Via Passere 2, 25020 Flero (BS) ·</span> <span class="intero">P.IVA 04489190985 ·</span> <span class="intero">REA BS-618970 ·</span> <a class="intero" href="privacy.html">Privacy</a></p>
     </div>
   </div>
 </footer>
@@ -456,16 +463,22 @@
  },
  "address": {
   "@type": "PostalAddress",
-  "addressLocality": "Flero",
+  "streetAddress": "Via Passere 2",
   "postalCode": "25020",
+  "addressLocality": "Flero",
   "addressRegion": "BS",
   "addressCountry": "IT"
+ },
+ "geo": {
+  "@type": "GeoCoordinates",
+  "latitude": 45.4911464,
+  "longitude": 10.180014
  },
  "areaServed": {
   "@type": "AdministrativeArea",
   "name": "Provincia di Brescia"
  },
- "hasMap": "https://www.google.com/maps?cid=2402155065646157496",
+ "hasMap": "https://www.google.com/maps/dir/?api=1&destination=Via+Passere+2%2C+25020+Flero+BS",
  "sameAs": [
   "https://www.instagram.com/astra.gardens/",
   "https://www.facebook.com/profile.php?id=61587199321572",
@@ -571,6 +584,6 @@
  }
 }
 </script>
-<script src="assets/js/main.js?v=20261014c" defer></script>
+<script src="assets/js/main.js?v=20261015a" defer></script>
 </body>
 </html>

@@ -471,6 +471,24 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 .zona h2 { line-height: 1.02; }
 .zona__corpo { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
 .zona__corpo p { font-size: 15px; line-height: 1.6; color: var(--grigio); }
+/* dove siamo: indirizzo della sede e link alle indicazioni (nessuna mappa incorporata) */
+.zona__dove {
+  width: 100%; margin-top: 10px; padding-top: 20px; border-top: 1px solid var(--linea);
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 14px 14px;
+}
+.zona__pin {
+  width: 44px; height: 44px; border-radius: 50%; background: var(--salvia); color: var(--verde);
+  display: flex; align-items: center; justify-content: center;
+}
+.zona__pin .icona { width: 22px; height: 22px; }
+.zona__corpo .zona__via { font-family: var(--serif); font-size: 26px; line-height: 1.12; color: var(--inchiostro); }
+.zona__indicazioni { grid-column: 1 / -1; justify-self: start; min-height: 50px; padding: 0 22px; }
+.zona__indicazioni .icona { width: 16px; height: 16px; }
+.piede__indirizzo { margin-top: 4px; line-height: 1.5; }
+@media (min-width: 900px) {
+  .zona__dove { margin-top: 14px; padding-top: 24px; }
+  .zona__corpo .zona__via { font-size: 30px; }
+}
 .nastro { overflow: hidden; padding-bottom: 56px; }
 .nastro__binario { display: flex; width: max-content; animation: scorri 38s linear infinite; }
 .nastro li { flex: none; height: var(--h-tel); aspect-ratio: var(--ratio); margin-right: 10px; }
