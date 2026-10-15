@@ -274,6 +274,19 @@ def clip(cfg, solo=None):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def espressione_pan(pan, w, cw):
+    """x del ritaglio (in pixel) che segue il soggetto: tra un punto chiave e il successivo il centro si sposta
+    con una curva morbida (smoothstep), cosi' la panoramica parte e si ferma senza scatti.
+    pan = [[secondo, centro come frazione della larghezza], ...]."""
+    def tratto(a, xa, b, xb):
+        u = "clip((t-%.3f)/%.3f,0,1)" % (a, b - a)
+        return "%.4f+(%.4f)*%s*%s*(3-2*%s)" % (xa, xb - xa, u, u, u)
+    expr = "%.4f" % pan[-1][1]
+    for (a, xa), (b, xb) in reversed(list(zip(pan[:-1], pan[1:]))):
+        expr = "if(lt(t,%.3f),%s,%s)" % (b, tratto(a, xa, b, xb), expr)
+    return "clip((%s)*%d-%d,0,%d)" % (expr, w, cw // 2, w - cw)
+
+
 def hd(cfg, solo=None):
     """Video HD del sito ("hd" in video.json). I file "copia" sono già l'uscita finale (H.264 SDR,
     faststart): si copiano senza ricodificarli. I file "rendi" si portano alla larghezza chiesta partendo
@@ -315,8 +328,18 @@ def hd(cfg, solo=None):
         if ow > w:
             raise SystemExit("%s: %d px chiesti ma il master è largo %d: niente ingrandimenti" % (v["nome"], ow, w))
         out = os.path.join(cartella, v["nome"] + ".mp4")
+        filtro_v = "scale=%d:%d:flags=lanczos,setsar=1,format=yuv420p" % (ow, oh)
+        if v.get("ritaglio_verticale"):
+            # UNICO ritaglio voluto del sito (Francesco 15/10/2026, «taglialo se serve per il telefono»):
+            # finestra 9:16 alta quanto il fotogramma, che segue il soggetto con una panoramica lenta
+            cw = round(h * 9 / 16) // 2 * 2
+            oh = ow * 16 // 9 // 2 * 2
+            if ow > cw:
+                raise SystemExit("%s: la finestra larga %d px verrebbe ingrandita a %d" % (v["nome"], cw, ow))
+            filtro_v = ("crop=%d:%d:'%s':0,scale=%d:%d:flags=lanczos,setsar=1,format=yuv420p"
+                        % (cw, h, espressione_pan(v["ritaglio_verticale"]["pan"], w, cw), ow, oh))
         esegui(["ffmpeg", "-v", "error", "-y", "-i", src, "-an", "-map_metadata", "-1", "-map_chapters", "-1",
-                "-vf", "scale=%d:%d:flags=lanczos,setsar=1,format=yuv420p" % (ow, oh),
+                "-vf", filtro_v,
                 "-c:v", "libx264", "-profile:v", "high", "-preset", v["preset"], "-crf", str(v["crf"]),
                 "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
                 "-color_range", "tv", "-movflags", "+faststart", out])

@@ -211,17 +211,21 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 .hero__schermo { position: relative; aspect-ratio: var(--ratio-tel); background: var(--verde); overflow: hidden; }
 .hero__poster, .hero__poster img, .hero__v { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .hero__poster img, .hero__v { object-fit: contain; }
-.hero__v { opacity: 0; transition: opacity 1.4s ease; }
+.hero__v { opacity: 0; transition: opacity .5s ease; }
 .hero__v.attivo { opacity: 1; }
 .hero__v[data-set="pc"] { display: none; }
 .hero__marchio {
-  position: absolute; left: 0; right: 0; top: 18px; z-index: 2; display: flex; flex-direction: column; align-items: center;
+  position: absolute; left: 0; right: 0; top: 18px; z-index: 2; isolation: isolate; display: flex; flex-direction: column; align-items: center;
   gap: 10px; padding: 0 16px; pointer-events: none; text-align: center;
 }
 .hero__marchio > * { animation: entra 1.2s .3s var(--curva) both; }
-.hero__marchio { transition: opacity .8s ease; }
-/* video con il soggetto in alto (fronde, facciata): logo e scritte si fanno da parte finché è in onda */
-.hero__schermo.senza-testo .hero__marchio { opacity: 0; }
+/* logo e pillola restano SEMPRE in vista (Francesco 15/10/2026): con il giro ogni 2 secondi niente dissolvenze.
+   Dietro, un'ombra radiale leggerissima solo sotto le scritte (niente fasce) per leggerle anche su fiori e facciate */
+.hero__marchio::before {
+  content: ""; position: absolute; left: 50%; top: -24px; z-index: -1; width: min(560px, 120%); height: calc(100% + 56px);
+  transform: translateX(-50%); background: radial-gradient(closest-side, rgba(0, 0, 0, .26), rgba(0, 0, 0, .12) 55%, rgba(0, 0, 0, 0));
+  pointer-events: none;
+}
 .hero__marchio img { width: 176px; height: auto; filter: drop-shadow(0 1px 8px rgba(0, 0, 0, .55)); }
 /* «Progettazione • Realizzazione • Manutenzione» e la frase sotto: niente fasce scure, solo l'ombra morbida del logo */
 .hero__pillola {
@@ -247,12 +251,13 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 .hero__punto:focus-visible { outline-color: #fff; outline-offset: -2px; border-radius: 50%; }
 @media (min-width: 900px) and (min-aspect-ratio: 1 / 1) {
   .hero__sottotitolo { display: block; font-size: clamp(15px, 1.15vw, 18px); }
+  /* sul computer la frase passa anche su cieli chiari e chiome fitte: ombra un po' più piena, sempre senza fasce */
+  .hero__marchio::before { width: min(820px, 110%); background: radial-gradient(closest-side, rgba(0, 0, 0, .36), rgba(0, 0, 0, .18) 60%, rgba(0, 0, 0, 0)); }
 }
 @keyframes dondola { 0%, 100% { transform: none; } 50% { transform: translateY(4px); } }
 @keyframes entra { from { opacity: 0; transform: translateY(-12px) scale(.98); } to { opacity: 1; transform: none; } }
 @media (min-width: 700px), (orientation: landscape) {
   .hero__schermo { aspect-ratio: var(--ratio-pc); }
-  .hero__v { transition-duration: 1.6s; }
   .hero__v[data-set="tel"] { display: none; }
   .hero__v[data-set="pc"] { display: block; }
   .hero__marchio { top: 4%; gap: 12px; }

@@ -86,7 +86,7 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261015e"
+VERSIONE = "20261015f"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 700px), (orientation: landscape)"
@@ -139,27 +139,6 @@ def poster_srcset(nome):
     return "%s-poster.webp %dw" % (b, w)
 
 
-def durata_mp4(nome):
-    """Durata in secondi dall'atomo mvhd del file (i nostri mp4 hanno il moov in testa: +faststart)."""
-    with open(os.path.join(SITO, "assets", "video", nome + ".mp4"), "rb") as f:
-        dati = f.read(4 * 1024 * 1024)
-    i = dati.find(b"mvhd")
-    if i < 0:
-        raise SystemExit("mvhd non trovato in " + nome)
-    if dati[i + 4] == 1:
-        scala, durata = int.from_bytes(dati[i + 24:i + 28], "big"), int.from_bytes(dati[i + 28:i + 36], "big")
-    else:
-        scala, durata = int.from_bytes(dati[i + 16:i + 20], "big"), int.from_bytes(dati[i + 20:i + 24], "big")
-    return durata / scala
-
-
-def dati_video(nome, senza_testo):
-    """Attributi per il giro dei video in cima: durata (il video resta in onda per intero se e' lungo), peso
-    (quanto prima scaricarlo) e se nascondere logo e scritte mentre e' in onda."""
-    peso = os.path.getsize(os.path.join(SITO, "assets", "video", nome + ".mp4"))
-    return ' data-durata="%.1f" data-peso="%d"%s' % (durata_mp4(nome), peso, " data-senza-testo" if senza_testo else "")
-
-
 def video_box(nome, alt, sizes, classe="", tag="div"):
     """Video muto in loop, senza comandi, INTERO (il riquadro ha le proporzioni del video).
     Si scarica e gira solo quando entra nello schermo (preload="none" + data-clip in main.js).
@@ -193,19 +172,20 @@ SPRITE = """<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.o
 # ---------------------------------------------------------------- contenuti
 
 # In cima alla pagina, interi. Telefono: tre verticali. Computer: due orizzontali (furgone con targa sfocata).
-# Terzo campo (quarto per il computer): True = mentre il video e' in onda logo e scritte si nascondono, perche'
-# in alto non c'e' cielo ma il soggetto (le fronde del fico, la facciata della villa). Misurato sui fotogrammi.
+# In cima, giro ogni 2 secondi (main.js). Il primo e' il video dei gerani con l'ape (Francesco 15/10/2026, «c'è
+# un'ape che mi piace moltissimo»): sul telefono nel ritaglio verticale, unico video ritagliato del sito.
 HERO_TEL = [
-    ("verticale-fiori", "Verbena e piscina in un giardino curato da noi", False),
-    ("giardino-piscina-1", "Giardino con piscina e vista sulle colline", False),
-    ("giardino-piscina-2", "Giardino con piscina, agavi e ulivi", False),
-    ("fico-verbene-verticale", "Giovane fico tra verbene e graminacee", True),
+    ("gerani-villa-verticale", "Un'ape su un geranio, poi l'ulivo, la villa e il vialetto di pietra"),
+    ("verticale-fiori", "Verbena e piscina in un giardino curato da noi"),
+    ("giardino-piscina-2", "Giardino con piscina, agavi e ulivi"),
+    ("fico-verbene-verticale", "Giovane fico tra verbene e graminacee"),
+    ("giardino-piscina-1", "Giardino con piscina e vista sulle colline"),
 ]
 HERO_PC = [
-    ("hero-furgone", "Il furgone Astra Gardens nel giardino con piscina", "hero-furgone-2560", False),
-    ("gerani-villa", "Gerani, ulivo e graminacee nel giardino di una villa", "gerani-villa-2560", True),
-    ("hero-fiori", "Verbena, doccia e piscina affacciate sulle colline", None, False),
-    ("giro-giardino-fontana", "Il giardino con la fontana e le aiuole rialzate in pietra", None, True),
+    ("gerani-villa", "Un'ape su un geranio, poi l'ulivo, la villa e il vialetto di pietra", "gerani-villa-2560"),
+    ("hero-furgone", "Il furgone Astra Gardens nel giardino con piscina", "hero-furgone-2560"),
+    ("hero-fiori", "Verbena, doccia e piscina affacciate sulle colline", None),
+    ("giro-giardino-fontana", "Il giardino con la fontana e le aiuole rialzate in pietra", None),
 ]
 
 # Striscia «Dai nostri cantieri»: foto e video verticali, nell'ordine della bozza approvata.
@@ -478,15 +458,15 @@ def hero():
     wt, ht = misura_video(HERO_TEL[0][0])
     wp, hp = misura_video(HERO_PC[0][0])
     video = []
-    for nome, alt, senza in HERO_TEL:
+    for nome, alt in HERO_TEL:
         b = "assets/video/" + nome
-        video.append('      <video class="hero__v" data-set="tel" data-src="%s.mp4" data-poster="%s-poster.webp"%s muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
-                     % (b, b, dati_video(nome, senza), e(alt)))
-    for nome, alt, hd, senza in HERO_PC:
+        video.append('      <video class="hero__v" data-set="tel" data-src="%s.mp4" data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
+                     % (b, b, e(alt)))
+    for nome, alt, hd in HERO_PC:
         b = "assets/video/" + nome
         extra = ' data-src-hd="assets/video/%s.mp4"' % hd if hd else ""
-        video.append('      <video class="hero__v" data-set="pc" data-src="%s.mp4"%s data-poster="%s-poster.webp"%s muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
-                     % (b, extra, b, dati_video(nome, senza), e(alt)))
+        video.append('      <video class="hero__v" data-set="pc" data-src="%s.mp4"%s data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
+                     % (b, extra, b, e(alt)))
     avvio = ("<script>(function(){var b=document.querySelector('[data-hero]');if(!b)return;"
              "var s=matchMedia(b.getAttribute('data-mq')).matches?'pc':'tel';"
              "var v=b.querySelector('video[data-set='+s+']');if(!v)return;"
