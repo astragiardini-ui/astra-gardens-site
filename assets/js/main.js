@@ -97,7 +97,10 @@
   var serveSblocco = false;
   if (telefono) tutti("video[data-src-tel]").forEach(function (v) {
     var s = v.querySelector("source");
-    if (s && !v.classList.contains("hero__v")) s.setAttribute("src", v.getAttribute("data-src-tel"));
+    if (s && !v.classList.contains("hero__v")) {
+      s.setAttribute("src", v.getAttribute("data-src-tel"));
+      try { v.load(); } catch (_) {} /* rifà la scelta della sorgente; con preload="none" non scarica nulla */
+    }
   });
   function scatola(v) { return v.closest("[data-clip]") || v.parentNode; }
   function visibile(el) {
