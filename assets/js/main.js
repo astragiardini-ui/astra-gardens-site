@@ -388,14 +388,22 @@
          a velocità normale (l'ape si vede con calma), poi si passa piano a 2x per mostrare anche l'aiuola,
          l'ulivo e l'ingresso. Il 2x solo con almeno 3 secondi già in memoria, così non si ferma mai. */
       var v = lista[i];
-      function via() {
-        v.removeEventListener("playing", via);
+      var via = function () {
         clearTimeout(tGiro);
         if (!meno.matches) primaVelocita(v);
         tGiro = setTimeout(function () { finePrimo(v); passo(); }, Math.max(ciclo(), 5000));
-      }
-      if (!v.paused && v.readyState >= 3) via();
-      else { v.addEventListener("playing", via); tGiro = setTimeout(via, 15000); }
+      };
+      /* «parte davvero» = in riproduzione con i dati: lo si controlla ogni 100 ms (l'evento playing può essere
+         già passato prima che questo script arrivasse) */
+      var t0 = adesso(), fatto = false;
+      var via0 = via;
+      via = function () { if (fatto) return; fatto = true; v.removeEventListener("playing", via); via0(); };
+      v.addEventListener("playing", via);
+      (function controlla() {
+        if (fatto) return;
+        if ((!v.paused && v.readyState >= 3 && v.currentTime > 0) || adesso() - t0 > 15000) { via(); return; }
+        tGiro = setTimeout(controlla, 100);
+      })();
     }
     function avvia() {
       var tipo = mq.matches ? "pc" : "tel";
