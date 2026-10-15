@@ -13,6 +13,33 @@
     try { el.focus({ preventScroll: true, focusVisible: !!daTastiera }); } catch (_) { el.focus(); }
   }
   function ascolta(mq, fn) { if (mq.addEventListener) mq.addEventListener("change", fn); else if (mq.addListener) mq.addListener(fn); }
+  /* scorrimenti fatti dallo script: subito, senza l'animazione morbida della pagina */
+  function scorriSubito(fn) {
+    var prima = radice.style.scrollBehavior;
+    radice.style.scrollBehavior = "auto";
+    try { fn(); } finally { radice.style.scrollBehavior = prima; }
+  }
+  /* «Risparmio dati» attivo o rete più lenta del 4G: in cima un solo video, nella striscia solo locandine */
+  var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  var leggeri = false;
+  try { leggeri = !!(conn && (conn.saveData || (conn.effectiveType && conn.effectiveType !== "4g"))); } catch (_) {}
+  if (leggeri) radice.classList.add("dati-leggeri");
+  /* la stima della rete arriva anche dopo: se diventa lenta si passa ai dati leggeri (mai il contrario) */
+  if (conn && conn.addEventListener) conn.addEventListener("change", function () {
+    try {
+      if (!leggeri && (conn.saveData || (conn.effectiveType && conn.effectiveType !== "4g"))) {
+        leggeri = true;
+        radice.classList.add("dati-leggeri");
+      }
+    } catch (_) {}
+  });
+  /* telefono (anche in orizzontale): versioni leggere dei video, NOME-tel.mp4 (Francesco 15/10/2026) */
+  var heroEl = doc.querySelector("[data-hero]");
+  var telefono = window.matchMedia((heroEl && heroEl.getAttribute("data-mq-tel")) || "(max-width: 899.98px), (max-height: 499.98px)").matches;
+  function scegliSrc(el) {
+    var t = el.getAttribute("data-src-tel");
+    return t && telefono ? t : el.getAttribute("data-src");
+  }
 
   /* ---------- Testata: ombra quando la pagina scorre ---------- */
   var testata = doc.querySelector(".testata");
@@ -25,20 +52,26 @@
   var menu = doc.getElementById("menu");
   if (apriMenuBtn && menu) {
     var chiudiMenuBtn = menu.querySelector(".chiudi-menu");
-    var tMenu = null;
+    var tMenu = null, yMenu = 0;
     var apriMenu = function (e) {
       clearTimeout(tMenu);
       menu.hidden = false;
       void menu.offsetWidth; /* fa partire la dissolvenza */
       menu.classList.add("aperto");
       apriMenuBtn.setAttribute("aria-expanded", "true");
-      radice.style.overflow = "hidden";
+      yMenu = window.scrollY || window.pageYOffset || 0;
+      doc.body.style.top = -yMenu + "px";
+      doc.body.classList.add("menu-aperto");
       metti(chiudiMenuBtn, !e || e.detail === 0);
     };
     var chiudiMenu = function (rimettiFocus, daTastiera) {
       menu.classList.remove("aperto");
       apriMenuBtn.setAttribute("aria-expanded", "false");
-      radice.style.overflow = "";
+      if (doc.body.classList.contains("menu-aperto")) {
+        doc.body.classList.remove("menu-aperto");
+        doc.body.style.top = "";
+        scorriSubito(function () { window.scrollTo(0, yMenu); });
+      }
       tMenu = setTimeout(function () { menu.hidden = true; }, meno.matches ? 0 : 400);
       if (rimettiFocus) metti(apriMenuBtn, daTastiera);
     };
@@ -62,6 +95,10 @@
      energetico) resta l'immagine ferma e i video partono al primo tocco. */
   var video = tutti("video");
   var serveSblocco = false;
+  if (telefono) tutti("video[data-src-tel]").forEach(function (v) {
+    var s = v.querySelector("source");
+    if (s && !v.classList.contains("hero__v")) s.setAttribute("src", v.getAttribute("data-src-tel"));
+  });
   function scatola(v) { return v.closest("[data-clip]") || v.parentNode; }
   function visibile(el) {
     var r = el.getBoundingClientRect();
@@ -86,6 +123,34 @@
     v._fermatoDaNoi = true;
     v.pause();
   }
+  function urlDi(v) {
+    var s = v.currentSrc || v.getAttribute("src") || "";
+    if (!s && v.classList.contains("hero__v")) s = scegliSrc(v) || "";
+    if (!s) { var so = v.querySelector("source"); if (so) s = so.getAttribute("src") || ""; }
+    try { return new URL(s, location.href).href; } catch (_) { return s; }
+  }
+  function scaricato(v) {
+    try {
+      var b = v.buffered;
+      return v.readyState >= 4 && b.length && b.end(b.length - 1) >= (v.duration || 0) - 0.3;
+    } catch (_) { return true; }
+  }
+  function avanti(v) {
+    try {
+      var b = v.buffered, t = v.currentTime;
+      for (var k = 0; k < b.length; k++) if (b.start(k) <= t + 0.1 && b.end(k) > t) return b.end(k) - t;
+    } catch (_) {}
+    return 0;
+  }
+  function inScarico(v) {
+    if (!(v.getAttribute("data-caricato") || v._avviato) || scaricato(v) || v.error) return false;
+    return v.networkState === 2 || v.readyState < 3;
+  }
+  /* lo stesso file lo sta già scaricando un altro video della pagina: si aspetta e poi lo dà la cache */
+  function doppione(v) {
+    var u = urlDi(v);
+    return !!u && video.some(function (x) { return x !== v && urlDi(x) === u && inScarico(x); });
+  }
   video.forEach(function (v) {
     v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true;
     v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.removeAttribute("controls");
@@ -104,12 +169,20 @@
 
   /* le clip partono quando entrano nello schermo e si fermano quando escono */
   var clip = tutti("[data-clip] video");
+  function partiClip(v) {
+    clearTimeout(v._attesa);
+    if (leggeri) return; /* resta la locandina: il video si guarda toccandolo */
+    if (doppione(v)) { v._attesa = setTimeout(function () { if (v._vista) partiClip(v); }, 500); return; }
+    v._avviato = true;
+    parti(v);
+  }
   if (haIO) {
     var osservaClip = new IntersectionObserver(function (voci) {
       voci.forEach(function (voce) {
         var v = voce.target.querySelector("video");
         if (!v) return;
-        if (voce.isIntersecting) parti(v); else ferma(v);
+        v._vista = voce.isIntersecting;
+        if (voce.isIntersecting) partiClip(v); else { clearTimeout(v._attesa); ferma(v); }
       });
     }, { rootMargin: "120px 0px 120px 0px", threshold: 0 });
     /* i video grandi fuori dalla striscia (introduzione e chi siamo sul computer) si scaricano solo quando
@@ -118,7 +191,8 @@
       voci.forEach(function (voce) {
         var v = voce.target.querySelector("video");
         if (!v) return;
-        if (voce.isIntersecting && voce.intersectionRatio >= 0.25) parti(v); else if (!voce.isIntersecting) ferma(v);
+        v._vista = voce.isIntersecting;
+        if (voce.isIntersecting && voce.intersectionRatio >= 0.25) partiClip(v); else if (!voce.isIntersecting) { clearTimeout(v._attesa); ferma(v); }
       });
     }, { threshold: [0, 0.25] });
     clip.forEach(function (v) {
@@ -126,7 +200,7 @@
       (box.closest("[data-striscia]") ? osservaClip : osservaGrandi).observe(box);
     });
   } else {
-    clip.forEach(parti);
+    clip.forEach(function (v) { v._vista = true; partiClip(v); });
   }
 
   /* ---------- Apertura: i video interi che si danno il cambio ogni 2 secondi ----------
@@ -143,9 +217,11 @@
     var mq = window.matchMedia(hero.getAttribute("data-mq"));
     var punti = hero.querySelector(".hero__punti");
     var lista = [], i = 0, tGiro = null, tCoda = null, inVista = true, primoGiro = true;
+    var scelta = -1, pausaFino = 0, tScelta = null;
     function ciclo() { return meno.matches ? 6000 : 2000; }
     function sorgente(v) {
-      var hd = v.getAttribute("data-src-hd");
+      var hd = v.getAttribute("data-src-hd"), t = v.getAttribute("data-src-tel");
+      if (t && telefono) return t;
       return hd && window.innerWidth * (window.devicePixelRatio || 1) > 2000 ? hd : v.getAttribute("data-src");
     }
     function carica(v) {
@@ -158,19 +234,12 @@
       try { v.load(); } catch (_) {}
     }
     /* pronto = scaricato tutto, oppure ha già in memoria almeno il pezzo che servirà nel suo turno */
-    function avanti(v) {
-      try {
-        var b = v.buffered, t = v.currentTime;
-        for (var k = 0; k < b.length; k++) if (b.start(k) <= t + 0.1 && b.end(k) > t) return b.end(k) - t;
-      } catch (_) {}
-      return 0;
-    }
     function pronto(v) {
       if (!v.getAttribute("data-caricato") || v.readyState < 3 || v._riscalda) return false;
       return scaricato(v) || avanti(v) >= 2;
     }
     /* Un video fermo il browser lo scarica solo per qualche decimo di secondo: per averne pronto un pezzo
-       lo si fa girare nascosto finché ha in memoria 3 secondi, poi lo si ferma e si torna al punto di prima. */
+       lo si fa girare nascosto finché ha in memoria 2,6 secondi, poi lo si ferma e si torna al punto di prima. */
     function riscalda(v) {
       if (v._riscalda || v.classList.contains("attivo")) return;
       v._riscalda = true;
@@ -178,7 +247,7 @@
       function basta() {
         if (!v._riscalda) return;
         if (v.classList.contains("attivo")) { v._riscalda = false; return; }
-        if (scaricato(v) || avanti(v) + (v.currentTime - da) >= 3.2 || adesso() - t0 > 20000) {
+        if (scaricato(v) || avanti(v) + (v.currentTime - da) >= 2.6 || adesso() - t0 > 20000) {
           v._riscalda = false;
           v._fermatoDaNoi = true;
           try { v.pause(); v.currentTime = da; } catch (_) {}
@@ -193,24 +262,22 @@
       if (p && p.catch) p.catch(function () { v._riscalda = false; });
       setTimeout(basta, 250);
     }
-    function scaricato(v) {
-      try {
-        var b = v.buffered;
-        return v.readyState >= 4 && b.length && b.end(b.length - 1) >= (v.duration || 0) - 0.3;
-      } catch (_) { return true; }
-    }
     function staScaricando(v) {
       if (v._riscalda) return true;
       if (!v.getAttribute("data-caricato") || scaricato(v) || v.error) return false;
+      /* quello in onda, se ha già 3,5 secondi in memoria, lascia spazio al prossimo: il giro parte prima */
+      if (v.classList.contains("attivo") && avanti(v) >= 3.5) return false;
       if (v.networkState !== 2 && v.readyState >= 3) return false; /* il browser ha smesso da solo */
       if (!v._inizioCarico) v._inizioCarico = adesso();
       return adesso() - v._inizioCarico < 20000; /* rete lentissima: dopo 20 s si passa comunque al successivo */
     }
     function coda() {
       clearTimeout(tCoda);
+      if (leggeri) return;
       if (!inVista || doc.visibilityState !== "visible" || !lista.length) return;
       if (lista.some(staScaricando)) { tCoda = setTimeout(coda, 400); return; }
       var dopo = lista.filter(function (v) { return !v.getAttribute("data-caricato"); })[0];
+      if (dopo && doppione(dopo)) { tCoda = setTimeout(coda, 500); return; } /* lo sta scaricando la striscia */
       if (dopo) {
         carica(dopo);
         var via = function () { dopo.removeEventListener("canplay", via); riscalda(dopo); };
@@ -225,7 +292,39 @@
       if (corto) riscalda(corto);
     }
     function aggiornaPunti() {
-      tutti(".hero__punto", punti).forEach(function (b, n) { b.setAttribute("aria-current", n === i ? "true" : "false"); });
+      tutti(".hero__punto", punti).forEach(function (b, n) {
+        b.setAttribute("aria-current", n === i ? "true" : "false");
+        b.classList.toggle("in-attesa", n === scelta);
+      });
+    }
+    /* puntino toccato: il video scelto si prepara e va in onda solo quando è pronto; il giro automatico
+       si ferma per 8 secondi e poi riparte da lì, senza mai tornare indietro da solo */
+    function attendiScelta() {
+      clearTimeout(tScelta);
+      if (scelta < 0) return;
+      if (pronto(lista[scelta])) {
+        var k = scelta;
+        scelta = -1;
+        mostra(k);
+        pausaFino = adesso() + 8000;
+        programma(false, 8000);
+      } else {
+        tScelta = setTimeout(attendiScelta, 250);
+      }
+    }
+    function scegli(k) {
+      if (k === i && scelta < 0) return;
+      if (k === i) { scelta = -1; aggiornaPunti(); return; }
+      scelta = k;
+      pausaFino = adesso() + 8000;
+      var v = lista[k];
+      if (!pronto(v)) {
+        carica(v);
+        var via = function () { v.removeEventListener("canplay", via); riscalda(v); };
+        if (v.readyState >= 3) via(); else v.addEventListener("canplay", via);
+      }
+      aggiornaPunti();
+      attendiScelta();
     }
     function mostra(k) {
       var prec = lista[i];
@@ -235,6 +334,8 @@
       v.classList.add("attivo");
       if (inVista) parti(v); /* riprende da dove era rimasto */
       if (prec && prec !== v) {
+        clearTimeout(prec._tVel); clearTimeout(prec._tGuarda);
+        prec.playbackRate = 1; /* ai giri successivi tutti a velocità normale */
         prec.classList.remove("attivo");
         setTimeout(function () { if (!prec.classList.contains("attivo")) ferma(prec); }, 600);
       }
@@ -242,21 +343,57 @@
     }
     function giro() {
       if (!inVista || doc.visibilityState !== "visible" || lista.length < 2) return;
+      if (leggeri || scelta >= 0 || adesso() < pausaFino) return;
       for (var d = 1; d < lista.length; d++) {
         var j = (i + d) % lista.length;
         if (pronto(lista[j])) { mostra(j); return; }
       }
     }
-    function programma(primo) {
+    /* cambio di velocità a piccoli passi (6 passi in 0,3 s), mai uno scatto */
+    function velocita(v, da, a, fatto) {
+      clearTimeout(v._tVel);
+      var k = 0;
+      (function passo() {
+        k++;
+        try { v.playbackRate = da + (a - da) * k / 6; } catch (_) {}
+        if (k < 6) v._tVel = setTimeout(passo, 50); else if (fatto) fatto();
+      })();
+    }
+    function primaVelocita(v) {
+      v._tVel = setTimeout(function () {
+        if (!v.classList.contains("attivo") || avanti(v) < 3) return; /* poco in memoria: resta a velocità normale */
+        velocita(v, 1, 2);
+        (function guarda() {
+          if (!v.classList.contains("attivo")) return;
+          if (v.playbackRate > 1 && avanti(v) < 1.5) { clearTimeout(v._tVel); v.playbackRate = 1; return; }
+          v._tGuarda = setTimeout(guarda, 200);
+        })();
+      }, 2000);
+    }
+    function finePrimo(v) {
+      clearTimeout(v._tVel); clearTimeout(v._tGuarda);
+      if (v.playbackRate !== 1) {
+        if (v.classList.contains("attivo")) velocita(v, v.playbackRate, 1); else v.playbackRate = 1;
+      }
+    }
+    function programma(primo, ritardo) {
       clearTimeout(tGiro);
+      if (leggeri) return; /* rete lenta o risparmio dati: un solo video, nessun giro */
       function passo() {
         giro();
         tGiro = setTimeout(passo, ciclo());
       }
-      if (!primo) { tGiro = setTimeout(passo, ciclo()); return; }
-      /* primo giro: 4 secondi contati da quando il video parte davvero (l'ape si vede con calma) */
+      if (!primo) { tGiro = setTimeout(passo, ritardo || ciclo()); return; }
+      /* primo giro (Francesco 15/10/2026): circa 5 secondi contati da quando il video parte davvero; i primi 2
+         a velocità normale (l'ape si vede con calma), poi si passa piano a 2x per mostrare anche l'aiuola,
+         l'ulivo e l'ingresso. Il 2x solo con almeno 3 secondi già in memoria, così non si ferma mai. */
       var v = lista[i];
-      function via() { v.removeEventListener("playing", via); clearTimeout(tGiro); tGiro = setTimeout(passo, Math.max(ciclo(), 4000)); }
+      function via() {
+        v.removeEventListener("playing", via);
+        clearTimeout(tGiro);
+        if (!meno.matches) primaVelocita(v);
+        tGiro = setTimeout(function () { finePrimo(v); passo(); }, Math.max(ciclo(), 5000));
+      }
       if (!v.paused && v.readyState >= 3) via();
       else { v.addEventListener("playing", via); tGiro = setTimeout(via, 15000); }
     }
@@ -268,12 +405,15 @@
       lista = tutti('video.hero__v[data-set="' + tipo + '"]', hero);
       if (!lista.length) return;
       punti.innerHTML = "";
+      if (leggeri) { /* solo il primo video */
+        lista = [lista.filter(function (v) { return v.classList.contains("attivo"); })[0] || lista[0]];
+      }
       if (lista.length > 1) {
         lista.forEach(function (v, k) {
           var b = doc.createElement("button");
           b.type = "button"; b.className = "hero__punto";
           b.setAttribute("aria-label", "Video " + (k + 1) + " di " + lista.length);
-          b.addEventListener("click", function () { if (k !== i) { mostra(k); programma(false); } });
+          b.addEventListener("click", function () { scegli(k); });
           punti.appendChild(b);
         });
       }
@@ -283,12 +423,12 @@
       mostra(i);
       programma(primoGiro);
       primoGiro = false;
-      coda();
+      if (!leggeri) coda();
     }
     function riprendi() {
       if (!inVista || doc.visibilityState !== "visible" || !lista.length) return;
       parti(lista[i]);
-      coda();
+      if (!leggeri) coda();
     }
     avvia();
     ascolta(mq, avvia);
@@ -309,8 +449,11 @@
     serveSblocco = false;
     video.forEach(function (v) {
       if (!v.paused || !haSorgente(v)) return;
-      var inOnda = !v.classList.contains("hero__v") || v.classList.contains("attivo");
-      if (inOnda && visibile(scatola(v))) { parti(v); return; }
+      var eroe = v.classList.contains("hero__v");
+      if (!eroe && (leggeri || doppione(v))) return;
+      var inOnda = !eroe || v.classList.contains("attivo");
+      if (inOnda && visibile(scatola(v))) { if (eroe) parti(v); else partiClip(v); return; }
+      if (eroe && !v.getAttribute("data-caricato")) return; /* i video in cima li prepara il loro giro */
       if (v._sbloccato) return;
       v._sbloccato = true;
       var p;
@@ -327,7 +470,7 @@
   });
   doc.addEventListener("visibilitychange", function () {
     if (doc.visibilityState !== "visible") return;
-    clip.forEach(function (v) { if (v.paused && visibile(scatola(v))) parti(v); });
+    clip.forEach(function (v) { if (v.paused && visibile(scatola(v))) partiClip(v); });
   });
 
   /* ---------- Foto e video a schermo intero ---------- */
@@ -360,13 +503,14 @@
         el.muted = true; el.loop = true; el.playsInline = true; el.autoplay = true;
         el.setAttribute("muted", ""); el.setAttribute("playsinline", ""); el.setAttribute("aria-label", alt);
         el.poster = b.getAttribute("data-poster") || "";
-        el.src = b.getAttribute("data-src");
+        el.src = scegliSrc(b);
         media.appendChild(el);
         var p; try { p = el.play(); } catch (_) { p = null; }
         if (p && p.catch) p.catch(function () {});
       } else {
         el = doc.createElement("img");
         el.alt = alt; el.decoding = "async";
+        if (b.getAttribute("data-srcset")) { el.sizes = "(min-width: 900px) 80vw, 100vw"; el.srcset = b.getAttribute("data-srcset"); }
         el.src = b.getAttribute("data-src");
         media.appendChild(el);
       }
@@ -381,6 +525,7 @@
       btnPrima.hidden = !piu; btnDopo.hidden = !piu;
       ultimo = b;
       dialog.showModal();
+      radice.classList.add("lightbox-aperta");
       mostra(Math.max(0, gruppo.indexOf(b)));
       metti(media, daTastiera);
     }
@@ -394,6 +539,7 @@
     });
     dialog.addEventListener("click", function (e) { if (e.target === dialog || e.target === media) dialog.close(); });
     dialog.addEventListener("close", function () {
+      radice.classList.remove("lightbox-aperta");
       media.innerHTML = ""; el = null;
       metti(ultimo, daTastiera);
     });
@@ -418,7 +564,7 @@
     var bottoni = tutti(".striscia__btn", striscia);
     var originali = bottoni.filter(function (b) { return !b.closest("[aria-hidden='true']"); });
     var VELOCITA = 40; /* px al secondo */
-    var pos = 0, impostato = -1, ultimoT = null, raf = null, inVista = false;
+    var pos = 0, impostato = -1, ultimoT = null, raf = null, inVista = false, ultimoUtente = -1e9;
     var sopra = false, tocco = false, dentro = false, trascina = false, mosso = false, riprendi = 0;
     var x0 = 0, s0 = 0, bloccaClick = false;
     function periodo() { return lista.offsetWidth / 2; }
@@ -428,8 +574,15 @@
       if (ultimoT === null) { ultimoT = t; pos = striscia.scrollLeft; return; }
       var dt = Math.min(64, t - ultimoT);
       ultimoT = t;
-      if (ferma()) { pos = striscia.scrollLeft; return; }
       var P = periodo();
+      /* ritorno all'inizio del giro (gli elementi sono due volte di fila): mai mentre la persona trascina o
+         mentre la striscia scivola per inerzia, altrimenti su iPhone salta */
+      if (!tocco && !trascina && adesso() - ultimoUtente > 800 && P > striscia.clientWidth && striscia.scrollLeft >= P) {
+        striscia.scrollLeft -= P;
+        impostato = striscia.scrollLeft;
+        pos = impostato;
+      }
+      if (ferma()) { pos = striscia.scrollLeft; return; }
       if (P <= striscia.clientWidth) return;
       pos += VELOCITA * dt / 1000;
       if (pos >= P) pos -= P;
@@ -449,20 +602,22 @@
     striscia.addEventListener("scroll", function () {
       if (Math.abs(striscia.scrollLeft - impostato) > 2) {
         riprendi = adesso() + 1600; /* l'ha spostata la persona */
-        var P = periodo();
-        if (!tocco && !trascina && P > striscia.clientWidth && striscia.scrollLeft >= P) {
-          striscia.scrollLeft -= P;
-          impostato = striscia.scrollLeft;
-        }
+        ultimoUtente = adesso();
       }
     }, { passive: true });
     striscia.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") sopra = true; });
     striscia.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { sopra = false; riprendi = adesso() + 300; } });
     striscia.addEventListener("touchstart", function () { tocco = true; }, { passive: true });
-    function fineTocco() { tocco = false; riprendi = adesso() + 2000; }
+    function fineTocco() { tocco = false; riprendi = adesso() + 2000; ultimoUtente = adesso(); }
     striscia.addEventListener("touchend", fineTocco, { passive: true });
     striscia.addEventListener("touchcancel", fineTocco, { passive: true });
-    striscia.addEventListener("focusin", function () { dentro = true; });
+    /* si ferma per il focus solo se arriva dalla tastiera: dopo un clic, un trascinamento o la chiusura
+       della foto a schermo intero deve ripartire */
+    striscia.addEventListener("focusin", function (e) {
+      var daTastiera = true;
+      try { daTastiera = e.target.matches(":focus-visible"); } catch (_) {}
+      dentro = daTastiera;
+    });
     striscia.addEventListener("focusout", function () { dentro = false; riprendi = adesso() + 800; });
     striscia.addEventListener("dragstart", function (e) { e.preventDefault(); });
 
@@ -496,6 +651,7 @@
       if (mosso) { bloccaClick = true; setTimeout(function () { bloccaClick = false; }, 0); }
       try { striscia.releasePointerCapture(e.pointerId); } catch (_) {}
       riprendi = adesso() + 1200;
+      ultimoUtente = adesso();
     }
     striscia.addEventListener("pointerup", fineTrascina);
     striscia.addEventListener("pointercancel", fineTrascina);
@@ -520,10 +676,11 @@
       voce.classList.toggle("aperta", aperta);
       voce.querySelector(".fisarmonica__btn").setAttribute("aria-expanded", aperta ? "true" : "false");
     }
-    function apri(voce, segui) {
+    function apri(voce, segui, daLink) {
       var era = voce.classList.contains("aperta");
       voci.forEach(function (x) { if (x !== voce) imposta(x, false); });
       imposta(voce, segui ? true : !era);
+      if (daLink) return; /* lo scorrimento lo fa apriDaIndirizzo */
       /* se chiudendo una voce sopra quella toccata la pagina "sale", la si riporta in vista */
       setTimeout(function () {
         var top = voce.getBoundingClientRect().top, alto = testata ? testata.offsetHeight : 0;
@@ -532,14 +689,29 @@
     }
     voci.forEach(function (voce) {
       voce.querySelector(".fisarmonica__btn").addEventListener("click", function () { apri(voce, false); });
-      voceServizio["#" + voce.id] = function () { apri(voce, true); };
+      voceServizio["#" + voce.id] = function () {
+        /* aperta da un link: niente animazioni, così la voce chiusa sopra non sposta la pagina dopo */
+        f.classList.add("senza-transizione");
+        apri(voce, true, true);
+        setTimeout(function () { f.classList.remove("senza-transizione"); }, 800);
+        return voce;
+      };
     });
   });
-  function apriDaIndirizzo(h) { if (voceServizio[h]) voceServizio[h](); }
+  function apriDaIndirizzo(h) {
+    if (!voceServizio[h]) return;
+    var voce = voceServizio[h]();
+    var vai = function () { scorriSubito(function () { voce.scrollIntoView({ block: "start", behavior: "auto" }); }); };
+    setTimeout(vai, 600);
+    if (doc.readyState !== "complete") window.addEventListener("load", function () { setTimeout(vai, 50); }, { once: true });
+  }
   apriDaIndirizzo(location.hash);
   window.addEventListener("hashchange", function () { apriDaIndirizzo(location.hash); });
   tutti('a[href*="#servizio-"]').forEach(function (a) {
-    a.addEventListener("click", function () { apriDaIndirizzo(a.getAttribute("href").replace(/^[^#]*/, "")); });
+    a.addEventListener("click", function () {
+      var h = a.getAttribute("href").replace(/^[^#]*/, "");
+      if (location.hash === h) apriDaIndirizzo(h); /* stesso link di prima: hashchange non arriva */
+    });
   });
 
   /* ---------- I nostri lavori: carosello con barra di avanzamento ---------- */

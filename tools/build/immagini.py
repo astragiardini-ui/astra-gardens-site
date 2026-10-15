@@ -108,9 +108,35 @@ def locandine_piccole():
     print("  locandine piccole dei video della striscia")
 
 
+# Foto più nitide per gli schermi retina (verifica del 15/10/2026): si rifanno dall'originale SOLO quando
+# l'originale è più grande di quello pubblicato. Le altre srv-*/lav-* sono già alla misura dell'originale.
+NITIDE = [
+    ("srv-abbattimenti", "pronti/foto-04-abbattimento-controllato.jpg", (360, 720, 1080)),
+    ("srv-alberi", "pronti/foto-03-tree-climbing-magnolia.jpg", (360, 720, 1080)),
+    ("srv-prato", "pronti/foto-02-prato-in-zolle.jpg", (360, 720, 1080)),
+    ("srv-siepi", "instagram/DAnsCKjODw3_2.jpg", (360, 720, 1080)),
+    ("srv-ulivi", "pronti/foto-01-ulivo-ornamentale-pon-pon.jpg", (360, 720, 1080)),
+    # originale iPhone 3024x4032: si pubblica il fotogramma INTERO (3:4), prima era tagliato in alto a 4:5
+    ("lav-ghiaia-pergola", "nuovi_05ott/giardino-ghiaia-prato-dall-alto.jpg", (400, 560, 800, 1080, 1500)),
+]
+
+
+def nitide():
+    from PIL import ImageOps
+    for nome, rel, larghezze in NITIDE:
+        src = os.path.join(MEDIA, rel)
+        im = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
+        tmp = os.path.join(tempfile.mkdtemp(prefix="astra-nitida-"), "foto.jpg")
+        im.save(tmp, "JPEG", quality=95)
+        varianti(tmp, nome, larghezze)
+        os.remove(tmp)
+        os.rmdir(os.path.dirname(tmp))
+
+
 if __name__ == "__main__":
     varianti(os.path.join(MEDIA, "video_hd_14ott", "foto-furgone-1080.jpg"), "foto-furgone", (480, 720, 1080))
     alfa = loghi()
     anteprima(alfa)
     locandine_piccole()
     da_storia_git("56579bf", "assets/video/clip/antizanzare-poster.jpg", "srv-antizanzare", (360, 720, 1080))
+    nitide()

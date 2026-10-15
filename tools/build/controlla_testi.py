@@ -8,8 +8,9 @@ Uso, dalla radice del repository:
 
 Regole dei testi di Astra Gardens: stile Paolo Borzacchiello, parole che nutrono, frasi in positivo;
 niente negazioni, niente prezzi, niente garanzie, niente emoji. Il risultato giusto e' «segnalazioni: 0».
-I blocchi con l'attributo data-legale (informativa privacy, testo scritto con la verifica legale) si saltano:
-li' le negazioni servono e il testo va tenuto com'e'.
+I blocchi con l'attributo data-legale (informativa privacy, testo scritto con la verifica legale) o
+data-testo-approvato (frase dettata parola per parola, es. la 404 del 15/10/2026) si saltano: li' le
+negazioni servono e il testo va tenuto com'e'.
 """
 import re, html, sys, json
 from html.parser import HTMLParser
@@ -20,7 +21,7 @@ class T(HTMLParser):
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if self.legale and tag not in VUOTI: self.legale[-1] += 1
-        if "data-legale" in a: self.legale.append(1)
+        if "data-legale" in a or "data-testo-approvato" in a: self.legale.append(1)
         if self.legale: return
         if tag in ("script", "style", "svg"): self.skip += 1
         for k in ("alt", "aria-label", "title", "content", "data-didascalia"):

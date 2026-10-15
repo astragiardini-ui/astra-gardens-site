@@ -79,17 +79,21 @@ REA = "BS-618970"
 PEC = "astra.gardens@pec.it"
 # Sede: SOLO dove lo chiede la legge, cioe' la riga legale in fondo a ogni pagina e la privacy (Francesco
 # 15/10/2026 10:34: la sede non e' ancora pronta per ricevere, niente indicazioni ne' indirizzo in vista).
-# Nessun link a Google Maps, nessuna via nei dati strutturati, finche' Francesco non dice che la sede e' pronta.
+# Nessun link alle indicazioni (maps/dir), nessuna via nei dati strutturati, finche' Francesco non dice che la
+# sede e' pronta. Il link GOOGLE (maps?cid) resta: porta alla scheda Google per le recensioni, e sulla scheda
+# l'indirizzo e' nascosto (si vede solo la zona servita, dal 15/10/2026).
 INDIRIZZO = "Via Passere 2, 25020 Flero (BS)"
 # Denominazione nell'ordine del registro VIES (verifica legale del 14/10/2026)
 DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261015h"
+VERSIONE = "20261015j"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
-MQ_PC = "(min-width: 700px), (orientation: landscape)"
+MQ_PC = "(min-width: 900px), (orientation: landscape)"
+# Telefono (anche girato in orizzontale): si usano le versioni leggere NOME-tel.mp4 (Francesco 15/10/2026).
+MQ_TEL = "(max-width: 899.98px), (max-height: 499.98px)"
 
 
 def e(t):
@@ -113,6 +117,11 @@ def picture(nome, alt, sizes, classe="", loading="lazy", priorita=None):
     return ('<picture%s style="--ratio: %d / %d"><source type="image/webp" srcset="%s" sizes="%s">'
             '<img src="%s" alt="%s" width="%d" height="%d" loading="%s" decoding="async" draggable="false"%s></picture>'
             % (cl, m["w"], m["h"], webp, sizes, jpg, e(alt), m["w"], m["h"], loading, extra))
+
+
+def srcset(nome):
+    m = MAN[nome]
+    return ", ".join("assets/img/%s-%d.webp %dw" % (nome, w, w) for w in m["webp"])
 
 
 def grande(nome):
@@ -139,6 +148,12 @@ def poster_srcset(nome):
     return "%s-poster.webp %dw" % (b, w)
 
 
+def tel(nome):
+    """Versione leggera per il telefono, se c'e' (tools/video/montaggio.py telefono)."""
+    f = "assets/video/%s-tel.mp4" % nome
+    return f if os.path.exists(os.path.join(SITO, f)) else None
+
+
 def video_box(nome, alt, sizes, classe="", tag="div"):
     """Video muto in loop, senza comandi, INTERO (il riquadro ha le proporzioni del video).
     Si scarica e gira solo quando entra nello schermo (preload="none" + data-clip in main.js).
@@ -147,9 +162,10 @@ def video_box(nome, alt, sizes, classe="", tag="div"):
     b = "assets/video/" + nome
     return ('<%s class="video-box%s" data-clip style="--ratio: %d / %d">'
             '<picture><source type="image/webp" srcset="%s" sizes="%s"><img src="%s-poster.jpg" alt="%s" width="%d" height="%d" loading="lazy" decoding="async" draggable="false"></picture>'
-            '<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">'
+            '<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"%s>'
             '<source src="%s.mp4" type="video/mp4"></video></%s>'
-            % (tag, (" " + classe) if classe else "", w, h, poster_srcset(nome), sizes, b, e(alt), w, h, b, tag))
+            % (tag, (" " + classe) if classe else "", w, h, poster_srcset(nome), sizes, b, e(alt), w, h,
+               (' data-src-tel="%s"' % tel(nome)) if tel(nome) else "", b, tag))
 
 
 def icona(id_, classe="icona"):
@@ -162,6 +178,7 @@ SPRITE = """<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.o
   <symbol id="i-foglia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19l7-7"/></g></symbol>
   <symbol id="i-freccia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></g></symbol>
   <symbol id="i-giu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12l7 7 7-7"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></symbol>
   <symbol id="i-dx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></symbol>
   <symbol id="i-sx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M5 5l14 14M19 5L5 19"/></symbol>
@@ -396,7 +413,7 @@ def testata(home=True):
 </header>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
   <div class="menu__testa">
-    <img src="assets/img/logo-bianco-640.png" alt="Astra Gardens" width="640" height="131">
+    <picture><source type="image/webp" srcset="assets/img/logo-bianco-640.webp"><img src="assets/img/logo-bianco-640.png" alt="Astra Gardens" width="640" height="131" loading="lazy" decoding="async"></picture>
     <button class="chiudi-menu" type="button">Chiudi%(icx)s</button>
   </div>
   <nav class="menu__voci" aria-label="Sezioni della pagina">
@@ -407,7 +424,7 @@ def testata(home=True):
   <div class="menu__piede">
     <a class="pillola-grande pillola-grande--chiara" href="%(wa)s" target="_blank" rel="noopener">Scrivici su WhatsApp</a>
     <a class="pillola-grande pillola-grande--chiara" href="tel:%(tel)s">Chiamaci · %(tel_breve)s</a>
-    <p class="menu__social"><a href="%(ig)s" target="_blank" rel="noopener">Instagram</a><a href="%(fb)s" target="_blank" rel="noopener">Facebook</a><a href="%(google)s" target="_blank" rel="noopener">Google</a></p>
+    <p class="menu__social"><a href="%(ig)s" target="_blank" rel="noopener">Instagram</a><a href="%(fb)s" target="_blank" rel="noopener">Facebook</a><a href="%(google)s" target="_blank" rel="noopener">Recensioni su Google</a></p>
   </div>
 </div>
 """ % {"p": p, "wa": WA_GENERALE, "tel": TEL_LINK, "tel_breve": TEL_BREVE, "ictel": icona("i-tel"),
@@ -430,7 +447,7 @@ def piede(home=True):
       <div><p class="piede__titoletto">Servizi</p><ul role="list">%(servizi)s</ul></div>
       <div><p class="piede__titoletto">Dove lavoriamo</p><ul role="list"><li>Sede a Flero</li><li>Brescia città</li><li>Tutta la provincia</li></ul></div>
       <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:%(tel)s">%(tel_breve)s</a></li><li><a href="mailto:%(email)s">%(email_capo)s</a></li></ul></div>
-      <div><p class="piede__titoletto">Social</p><ul role="list"><li><a href="%(ig)s" target="_blank" rel="noopener">Instagram</a></li><li><a href="%(fb)s" target="_blank" rel="noopener">Facebook</a></li><li><a href="%(google)s" target="_blank" rel="noopener">Google</a></li></ul></div>
+      <div><p class="piede__titoletto">Social</p><ul role="list"><li><a href="%(ig)s" target="_blank" rel="noopener">Instagram</a></li><li><a href="%(fb)s" target="_blank" rel="noopener">Facebook</a></li><li><a href="%(google)s" target="_blank" rel="noopener">Recensioni su Google</a></li></ul></div>
     </div>
     <div class="piede__legale">
       <picture><source type="image/webp" srcset="assets/img/logo-bianco-640.webp"><img src="assets/img/logo-bianco-640.png" alt="Astra Gardens" width="640" height="131" loading="lazy"></picture>
@@ -460,22 +477,22 @@ def hero():
     video = []
     for nome, alt in HERO_TEL:
         b = "assets/video/" + nome
-        video.append('      <video class="hero__v" data-set="tel" data-src="%s.mp4" data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
-                     % (b, b, e(alt)))
+        video.append('      <video class="hero__v" data-set="tel" data-src="%s" data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
+                     % (tel(nome) or b + ".mp4", b, e(alt)))
     for nome, alt, hd in HERO_PC:
         b = "assets/video/" + nome
-        extra = ' data-src-hd="assets/video/%s.mp4"' % hd if hd else ""
+        extra = (' data-src-hd="assets/video/%s.mp4"' % hd if hd else "") + (' data-src-tel="%s"' % tel(nome) if tel(nome) else "")
         video.append('      <video class="hero__v" data-set="pc" data-src="%s.mp4"%s data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
                      % (b, extra, b, e(alt)))
     avvio = ("<script>(function(){var b=document.querySelector('[data-hero]');if(!b)return;"
              "var s=matchMedia(b.getAttribute('data-mq')).matches?'pc':'tel';"
              "var v=b.querySelector('video[data-set='+s+']');if(!v)return;"
-             "var hd=v.getAttribute('data-src-hd');"
-             "v.src=hd&&innerWidth*(devicePixelRatio||1)>2000?hd:v.getAttribute('data-src');"
+             "var hd=v.getAttribute('data-src-hd'),t=v.getAttribute('data-src-tel');"
+             "v.src=t&&matchMedia('" + MQ_TEL + "').matches?t:hd&&innerWidth*(devicePixelRatio||1)>2000?hd:v.getAttribute('data-src');"
              "v.setAttribute('data-caricato','1');v.preload='auto';v.muted=true;v.className+=' attivo';"
              "try{var p=v.play();if(p&&p.catch)p.catch(function(){})}catch(_){}})();</script>")
     return """  <section class="hero" id="inizio" aria-label="I nostri giardini in video">
-    <div class="hero__schermo" data-hero data-mq="%(mq)s" style="--ratio-tel: %(wt)d / %(ht)d; --ratio-pc: %(wp)d / %(hp)d">
+    <div class="hero__schermo" data-hero data-mq="%(mq)s" data-mq-tel="%(mqtel)s" style="--ratio-tel: %(wt)d / %(ht)d; --ratio-pc: %(wp)d / %(hp)d">
       <picture class="hero__poster">
         <source media="%(mq)s" type="image/webp" srcset="assets/video/%(pc)s-poster.webp">
         <source media="%(mq)s" srcset="assets/video/%(pc)s-poster.jpg">
@@ -484,7 +501,7 @@ def hero():
       </picture>
 %(video)s
       <div class="hero__marchio">
-        <picture><source type="image/webp" srcset="assets/img/logo-bianco-640.webp 640w, assets/img/logo-bianco-960.webp 960w, assets/img/logo-bianco-1400.webp 1400w" sizes="(min-width: 700px) clamp(220px, 30vw, 460px), 176px"><img src="assets/img/logo-bianco-640.png" alt="Astra Gardens" width="640" height="131"></picture>
+        <picture><source type="image/webp" srcset="assets/img/logo-bianco-640.webp 640w, assets/img/logo-bianco-960.webp 960w, assets/img/logo-bianco-1400.webp 1400w" sizes="(min-width: 900px) clamp(200px, 23vw, 360px), 176px"><img src="assets/img/logo-bianco-640.png" alt="Astra Gardens" width="640" height="131"></picture>
         <p class="hero__pillola">Progettazione • Realizzazione • Manutenzione</p>
         <p class="hero__sottotitolo">Dal 2023 progettiamo, realizziamo e curiamo giardini in tutta la provincia di Brescia, su misura per ogni esigenza e ogni gusto.</p>
       </div>
@@ -493,7 +510,7 @@ def hero():
     </div>
     %(avvio)s
   </section>
-""" % {"mq": MQ_PC, "wt": wt, "ht": ht, "wp": wp, "hp": hp, "pc": HERO_PC[0][0], "tel": HERO_TEL[0][0],
+""" % {"mq": MQ_PC, "mqtel": MQ_TEL, "wt": wt, "ht": ht, "wp": wp, "hp": hp, "pc": HERO_PC[0][0], "tel": HERO_TEL[0][0],
        "video": "\n".join(video), "avvio": avvio, "icgiu": icona("i-giu")}
 
 
@@ -502,8 +519,8 @@ def intro():
     <div class="contenitore intro__griglia">
       <div class="intro__testo">
         <p class="occhiello solo-tel rivela">Giardinieri a Flero · in tutta la provincia di Brescia</p>
-        <h1 id="titolo-intro" class="rivela" style="--ritardo: .1s">Il tuo giardino sempre bello. <em>Ci pensiamo noi.</em></h1>
-        <p class="intro__lead rivela" style="--ritardo: .2s">Progettiamo, realizziamo e curiamo giardini in tutta la provincia di Brescia. Una squadra giovane, guidata da un perito agrario iscritto all'albo, che segue il tuo verde dalla prima visita alla cura di ogni stagione.</p>
+        <h1 id="titolo-intro" class="rivela" style="--ritardo: .1s">Il tuo giardino sempre bello.<br> <em>Ci&nbsp;pensiamo noi.</em></h1>
+        <p class="intro__lead rivela" style="--ritardo: .2s">Una squadra giovane, guidata da un perito agrario iscritto all'albo: dal primo sopralluogo alla cura di ogni stagione, il tuo verde è in buone mani.</p>
         <div class="intro__azioni rivela" style="--ritardo: .3s">
           <a class="btn btn--pieno btn--grande btn--wa" href="%(wa)s" target="_blank" rel="noopener">%(icwa)s<span>Scrivici su WhatsApp</span></a>
           <a class="btn btn--vuoto btn--grande" href="tel:%(tel)s">Chiamaci · %(tel_breve)s</a>
@@ -529,15 +546,24 @@ def galleria():
             if tipo == "foto":
                 r = proporzione(nome)
                 media = picture(nome, alt, "(min-width: 900px) %dpx, %dpx" % (round(hp * r), round(ht * r)))
-                dati = 'data-media="foto" data-src="%s" data-w="%d" data-h="%d"' % (grande(nome), MAN[nome]["w"], MAN[nome]["h"])
+                dati = 'data-media="foto" data-src="%s" data-srcset="%s" data-w="%d" data-h="%d"' % (grande(nome), srcset(nome), MAN[nome]["w"], MAN[nome]["h"])
                 etichetta = "Apri la foto: " + alt
                 stile = "--ratio: %d / %d" % (MAN[nome]["w"], MAN[nome]["h"])
             else:
                 w, h = misura_video(nome)
                 larga = w > h
-                media = video_box(nome, alt, ("(min-width: 900px) %dpx, 88vw" % round(hp * w / h)) if larga else
-                                  "(min-width: 900px) %dpx, %dpx" % (round(hp * w / h), round(ht * w / h)), tag="span")
-                dati = 'data-media="video" data-src="assets/video/%s.mp4" data-poster="assets/video/%s-poster.jpg" data-w="%d" data-h="%d"' % (nome, nome, w, h)
+                if larga:
+                    # video orizzontali (pesanti): nella striscia solo la locandina con il segno «play»,
+                    # il video si scarica e parte solo nella finestra a schermo intero
+                    b = "assets/video/" + nome
+                    media = ('<span class="locandina" style="--ratio: %d / %d"><picture><source type="image/webp" srcset="%s" sizes="(min-width: 900px) %dpx, 88vw">'
+                             '<img src="%s-poster.jpg" alt="%s" width="%d" height="%d" loading="lazy" decoding="async" draggable="false"></picture>'
+                             '<span class="locandina__play" aria-hidden="true">%s</span></span>'
+                             % (w, h, poster_srcset(nome), round(hp * w / h), b, e(alt), w, h, icona("i-play")))
+                else:
+                    media = video_box(nome, alt, "(min-width: 900px) %dpx, %dpx" % (round(hp * w / h), round(ht * w / h)), tag="span")
+                dati = 'data-media="video" data-src="assets/video/%s.mp4"%s data-poster="assets/video/%s-poster.jpg" data-w="%d" data-h="%d"' % (
+                    nome, (' data-src-tel="%s"' % tel(nome)) if tel(nome) else "", nome, w, h)
                 etichetta = "Apri il video: " + alt
                 stile = "--ratio: %d / %d" % (w, h)
             classe = "striscia__voce striscia__voce--larga" if tipo == "video" and larga else "striscia__voce"
@@ -551,7 +577,7 @@ def galleria():
       </div>
       <p class="cantieri__aiuto rivela" style="--ritardo: .15s">Scorri, tocca una foto o un video per vederlo in grande.</p>
     </div>
-    <div class="striscia rivela" data-striscia tabindex="0" aria-label="Foto e video dai nostri cantieri, scorrono da soli" style="--h-tel: %(ht)dpx; --h-pc: %(hp)dpx">
+    <div class="striscia rivela" data-striscia tabindex="0" role="region" aria-label="Foto e video dai nostri cantieri, scorrono da soli" style="--h-tel: %(ht)dpx; --h-pc: %(hp)dpx">
       <ul class="striscia__lista" role="list">
 %(voci)s
       </ul>
@@ -590,7 +616,7 @@ def servizi():
         nota_html = '<p class="fisarmonica__nota">%s</p>' % e(nota) if nota else ""
         voci.append("""        <li class="fisarmonica__voce%(cl)s" id="servizio-%(slug)s">
           <h3><button class="fisarmonica__btn" type="button" id="srv-%(slug)s-btn" aria-expanded="%(esp)s" aria-controls="srv-%(slug)s">%(icfoglia)s<span class="fisarmonica__titolo">%(titolo)s</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
-          <div class="fisarmonica__pannello" id="srv-%(slug)s" role="region" aria-labelledby="srv-%(slug)s-btn">
+          <div class="fisarmonica__pannello" id="srv-%(slug)s">
             <div class="fisarmonica__interno">
               <div class="fisarmonica__testo"><p>%(testo)s</p>%(avviso)s</div>
               %(figura)s
@@ -623,7 +649,7 @@ def progetti():
           %s
           <h3>%s</h3>
           <p>%s</p>
-        </li>""" % (picture(foto, alt, "(min-width: 900px) 380px, 280px"), e(titolo), e(testo)))
+        </li>""" % (picture(foto, alt, "(min-width: 900px) 380px, 280px", classe="scheda__foto"), e(titolo), e(testo)))
     return """  <section class="progetti" id="lavori" aria-labelledby="titolo-progetti">
     <div class="contenitore progetti__testa">
       <div class="rivela">
@@ -635,7 +661,7 @@ def progetti():
         <button class="freccia freccia--piena" type="button" data-carosello-avanti aria-label="Lavoro successivo">%(icdx)s</button>
       </div>
     </div>
-    <div class="carosello rivela" data-carosello tabindex="0" aria-label="I nostri lavori più belli, scorri per vederli tutti" style="--ritardo: .1s">
+    <div class="carosello rivela" data-carosello tabindex="0" role="region" aria-label="I nostri lavori più belli, scorri per vederli tutti" style="--ritardo: .1s">
       <ul class="carosello__lista" role="list">
 %(schede)s
       </ul>
@@ -669,7 +695,7 @@ def confronto(oggi, progetto, alt_oggi, alt_progetto, titolo, sx, dx, nota, size
 
 
 CONFRONTI = [
-    ("lavoro-prima", "lavoro-dopo", "Prima: terreno spoglio e secco dietro la recinzione",
+    ("lavoro-prima", "lavoro-dopo", "Prima: un grande fico piegato sul giardino, terra spoglia e oggetti accatastati dietro la recinzione",
      "Dopo: aiuola pacciamata con nuove piante, prato e recinzione in ordine",
      "Un giardino trasformato", "Prima", "Dopo", "Lavoro realizzato · foto vere"),
     ("render-aiuola-oggi", "render-aiuola-progetto", "Oggi: l'aiuola d'ingresso prima del progetto",
@@ -710,7 +736,7 @@ def prima_dopo():
     return """  <section class="primadopo sezione--chiara" id="prima-e-dopo" aria-labelledby="titolo-primadopo">
     <div class="contenitore primadopo__testa rivela">
       <p class="pillola">Prima e dopo</p>
-      <h2 id="titolo-primadopo">Com'era. Com'è adesso.</h2>
+      <h2 id="titolo-primadopo">Com'era. Come diventa.</h2>
       <p class="primadopo__aiuto">Trascina il cursore e guarda il giardino cambiare.</p>
     </div>
 %s
@@ -732,7 +758,7 @@ def zona():
       <div class="zona__corpo rivela" style="--ritardo: .15s">
         <p>Raccontaci il tuo giardino con una foto su WhatsApp: ti rispondiamo con un'idea e fissiamo un sopralluogo.</p>
         <a class="link-freccia" href="%(wa)s" target="_blank" rel="noopener">Scrivici su WhatsApp%(icfreccia)s</a>
-        <p class="zona__appuntamento">Riceviamo solo su appuntamento: scrivici su WhatsApp e fissiamo un sopralluogo.</p>
+        <p class="zona__appuntamento">In sede riceviamo solo su appuntamento.</p>
       </div>
     </div>
     <div class="nastro" aria-hidden="true" style="--h-tel: %(ht)dpx; --h-pc: %(hp)dpx">
@@ -838,26 +864,25 @@ def pagina_404():
 <style>
   @font-face{font-family:"DM Sans";src:url("/assets/fonts/dm-sans-var.woff2") format("woff2");font-weight:400 600;font-display:swap}
   @font-face{font-family:"Instrument Serif";src:url("/assets/fonts/instrument-serif.woff2") format("woff2");font-weight:400;font-display:swap}
-  html,body{margin:0;height:100%%}
-  body{font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#2A381B;color:#fff;display:grid;place-items:center;text-align:center;padding:24px;box-sizing:border-box;font-size:17px;line-height:1.6}
-  main{max-width:560px}
+  html{height:100%%}
+  body{margin:0;min-height:100%%;display:flex;flex-direction:column;align-items:center;font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#2A381B;color:#fff;text-align:center;padding:24px 24px 0;box-sizing:border-box;font-size:17px;line-height:1.6}
+  main{max-width:560px;margin:auto 0;padding:24px 0}
   img{width:220px;height:auto;margin:0 auto 36px;display:block}
   h1{font-family:"Instrument Serif",Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(40px,9vw,64px);line-height:1;margin:0 0 .4em}
   p{color:#D6DCCB;margin:0 0 28px}
   a{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:10px 28px;border-radius:999px;border:1px solid #fff;color:#fff;font-family:"Instrument Serif",Georgia,serif;font-size:22px;text-decoration:none;margin:6px}
   a:hover{background:#fff;color:#2A381B}
-  footer{position:absolute;left:0;right:0;bottom:0;padding:16px 24px calc(16px + env(safe-area-inset-bottom));font-size:12px;color:#D6DCCB}
-  footer a{display:inline;min-height:0;padding:0;margin:0;border:0;border-radius:0;font-family:inherit;font-size:inherit;color:#D6DCCB;text-decoration:underline}
+  footer{position:static;margin-top:auto;padding:16px 0 calc(16px + env(safe-area-inset-bottom));font-size:12px;color:#D6DCCB}
+  footer a{display:inline-block;min-height:0;padding:13px 0;margin:0;border:0;border-radius:0;font-family:inherit;font-size:inherit;color:#D6DCCB;text-decoration:underline}
   footer a:hover{background:none;color:#fff}
   .intero{white-space:nowrap}
-  body{padding-bottom:96px}
 </style>
 </head>
 <body>
 <main>
   <img src="data:image/webp;base64,%(logo)s" alt="Astra Gardens" width="640" height="131">
   <h1>Questo sentiero porta altrove.</h1>
-  <p>La pagina che cerchi ha cambiato posto. Torna alla pagina principale e scopri i nostri giardini.</p>
+  <p data-testo-approvato>Questa pagina non c'è, o ha cambiato indirizzo.</p>
   <a id="casa" href="/">Torna alla pagina principale</a>
   <a href="%(wa)s" target="_blank" rel="noopener">Scrivici su WhatsApp</a>
 </main>

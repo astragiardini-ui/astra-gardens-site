@@ -18,6 +18,7 @@ Uso, dalla cartella del sito (Pillow serve per i poster: stesso venv di tools/pr
     /private/tmp/claude-501/allinea/bin/python tools/video/montaggio.py clip --solo antizanzare
     /private/tmp/claude-501/allinea/bin/python tools/video/montaggio.py interi     # i due video interi dell'apertura
     python3 tools/video/montaggio.py hd       # video HD del 14/10/2026: copia + furgone 2560 + poster
+    python3 tools/video/montaggio.py telefono # versioni del telefono (NOME-tel.mp4) con tetto di bitrate
     /private/tmp/claude-501/allinea/bin/python tools/video/montaggio.py tutto
     python3 tools/video/montaggio.py controlla   # ffprobe di tutti i video pubblicati
 
@@ -287,6 +288,52 @@ def espressione_pan(pan, w, cw):
     return "clip((%s)*%d-%d,0,%d)" % (expr, w, cw // 2, w - cw)
 
 
+def _sorgente_hd(c, rel):
+    if any(v.lower() in rel.lower() for v in c.get("vietati", [])):
+        raise SystemExit("%s è l'originale NON sfocato: si usa solo il master con la targa sfocata" % rel)
+    src = os.path.join(MEDIA, rel)
+    if not os.path.exists(src):
+        raise SystemExit("manca il file sorgente: " + src)
+    w, h, trc = info(src)
+    if min(w, h) < LATO_MINIMO:
+        raise SystemExit("%s è %dx%d: sotto i %d px non si pubblica" % (rel, w, h, LATO_MINIMO))
+    if trc in ("arib-std-b67", "smpte2084"):
+        if rel.lower().endswith(".mov"):
+            return sorgente_sdr(rel)  # originale dell'iPhone: HDR -> SDR con avconvert
+        raise SystemExit("%s è HDR (%s): serve la versione SDR" % (rel, trc))
+    return src
+
+
+def _rendi(src, v, out, crf, preset, tetto=None):
+    """Una codifica H.264 alla larghezza v["larghezza"] (mai ingrandita), con il ritaglio verticale se c'è.
+    tetto = (maxrate, bufsize): solo per le versioni del telefono."""
+    w, h, _ = info(src)
+    ow = int(v["larghezza"])
+    oh = round(ow * h / w) // 2 * 2
+    if ow > w:
+        raise SystemExit("%s: %d px chiesti ma il master è largo %d: niente ingrandimenti" % (v["nome"], ow, w))
+    filtro_v = "scale=%d:%d:flags=lanczos,setsar=1,format=yuv420p" % (ow, oh)
+    if v.get("ritaglio_verticale"):
+        # UNICO ritaglio voluto del sito (Francesco 15/10/2026, «taglialo se serve per il telefono»):
+        # finestra 9:16 alta quanto il fotogramma, che segue il soggetto con una panoramica lenta
+        cw = round(h * 9 / 16) // 2 * 2
+        oh = ow * 16 // 9 // 2 * 2
+        if ow > cw:
+            raise SystemExit("%s: la finestra larga %d px verrebbe ingrandita a %d" % (v["nome"], cw, ow))
+        filtro_v = ("crop=%d:%d:'%s':0,scale=%d:%d:flags=lanczos,setsar=1,format=yuv420p"
+                    % (cw, h, espressione_pan(v["ritaglio_verticale"]["pan"], w, cw), ow, oh))
+    extra = ["-maxrate", tetto[0], "-bufsize", tetto[1]] if tetto else []
+    esegui(["ffmpeg", "-v", "error", "-y", "-i", src, "-an", "-map_metadata", "-1", "-map_chapters", "-1",
+            "-vf", filtro_v,
+            "-c:v", "libx264", "-profile:v", "high", "-preset", preset, "-crf", str(crf)] + extra +
+           ["-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
+            "-color_range", "tv", "-movflags", "+faststart", out])
+    W, H, br, dur, size = descrivi(out)
+    print("  rendi %s  %dx%d  crf %s %s%s  %.1f s  %.1f Mbit/s  %.1f MB"
+          % (os.path.relpath(out, SITO), W, H, crf, preset, (" tetto %s" % tetto[0]) if tetto else "",
+             dur, br / 1e6, size / 1048576))
+
+
 def hd(cfg, solo=None):
     """Video HD del sito ("hd" in video.json). I file "copia" sono già l'uscita finale (H.264 SDR,
     faststart): si copiano senza ricodificarli. I file "rendi" si portano alla larghezza chiesta partendo
@@ -295,24 +342,10 @@ def hd(cfg, solo=None):
     Il nome dell'originale non sfocato del furgone ("vietati") fa fermare tutto. --solo NOME = una voce."""
     c = cfg["hd"]
     cartella = os.path.join(SITO, c["cartella"])
-    def sorgente(rel):
-        if any(v.lower() in rel.lower() for v in c.get("vietati", [])):
-            raise SystemExit("%s è l'originale NON sfocato: si usa solo il master con la targa sfocata" % rel)
-        src = os.path.join(MEDIA, rel)
-        if not os.path.exists(src):
-            raise SystemExit("manca il file sorgente: " + src)
-        w, h, trc = info(src)
-        if min(w, h) < LATO_MINIMO:
-            raise SystemExit("%s è %dx%d: sotto i %d px non si pubblica" % (rel, w, h, LATO_MINIMO))
-        if trc in ("arib-std-b67", "smpte2084"):
-            if rel.lower().endswith(".mov"):
-                return sorgente_sdr(rel)  # originale dell'iPhone: HDR -> SDR con avconvert
-            raise SystemExit("%s è HDR (%s): serve la versione SDR" % (rel, trc))
-        return src
     for v in c["copia"]:
         if solo and v["nome"] != solo:
             continue
-        src = sorgente(v["file"])
+        src = _sorgente_hd(c, v["file"])
         out = os.path.join(cartella, v["nome"] + ".mp4")
         shutil.copyfile(src, out)
         W, H, br, dur, size = descrivi(out)
@@ -321,33 +354,26 @@ def hd(cfg, solo=None):
     for v in c["rendi"]:
         if solo and v["nome"] != solo:
             continue
-        src = sorgente(v["file"])
-        w, h, _ = info(src)
-        ow = int(v["larghezza"])
-        oh = round(ow * h / w) // 2 * 2
-        if ow > w:
-            raise SystemExit("%s: %d px chiesti ma il master è largo %d: niente ingrandimenti" % (v["nome"], ow, w))
+        src = _sorgente_hd(c, v["file"])
         out = os.path.join(cartella, v["nome"] + ".mp4")
-        filtro_v = "scale=%d:%d:flags=lanczos,setsar=1,format=yuv420p" % (ow, oh)
-        if v.get("ritaglio_verticale"):
-            # UNICO ritaglio voluto del sito (Francesco 15/10/2026, «taglialo se serve per il telefono»):
-            # finestra 9:16 alta quanto il fotogramma, che segue il soggetto con una panoramica lenta
-            cw = round(h * 9 / 16) // 2 * 2
-            oh = ow * 16 // 9 // 2 * 2
-            if ow > cw:
-                raise SystemExit("%s: la finestra larga %d px verrebbe ingrandita a %d" % (v["nome"], cw, ow))
-            filtro_v = ("crop=%d:%d:'%s':0,scale=%d:%d:flags=lanczos,setsar=1,format=yuv420p"
-                        % (cw, h, espressione_pan(v["ritaglio_verticale"]["pan"], w, cw), ow, oh))
-        esegui(["ffmpeg", "-v", "error", "-y", "-i", src, "-an", "-map_metadata", "-1", "-map_chapters", "-1",
-                "-vf", filtro_v,
-                "-c:v", "libx264", "-profile:v", "high", "-preset", v["preset"], "-crf", str(v["crf"]),
-                "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
-                "-color_range", "tv", "-movflags", "+faststart", out])
-        W, H, br, dur, size = descrivi(out)
-        print("  rendi %s  %dx%d  crf %s %s  %.1f s  %.1f Mbit/s  %.1f MB"
-              % (os.path.relpath(out, SITO), W, H, v["crf"], v["preset"], dur, br / 1e6, size / 1048576))
+        _rendi(src, v, out, v["crf"], v["preset"])
         if v.get("poster"):
             poster(out, os.path.join(cartella, v["nome"] + "-poster"), int(v["poster"]))
+
+
+def telefono(cfg, solo=None):
+    """Versioni del TELEFONO ("telefono" in video.json, decisione di Francesco del 15/10/2026: «per la
+    qualità il tempo deve essere accettabile»). Stessa sorgente e stesso ritaglio delle versioni piene,
+    CRF del profilo con un tetto di bitrate (maxrate/bufsize) perché si carichino in fretta sulla rete del
+    telefono. Escono come NOME-tel.mp4; le versioni piene restano per il computer."""
+    c, t = cfg["hd"], cfg["telefono"]
+    cartella = os.path.join(SITO, c["cartella"])
+    tetto = (t["maxrate"], t["bufsize"])
+    for v in t["video"]:
+        if solo and v["nome"] != solo:
+            continue
+        src = _sorgente_hd(c, v["file"])
+        _rendi(src, v, os.path.join(cartella, v["nome"] + "-tel.mp4"), t["crf"], t["preset"], tetto)
 
 
 def controlla():
@@ -384,6 +410,9 @@ def main():
     if cosa in ("hd", "tutto"):
         print("Video HD del sito (14/10/2026)")
         hd(cfg, solo)
+    if cosa in ("telefono", "tutto"):
+        print("Versioni leggere per il telefono (15/10/2026)")
+        telefono(cfg, solo)
     if cosa in ("controlla", "tutto"):
         print("Controllo dei video pubblicati")
         controlla()
