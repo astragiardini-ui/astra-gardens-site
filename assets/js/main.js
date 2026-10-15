@@ -157,7 +157,42 @@
       v.src = sorgente(v);
       try { v.load(); } catch (_) {}
     }
-    function pronto(v) { return !!v.getAttribute("data-caricato") && v.readyState >= 3; }
+    /* pronto = scaricato tutto, oppure ha già in memoria almeno il pezzo che servirà nel suo turno */
+    function avanti(v) {
+      try {
+        var b = v.buffered, t = v.currentTime;
+        for (var k = 0; k < b.length; k++) if (b.start(k) <= t + 0.1 && b.end(k) > t) return b.end(k) - t;
+      } catch (_) {}
+      return 0;
+    }
+    function pronto(v) {
+      if (!v.getAttribute("data-caricato") || v.readyState < 3 || v._riscalda) return false;
+      return scaricato(v) || avanti(v) >= 2;
+    }
+    /* Un video fermo il browser lo scarica solo per qualche decimo di secondo: per averne pronto un pezzo
+       lo si fa girare nascosto finché ha in memoria 3 secondi, poi lo si ferma e si torna al punto di prima. */
+    function riscalda(v) {
+      if (v._riscalda || v.classList.contains("attivo")) return;
+      v._riscalda = true;
+      var da = v.currentTime, t0 = adesso();
+      function basta() {
+        if (!v._riscalda) return;
+        if (v.classList.contains("attivo")) { v._riscalda = false; return; }
+        if (scaricato(v) || avanti(v) + (v.currentTime - da) >= 3.2 || adesso() - t0 > 20000) {
+          v._riscalda = false;
+          v._fermatoDaNoi = true;
+          try { v.pause(); v.currentTime = da; } catch (_) {}
+          coda();
+        } else {
+          setTimeout(basta, 250);
+        }
+      }
+      v.muted = true;
+      var p;
+      try { p = v.play(); } catch (_) { p = null; }
+      if (p && p.catch) p.catch(function () { v._riscalda = false; });
+      setTimeout(basta, 250);
+    }
     function scaricato(v) {
       try {
         var b = v.buffered;
@@ -165,6 +200,7 @@
       } catch (_) { return true; }
     }
     function staScaricando(v) {
+      if (v._riscalda) return true;
       if (!v.getAttribute("data-caricato") || scaricato(v) || v.error) return false;
       if (v.networkState !== 2 && v.readyState >= 3) return false; /* il browser ha smesso da solo */
       if (!v._inizioCarico) v._inizioCarico = adesso();
@@ -175,7 +211,18 @@
       if (!inVista || doc.visibilityState !== "visible" || !lista.length) return;
       if (lista.some(staScaricando)) { tCoda = setTimeout(coda, 400); return; }
       var dopo = lista.filter(function (v) { return !v.getAttribute("data-caricato"); })[0];
-      if (dopo) { carica(dopo); tCoda = setTimeout(coda, 400); }
+      if (dopo) {
+        carica(dopo);
+        var via = function () { dopo.removeEventListener("canplay", via); riscalda(dopo); };
+        if (dopo.readyState >= 3) via(); else dopo.addEventListener("canplay", via);
+        tCoda = setTimeout(coda, 400);
+        return;
+      }
+      /* tutti avviati: chi è rimasto con poco in memoria si riscalda, uno alla volta */
+      var corto = lista.filter(function (v) {
+        return !v.classList.contains("attivo") && v.readyState >= 1 && !scaricato(v) && avanti(v) < 2.5;
+      })[0];
+      if (corto) riscalda(corto);
     }
     function aggiornaPunti() {
       tutti(".hero__punto", punti).forEach(function (b, n) { b.setAttribute("aria-current", n === i ? "true" : "false"); });

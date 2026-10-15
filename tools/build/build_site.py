@@ -86,7 +86,7 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261015f"
+VERSIONE = "20261015h"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 700px), (orientation: landscape)"
