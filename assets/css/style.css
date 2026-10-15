@@ -215,14 +215,24 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 .hero__v.attivo { opacity: 1; }
 .hero__v[data-set="pc"] { display: none; }
 .hero__marchio {
-  position: absolute; left: 0; right: 0; top: 22px; z-index: 2; display: flex; flex-direction: column; align-items: center;
-  gap: 14px; padding: 0 24px; pointer-events: none; animation: entra 1.2s .3s var(--curva) both;
+  position: absolute; left: 0; right: 0; top: 18px; z-index: 2; display: flex; flex-direction: column; align-items: center;
+  gap: 10px; padding: 0 16px; pointer-events: none; text-align: center;
 }
+.hero__marchio > * { animation: entra 1.2s .3s var(--curva) both; }
 .hero__marchio img { width: 176px; height: auto; filter: drop-shadow(0 1px 8px rgba(0, 0, 0, .55)); }
-.hero__motto {
-  font-size: 13px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; text-align: center;
-  color: #fff; text-shadow: 0 1px 10px rgba(0, 0, 0, .6);
+/* «Progettazione • Realizzazione • Manutenzione» e la frase sotto: niente fasce scure, solo l'ombra morbida del logo */
+.hero__pillola {
+  padding: 4px 10px; border: 1px solid rgba(255, 255, 255, .9); border-radius: 999px; color: #fff;
+  font-size: 9.5px; font-weight: 600; letter-spacing: .15em; line-height: 1.4; text-transform: uppercase; white-space: nowrap;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .5)) drop-shadow(0 1px 8px rgba(0, 0, 0, .45)); animation-delay: .5s !important;
 }
+/* la frase sta nel cielo solo dove il cielo e' abbastanza alto: sul telefono e sul tablet coprirebbe la doccia
+   del primo video, quindi li' resta la sola pillola (misurato sui fotogrammi di tutti i video, 15/10/2026) */
+.hero__sottotitolo {
+  display: none; max-width: 560px; color: #fff; line-height: 1.4; text-wrap: balance;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 1px 10px rgba(0, 0, 0, .55); animation-delay: .7s !important;
+}
+.hero__giu { display: none; }
 .hero__punti { position: absolute; left: 0; right: 0; bottom: 8px; z-index: 2; display: flex; justify-content: center; }
 .hero__punti:empty { display: none; }
 .hero__punto { -webkit-appearance: none; appearance: none; border: 0; background: none; padding: 8px; margin: 0; cursor: pointer; }
@@ -232,15 +242,30 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 }
 .hero__punto[aria-current="true"]::before { opacity: 1; transform: scale(1.15); }
 .hero__punto:focus-visible { outline-color: #fff; outline-offset: -2px; border-radius: 50%; }
+@media (min-width: 900px) and (min-aspect-ratio: 1 / 1) {
+  .hero__sottotitolo { display: block; font-size: clamp(15px, 1.15vw, 18px); }
+}
+@keyframes dondola { 0%, 100% { transform: none; } 50% { transform: translateY(4px); } }
 @keyframes entra { from { opacity: 0; transform: translateY(-12px) scale(.98); } to { opacity: 1; transform: none; } }
 @media (min-width: 700px), (orientation: landscape) {
   .hero__schermo { aspect-ratio: var(--ratio-pc); }
   .hero__v { transition-duration: 1.6s; }
   .hero__v[data-set="tel"] { display: none; }
   .hero__v[data-set="pc"] { display: block; }
-  .hero__marchio { top: 9%; }
-  .hero__marchio img { width: clamp(220px, 30vw, 460px); filter: drop-shadow(0 2px 12px rgba(0, 0, 0, .5)); }
-  .hero__punti { bottom: 14px; }
+  .hero__marchio { top: 4%; gap: 12px; }
+  .hero__marchio img { width: clamp(200px, 23vw, 360px); filter: drop-shadow(0 2px 12px rgba(0, 0, 0, .5)); }
+  .hero__pillola { padding: 5px 15px; font-size: 11px; letter-spacing: .2em; }
+  /* freccia rotonda in basso al centro, che porta alla presentazione */
+  .hero__giu {
+    position: absolute; left: 50%; bottom: 22px; z-index: 2; width: 52px; height: 52px; margin-left: -26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; background: #fff; color: var(--verde);
+    box-shadow: 0 6px 20px -6px rgba(0, 0, 0, .45); animation: entra 1.2s .9s var(--curva) both;
+    transition: background-color .25s ease, color .25s ease;
+  }
+  .hero__giu .icona { width: 22px; height: 22px; animation: dondola 2.4s 2.2s ease-in-out infinite; }
+  .hero__giu:hover { background: var(--verde); color: #fff; }
+  .hero__giu:focus-visible { outline-color: #fff; }
+  .hero__punti { left: auto; right: 22px; bottom: 26px; justify-content: flex-end; }
   .hero__punto { padding: 9px; }
   .hero__punto::before { width: 9px; height: 9px; }
 }
@@ -352,6 +377,7 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 .fisarmonica__interno { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding-left: 34px; }
 .fisarmonica__testo { display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.6; }
 .fisarmonica__foto { margin: 0 0 22px; }
+.fisarmonica__testo:last-child { padding-bottom: 22px; }
 .fisarmonica__foto img { width: 100%; height: auto; border-radius: 4px; }
 .fisarmonica__nota { margin-top: 8px; font-size: 12px; color: var(--grigio); }
 @media (min-width: 900px) {
@@ -367,6 +393,7 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
   .fisarmonica__interno { flex-direction: row; align-items: flex-start; gap: 24px; padding-left: 38px; }
   .fisarmonica__testo { flex: 1 1 240px; font-size: 16px; line-height: 1.65; }
   .fisarmonica__foto { flex: 0 0 260px; margin-bottom: 28px; }
+  .fisarmonica__testo:last-child { padding-bottom: 28px; }
 }
 
 /* ---------- progetti: carosello ---------- */
@@ -482,6 +509,7 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 }
 .zona__pin .icona { width: 22px; height: 22px; }
 .zona__corpo .zona__via { font-family: var(--serif); font-size: 26px; line-height: 1.12; color: var(--inchiostro); }
+.zona__corpo .zona__appuntamento { grid-column: 1 / -1; font-size: 15px; line-height: 1.55; color: var(--grigio); }
 .zona__indicazioni { grid-column: 1 / -1; justify-self: start; min-height: 50px; padding: 0 22px; }
 .zona__indicazioni .icona { width: 16px; height: 16px; }
 .piede__indirizzo { margin-top: 4px; line-height: 1.5; }
@@ -602,7 +630,7 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .anima .rivela, .anima .rivela.visibile { transform: none; transition: opacity .4s ease; }
-  .hero__marchio { animation: none; }
+  .hero__marchio > *, .hero__giu, .hero__giu .icona { animation: none; }
   .menu, .menu__voci a { transition: none; }
   .menu__voci a { opacity: 1; transform: none; }
   .nastro { overflow-x: auto; scrollbar-width: none; }

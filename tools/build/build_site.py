@@ -87,7 +87,7 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261015a"
+VERSIONE = "20261015b"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 700px), (orientation: landscape)"
@@ -162,6 +162,7 @@ SPRITE = """<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.o
   <symbol id="i-foglia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19l7-7"/></g></symbol>
   <symbol id="i-freccia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></g></symbol>
   <symbol id="i-luogo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></g></symbol>
+  <symbol id="i-giu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12l7 7 7-7"/></symbol>
   <symbol id="i-dx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></symbol>
   <symbol id="i-sx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M5 5l14 14M19 5L5 19"/></symbol>
@@ -208,6 +209,12 @@ SERVIZI = [
      "Disegniamo il giardino su misura e te lo mostriamo con un render realistico: vedi il risultato prima ancora di iniziare.",
      "render-aiuola-progetto", "Render di progetto: aiuola d'ingresso con bordura in corten, graminacee e luci",
      "Immagine di progetto · render IA"),
+    ("studio-botanico", "Studio botanico",
+     "Scegliamo con te le piante giuste per luce, terreno e tempo che vuoi dedicare al giardino: belle oggi e sane negli anni.",
+     "lav-ulivi-rose", "Ulivi, rose e prato: piante scelte per la luce e il terreno del giardino", None),
+    ("preventivo", "Preventivo",
+     "Un preventivo scritto e chiaro in ogni voce, con le condizioni nero su bianco prima di iniziare.",
+     None, None, None),
     ("realizzazione", "Realizzazione e movimento terra",
      "Scavi, terra nuova, aiuole, bordure e piantagioni: costruiamo il giardino con mezzi nostri e la nostra squadra.",
      "srv-movimento-terra", "Miniescavatore al lavoro e furgone Astra Gardens sullo sfondo", None),
@@ -217,6 +224,12 @@ SERVIZI = [
     ("irrigazione", "Irrigazione automatica",
      "Impianti a goccia e irrigatori a scomparsa, studiati zona per zona: l'acqua giusta, al momento giusto.",
      "srv-irrigazione", "Scavo stretto e preciso con la catenaria per l'impianto di irrigazione", None),
+    ("illuminazione", "Illuminazione",
+     "Luci per vialetti, alberi e aiuole: il giardino si vive anche la sera.",
+     None, None, None),
+    ("arredo", "Arredo e complementi",
+     "Fioriere, vasi, bordure e complementi scelti insieme a te per completare il progetto.",
+     "lav-ghiaia-pergola", "Ghiaia bianca, prato, pergola e piante in vaso a completare il giardino", None),
     ("potature", "Potature e tree climbing",
      "Saliamo sulla pianta con funi e imbrago o con la piattaforma aerea, e potiamo con tagli puliti che rispettano la forma naturale.",
      "srv-alberi", "Giardiniere in tree climbing tra i rami di una grande magnolia", None),
@@ -395,7 +408,7 @@ def piede(home=True):
     <div class="piede__colonne">
       <div><p class="piede__titoletto">Servizi</p><ul role="list">%(servizi)s</ul></div>
       <div><p class="piede__titoletto">Dove lavoriamo</p><ul role="list"><li>Sede a Flero</li><li>Brescia città</li><li>Tutta la provincia</li></ul></div>
-      <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:%(tel)s">%(tel_breve)s</a></li><li><a href="mailto:%(email)s">%(email_capo)s</a></li><li class="piede__indirizzo"><a href="%(indicazioni)s" target="_blank" rel="noopener"><span class="intero">Via Passere 2,</span> <span class="intero">25020 Flero (BS)</span></a></li></ul></div>
+      <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:%(tel)s">%(tel_breve)s</a></li><li><a href="mailto:%(email)s">%(email_capo)s</a></li><li class="piede__indirizzo"><a href="%(indicazioni)s" target="_blank" rel="noopener"><span class="intero">Via Passere 2,</span> <span class="intero">25020 Flero (BS)</span></a> <span class="intero">(su appuntamento)</span></li></ul></div>
       <div><p class="piede__titoletto">Social</p><ul role="list"><li><a href="%(ig)s" target="_blank" rel="noopener">Instagram</a></li><li><a href="%(fb)s" target="_blank" rel="noopener">Facebook</a></li><li><a href="%(google)s" target="_blank" rel="noopener">Google</a></li></ul></div>
     </div>
     <div class="piede__legale">
@@ -452,18 +465,20 @@ def hero():
 %(video)s
       <div class="hero__marchio">
         <picture><source type="image/webp" srcset="assets/img/logo-bianco-640.webp 640w, assets/img/logo-bianco-960.webp 960w, assets/img/logo-bianco-1400.webp 1400w" sizes="(min-width: 700px) clamp(220px, 30vw, 460px), 176px"><img src="assets/img/logo-bianco-640.png" alt="Astra Gardens" width="640" height="131"></picture>
-        <p class="hero__motto solo-pc">Giardinieri a Flero · in tutta la provincia di Brescia</p>
+        <p class="hero__pillola">Progettazione • Realizzazione • Manutenzione</p>
+        <p class="hero__sottotitolo">Dal 2023 progettiamo, realizziamo e curiamo giardini in tutta la provincia di Brescia, su misura per ogni esigenza e ogni gusto.</p>
       </div>
       <div class="hero__punti" role="group" aria-label="Scegli il video"></div>
+      <a class="hero__giu" href="#intro" aria-label="Scorri alla presentazione">%(icgiu)s</a>
     </div>
     %(avvio)s
   </section>
 """ % {"mq": MQ_PC, "wt": wt, "ht": ht, "wp": wp, "hp": hp, "pc": HERO_PC[0][0], "tel": HERO_TEL[0][0],
-       "video": "\n".join(video), "avvio": avvio}
+       "video": "\n".join(video), "avvio": avvio, "icgiu": icona("i-giu")}
 
 
 def intro():
-    return """  <section class="intro" aria-labelledby="titolo-intro">
+    return """  <section class="intro" id="intro" aria-labelledby="titolo-intro">
     <div class="contenitore intro__griglia">
       <div class="intro__testo">
         <p class="occhiello solo-tel rivela">Giardinieri a Flero · in tutta la provincia di Brescia</p>
@@ -555,12 +570,13 @@ def servizi():
           <div class="fisarmonica__pannello" id="srv-%(slug)s" role="region" aria-labelledby="srv-%(slug)s-btn">
             <div class="fisarmonica__interno">
               <div class="fisarmonica__testo"><p>%(testo)s</p>%(avviso)s</div>
-              <figure class="fisarmonica__foto">%(foto)s%(nota)s</figure>
+              %(figura)s
             </div>
           </div>
         </li>""" % {"cl": " aperta" if aperto else "", "slug": slug, "esp": "true" if aperto else "false",
                     "icfoglia": icona("i-foglia", "icona fisarmonica__icona"), "titolo": e(titolo), "testo": e(testo),
-                    "foto": picture(foto, alt, "(min-width: 900px) 260px, calc(100vw - 74px)"), "nota": nota_html,
+                    "figura": ('<figure class="fisarmonica__foto">%s%s</figure>' % (
+                        picture(foto, alt, "(min-width: 900px) 260px, calc(100vw - 74px)"), nota_html)) if foto else "",
                     "avviso": '<p class="avviso-render">%s</p>' % e(AVVISO_RENDER) if slug == "progetto" else ""})
     return """  <section class="servizi" id="servizi" aria-labelledby="titolo-servizi">
     <div class="contenitore servizi__griglia">
@@ -680,6 +696,7 @@ def zona():
         <div class="zona__dove" id="dove-siamo">
           <span class="zona__pin">%(icluogo)s</span>
           <p class="zona__via">Ci trovi in <span class="intero">Via Passere 2,</span> <span class="intero">25020 Flero (BS)</span></p>
+          <p class="zona__appuntamento">Riceviamo in sede solo su appuntamento: scrivici prima su WhatsApp.</p>
           <a class="btn btn--vuoto zona__indicazioni" href="%(indicazioni)s" target="_blank" rel="noopener">Indicazioni%(icfreccia)s</a>
         </div>
       </div>

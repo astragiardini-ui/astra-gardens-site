@@ -25,7 +25,7 @@
 <link rel="manifest" href="site.webmanifest">
 <link rel="preload" href="assets/fonts/dm-sans-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=20261015a">
+<link rel="stylesheet" href="assets/css/style.css?v=20261015b">
 <script>document.documentElement.className += " js";</script>
 </head>
 <body>
@@ -35,6 +35,7 @@
   <symbol id="i-foglia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19l7-7"/></g></symbol>
   <symbol id="i-freccia" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></g></symbol>
   <symbol id="i-luogo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></g></symbol>
+  <symbol id="i-giu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12l7 7 7-7"/></symbol>
   <symbol id="i-dx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></symbol>
   <symbol id="i-sx" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M5 5l14 14M19 5L5 19"/></symbol>
@@ -95,14 +96,16 @@
       <video class="hero__v" data-set="pc" data-src="assets/video/hero-fiori.mp4" data-poster="assets/video/hero-fiori-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="Verbena, doccia e piscina affacciate sulle colline"></video>
       <div class="hero__marchio">
         <picture><source type="image/webp" srcset="assets/img/logo-bianco-640.webp 640w, assets/img/logo-bianco-960.webp 960w, assets/img/logo-bianco-1400.webp 1400w" sizes="(min-width: 700px) clamp(220px, 30vw, 460px), 176px"><img src="assets/img/logo-bianco-640.png" alt="Astra Gardens" width="640" height="131"></picture>
-        <p class="hero__motto solo-pc">Giardinieri a Flero · in tutta la provincia di Brescia</p>
+        <p class="hero__pillola">Progettazione • Realizzazione • Manutenzione</p>
+        <p class="hero__sottotitolo">Dal 2023 progettiamo, realizziamo e curiamo giardini in tutta la provincia di Brescia, su misura per ogni esigenza e ogni gusto.</p>
       </div>
       <div class="hero__punti" role="group" aria-label="Scegli il video"></div>
+      <a class="hero__giu" href="#intro" aria-label="Scorri alla presentazione"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-giu" xlink:href="#i-giu"></use></svg></a>
     </div>
     <script>(function(){var b=document.querySelector('[data-hero]');if(!b)return;var s=matchMedia(b.getAttribute('data-mq')).matches?'pc':'tel';var v=b.querySelector('video[data-set='+s+']');if(!v)return;var hd=v.getAttribute('data-src-hd');v.src=hd&&innerWidth*(devicePixelRatio||1)>2000?hd:v.getAttribute('data-src');v.setAttribute('data-caricato','1');v.preload='auto';v.muted=true;v.className+=' attivo';try{var p=v.play();if(p&&p.catch)p.catch(function(){})}catch(_){}})();</script>
   </section>
 
-  <section class="intro" aria-labelledby="titolo-intro">
+  <section class="intro" id="intro" aria-labelledby="titolo-intro">
     <div class="contenitore intro__griglia">
       <div class="intro__testo">
         <p class="occhiello solo-tel rivela">Giardinieri a Flero · in tutta la provincia di Brescia</p>
@@ -202,6 +205,24 @@
             </div>
           </div>
         </li>
+        <li class="fisarmonica__voce" id="servizio-studio-botanico">
+          <h3><button class="fisarmonica__btn" type="button" id="srv-studio-botanico-btn" aria-expanded="false" aria-controls="srv-studio-botanico"><svg class="icona fisarmonica__icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg><span class="fisarmonica__titolo">Studio botanico</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
+          <div class="fisarmonica__pannello" id="srv-studio-botanico" role="region" aria-labelledby="srv-studio-botanico-btn">
+            <div class="fisarmonica__interno">
+              <div class="fisarmonica__testo"><p>Scegliamo con te le piante giuste per luce, terreno e tempo che vuoi dedicare al giardino: belle oggi e sane negli anni.</p></div>
+              <figure class="fisarmonica__foto"><picture style="--ratio: 1080 / 1620"><source type="image/webp" srcset="assets/img/lav-ulivi-rose-400.webp 400w, assets/img/lav-ulivi-rose-560.webp 560w, assets/img/lav-ulivi-rose-800.webp 800w, assets/img/lav-ulivi-rose-1080.webp 1080w" sizes="(min-width: 900px) 260px, calc(100vw - 74px)"><img src="assets/img/lav-ulivi-rose-640.jpg" alt="Ulivi, rose e prato: piante scelte per la luce e il terreno del giardino" width="1080" height="1620" loading="lazy" decoding="async" draggable="false"></picture></figure>
+            </div>
+          </div>
+        </li>
+        <li class="fisarmonica__voce" id="servizio-preventivo">
+          <h3><button class="fisarmonica__btn" type="button" id="srv-preventivo-btn" aria-expanded="false" aria-controls="srv-preventivo"><svg class="icona fisarmonica__icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg><span class="fisarmonica__titolo">Preventivo</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
+          <div class="fisarmonica__pannello" id="srv-preventivo" role="region" aria-labelledby="srv-preventivo-btn">
+            <div class="fisarmonica__interno">
+              <div class="fisarmonica__testo"><p>Un preventivo scritto e chiaro in ogni voce, con le condizioni nero su bianco prima di iniziare.</p></div>
+              
+            </div>
+          </div>
+        </li>
         <li class="fisarmonica__voce" id="servizio-realizzazione">
           <h3><button class="fisarmonica__btn" type="button" id="srv-realizzazione-btn" aria-expanded="false" aria-controls="srv-realizzazione"><svg class="icona fisarmonica__icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg><span class="fisarmonica__titolo">Realizzazione e movimento terra</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
           <div class="fisarmonica__pannello" id="srv-realizzazione" role="region" aria-labelledby="srv-realizzazione-btn">
@@ -226,6 +247,24 @@
             <div class="fisarmonica__interno">
               <div class="fisarmonica__testo"><p>Impianti a goccia e irrigatori a scomparsa, studiati zona per zona: l&#x27;acqua giusta, al momento giusto.</p></div>
               <figure class="fisarmonica__foto"><picture style="--ratio: 720 / 900"><source type="image/webp" srcset="assets/img/srv-irrigazione-360.webp 360w, assets/img/srv-irrigazione-720.webp 720w" sizes="(min-width: 900px) 260px, calc(100vw - 74px)"><img src="assets/img/srv-irrigazione-640.jpg" alt="Scavo stretto e preciso con la catenaria per l&#x27;impianto di irrigazione" width="720" height="900" loading="lazy" decoding="async" draggable="false"></picture></figure>
+            </div>
+          </div>
+        </li>
+        <li class="fisarmonica__voce" id="servizio-illuminazione">
+          <h3><button class="fisarmonica__btn" type="button" id="srv-illuminazione-btn" aria-expanded="false" aria-controls="srv-illuminazione"><svg class="icona fisarmonica__icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg><span class="fisarmonica__titolo">Illuminazione</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
+          <div class="fisarmonica__pannello" id="srv-illuminazione" role="region" aria-labelledby="srv-illuminazione-btn">
+            <div class="fisarmonica__interno">
+              <div class="fisarmonica__testo"><p>Luci per vialetti, alberi e aiuole: il giardino si vive anche la sera.</p></div>
+              
+            </div>
+          </div>
+        </li>
+        <li class="fisarmonica__voce" id="servizio-arredo">
+          <h3><button class="fisarmonica__btn" type="button" id="srv-arredo-btn" aria-expanded="false" aria-controls="srv-arredo"><svg class="icona fisarmonica__icona" aria-hidden="true" focusable="false"><use href="#i-foglia" xlink:href="#i-foglia"></use></svg><span class="fisarmonica__titolo">Arredo e complementi</span><span class="fisarmonica__segno" aria-hidden="true"></span></button></h3>
+          <div class="fisarmonica__pannello" id="srv-arredo" role="region" aria-labelledby="srv-arredo-btn">
+            <div class="fisarmonica__interno">
+              <div class="fisarmonica__testo"><p>Fioriere, vasi, bordure e complementi scelti insieme a te per completare il progetto.</p></div>
+              <figure class="fisarmonica__foto"><picture style="--ratio: 1080 / 1350"><source type="image/webp" srcset="assets/img/lav-ghiaia-pergola-400.webp 400w, assets/img/lav-ghiaia-pergola-560.webp 560w, assets/img/lav-ghiaia-pergola-800.webp 800w, assets/img/lav-ghiaia-pergola-1080.webp 1080w" sizes="(min-width: 900px) 260px, calc(100vw - 74px)"><img src="assets/img/lav-ghiaia-pergola-640.jpg" alt="Ghiaia bianca, prato, pergola e piante in vaso a completare il giardino" width="1080" height="1350" loading="lazy" decoding="async" draggable="false"></picture></figure>
             </div>
           </div>
         </li>
@@ -378,6 +417,7 @@
         <div class="zona__dove" id="dove-siamo">
           <span class="zona__pin"><svg class="icona" aria-hidden="true" focusable="false"><use href="#i-luogo" xlink:href="#i-luogo"></use></svg></span>
           <p class="zona__via">Ci trovi in <span class="intero">Via Passere 2,</span> <span class="intero">25020 Flero (BS)</span></p>
+          <p class="zona__appuntamento">Riceviamo in sede solo su appuntamento: scrivici prima su WhatsApp.</p>
           <a class="btn btn--vuoto zona__indicazioni" href="https://www.google.com/maps/dir/?api=1&amp;destination=Via+Passere+2%2C+25020+Flero+BS" target="_blank" rel="noopener">Indicazioni<svg class="icona" aria-hidden="true" focusable="false"><use href="#i-freccia" xlink:href="#i-freccia"></use></svg></a>
         </div>
       </div>
@@ -419,7 +459,7 @@
     <div class="piede__colonne">
       <div><p class="piede__titoletto">Servizi</p><ul role="list"><li><a href="#servizio-manutenzione">Manutenzione</a></li><li><a href="#servizio-potature">Potature</a></li><li><a href="#servizio-abbattimenti">Abbattimenti</a></li><li><a href="#servizio-prati">Prati in zolla</a></li><li><a href="#servizio-irrigazione">Irrigazione</a></li></ul></div>
       <div><p class="piede__titoletto">Dove lavoriamo</p><ul role="list"><li>Sede a Flero</li><li>Brescia città</li><li>Tutta la provincia</li></ul></div>
-      <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:+393341865764">334 186 5764</a></li><li><a href="mailto:astragiardini@gmail.com">astragiardini<wbr>@gmail.com</a></li><li class="piede__indirizzo"><a href="https://www.google.com/maps/dir/?api=1&amp;destination=Via+Passere+2%2C+25020+Flero+BS" target="_blank" rel="noopener"><span class="intero">Via Passere 2,</span> <span class="intero">25020 Flero (BS)</span></a></li></ul></div>
+      <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:+393341865764">334 186 5764</a></li><li><a href="mailto:astragiardini@gmail.com">astragiardini<wbr>@gmail.com</a></li><li class="piede__indirizzo"><a href="https://www.google.com/maps/dir/?api=1&amp;destination=Via+Passere+2%2C+25020+Flero+BS" target="_blank" rel="noopener"><span class="intero">Via Passere 2,</span> <span class="intero">25020 Flero (BS)</span></a> <span class="intero">(su appuntamento)</span></li></ul></div>
       <div><p class="piede__titoletto">Social</p><ul role="list"><li><a href="https://www.instagram.com/astra.gardens/" target="_blank" rel="noopener">Instagram</a></li><li><a href="https://www.facebook.com/profile.php?id=61587199321572" target="_blank" rel="noopener">Facebook</a></li><li><a href="https://www.google.com/maps?cid=2402155065646157496" target="_blank" rel="noopener">Google</a></li></ul></div>
     </div>
     <div class="piede__legale">
@@ -487,9 +527,13 @@
  "knowsAbout": [
   "Sopralluogo",
   "Progetto e render",
+  "Studio botanico",
+  "Preventivo",
   "Realizzazione e movimento terra",
   "Prati in zolla",
   "Irrigazione automatica",
+  "Illuminazione",
+  "Arredo e complementi",
   "Potature e tree climbing",
   "Abbattimenti controllati",
   "Cura degli ulivi",
@@ -520,6 +564,22 @@
     "@type": "Offer",
     "itemOffered": {
      "@type": "Service",
+     "name": "Studio botanico",
+     "description": "Scegliamo con te le piante giuste per luce, terreno e tempo che vuoi dedicare al giardino: belle oggi e sane negli anni."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Preventivo",
+     "description": "Un preventivo scritto e chiaro in ogni voce, con le condizioni nero su bianco prima di iniziare."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
      "name": "Realizzazione e movimento terra",
      "description": "Scavi, terra nuova, aiuole, bordure e piantagioni: costruiamo il giardino con mezzi nostri e la nostra squadra."
     }
@@ -538,6 +598,22 @@
      "@type": "Service",
      "name": "Irrigazione automatica",
      "description": "Impianti a goccia e irrigatori a scomparsa, studiati zona per zona: l'acqua giusta, al momento giusto."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Illuminazione",
+     "description": "Luci per vialetti, alberi e aiuole: il giardino si vive anche la sera."
+    }
+   },
+   {
+    "@type": "Offer",
+    "itemOffered": {
+     "@type": "Service",
+     "name": "Arredo e complementi",
+     "description": "Fioriere, vasi, bordure e complementi scelti insieme a te per completare il progetto."
     }
    },
    {
@@ -584,6 +660,6 @@
  }
 }
 </script>
-<script src="assets/js/main.js?v=20261015a" defer></script>
+<script src="assets/js/main.js?v=20261015b" defer></script>
 </body>
 </html>
