@@ -66,6 +66,9 @@ button { font: inherit; }
 .intero { white-space: nowrap; }
 @media (min-width: 900px) { .solo-tel { display: none !important; } }
 @media (max-width: 899.98px) { .solo-pc { display: none !important; } }
+/* stessa soglia del telefono usata per i video (MQ_TEL in build_site.py): telefono anche girato in orizzontale */
+@media (max-width: 899.98px), (max-height: 499.98px) { .vista-pc { display: none !important; } }
+@media (min-width: 900px) and (min-height: 500px) { .vista-tel { display: none !important; } }
 
 .salta {
   position: absolute; left: 12px; top: -80px; z-index: 100; padding: 10px 16px; border-radius: 6px;
@@ -339,6 +342,11 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
 }
 .striscia__btn:hover img { opacity: .9; }
 .striscia.trascina .striscia__btn { cursor: grabbing; }
+/* telefono: due file che non mischiano i formati. Sopra le verticali, sotto le orizzontali, tutte della stessa
+   altezza e mai più larghe dell'88% dello schermo (17/10/2026) */
+.striscia--tel .striscia__voce, .striscia--tel .striscia__voce--larga { height: var(--h-tel); margin-right: 10px; }
+.striscia--orizzontale { margin-top: 10px; }
+.striscia--orizzontale .striscia__voce, .striscia--orizzontale .striscia__voce--larga { height: min(var(--h-tel), calc(88vw * 9 / 16)); }
 @media (min-width: 900px) {
   .cantieri { padding: 88px 0 96px; }
   .cantieri__testa { flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 40px; }
@@ -448,9 +456,13 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
 .carosello::-webkit-scrollbar { display: none; }
 .carosello:focus-visible { outline-offset: -2px; }
 .carosello__lista { display: flex; align-items: flex-start; gap: 16px; width: max-content; }
-.scheda { flex: none; width: 280px; scroll-snap-align: start; display: flex; flex-direction: column; gap: 10px; }
-.scheda__foto { aspect-ratio: 4 / 5; background: var(--salvia); border-radius: 4px; overflow: hidden; }
+/* ogni scheda prende le proporzioni della sua foto: altezza della fila fissa, larghezza = altezza x proporzione
+   (17/10/2026: le foto orizzontali nelle schede 4:5 lasciavano fino al 55% di bande vuote) */
+.scheda { flex: none; width: calc(var(--h-scheda, 350px) * var(--ratio, 4 / 5)); scroll-snap-align: start; display: flex; flex-direction: column; gap: 10px; }
+.scheda__foto { width: 100%; height: var(--h-scheda, 350px); background: var(--salvia); border-radius: 4px; overflow: hidden; }
 .scheda__foto img { width: 100%; height: 100%; object-fit: contain; }
+.scheda h3, .scheda p { max-width: 380px; }
+.carosello--orizzontale { margin-top: 26px; }
 .scheda h3 { font-size: 26px; line-height: 1.05; color: var(--inchiostro); }
 .scheda p { font-size: 14px; line-height: 1.55; color: var(--grigio); }
 .avanzamento { position: relative; height: 2px; margin-top: 22px; background: var(--linea); overflow: hidden; }
@@ -460,7 +472,7 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
   .progetti__testa { margin-bottom: 44px; }
   .progetti__testa > div:first-child { gap: 18px; }
   .carosello__lista { gap: 24px; }
-  .scheda { width: 380px; gap: 12px; }
+  .scheda { gap: 12px; }
   .scheda h3 { font-size: 32px; }
   .scheda p { font-size: 15px; line-height: 1.6; }
   .avanzamento { margin-top: 32px; }

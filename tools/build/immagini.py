@@ -101,7 +101,9 @@ def locandine_piccole():
     (il video resta alla sua risoluzione piena)."""
     for nome, w in (("verticale-fiori", 540), ("giardino-piscina-1", 540), ("giardino-piscina-2", 540),
                     ("fico-verbene-verticale", 540), ("terrazzo-fioriera", 540),
-                    ("gerani-villa", 960), ("giro-giardino-fontana", 960)):
+                    ("gerani-villa", 960), ("giro-giardino-fontana", 960),
+                    # fila orizzontale della striscia sul telefono (17/10/2026): anche il furgone e i fiori
+                    ("hero-furgone", 960), ("hero-fiori", 960)):
         src = os.path.join(SITO, "assets", "video", nome + "-poster.jpg")
         im = Image.open(src).convert("RGB")
         r = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)

@@ -291,6 +291,8 @@
       if (!v.getAttribute("data-caricato") || scaricato(v) || v.error) return false;
       /* finché il primo video non ha in memoria il primo turno, niente altri download: mai scatti all'apertura */
       if (v === lista[0] && !primoPronto) return !primoTurnoInMemoria(v) && adesso() - (v._inizioCarico || 0) < 25000;
+      /* il primo turno è in memoria: il successivo parte subito, così è pronto per la dissolvenza dopo l'ape */
+      if (v === lista[0] && primoTurnoInMemoria(v)) return false;
       /* quello in onda, se ha già 3,5 secondi in memoria, lascia spazio al prossimo: il giro parte prima */
       if (v.classList.contains("attivo") && avanti(v) >= 3.5) return false;
       if (v.networkState !== 2 && v.readyState >= 3) return false; /* il browser ha smesso da solo */
@@ -584,8 +586,26 @@
   /* ---------- Dai nostri cantieri: striscia che scorre da sola ----------
      Scorre da destra a sinistra senza fine (gli elementi sono due volte di fila); si ferma quando ci si
      passa sopra col mouse, quando la si tocca o la si trascina, e riparte poco dopo. */
-  var striscia = doc.querySelector("[data-striscia]");
-  if (striscia) (function () {
+  /* foto e locandine «pigre» delle file (data-pigro-*): gli indirizzi si mettono quando il primo video in cima ha in
+     memoria il suo primo turno e la fila è vicina allo schermo; poi decide il caricamento pigro del browser */
+  function svegliaImmagini(box) {
+    tutti("[data-pigro-srcset], [data-pigro-src]", box).forEach(function (el) {
+      var ss = el.getAttribute("data-pigro-srcset"), sr = el.getAttribute("data-pigro-src");
+      if (ss) { el.setAttribute("srcset", ss); el.removeAttribute("data-pigro-srcset"); }
+      if (sr) { el.setAttribute("src", sr); el.removeAttribute("data-pigro-src"); }
+    });
+  }
+  tutti("[data-striscia]").forEach(function (box) {
+    if (!box.querySelector("[data-pigro-src]")) return;
+    quandoPrimoPronto(function () {
+      if (!haIO) { svegliaImmagini(box); return; }
+      var oss = new IntersectionObserver(function (voci) {
+        if (voci[0].isIntersecting) { oss.disconnect(); svegliaImmagini(box); }
+      }, { rootMargin: "400px 0px 400px 0px", threshold: 0 });
+      oss.observe(box);
+    });
+  });
+  tutti("[data-striscia]").forEach(function (striscia) {
     var lista = striscia.querySelector(".striscia__lista");
     var bottoni = tutti(".striscia__btn", striscia);
     var originali = bottoni.filter(function (b) { return !b.closest("[aria-hidden='true']"); });
@@ -693,7 +713,7 @@
     if (!lb) bottoni.forEach(function (b) {
       b.addEventListener("click", function () { window.location.href = b.getAttribute("data-src"); });
     });
-  })();
+  });
 
   /* ---------- Servizi: fisarmonica (uno aperto alla volta) ---------- */
   var voceServizio = {};
@@ -742,11 +762,11 @@
   });
 
   /* ---------- I nostri lavori: carosello con barra di avanzamento ---------- */
-  var carosello = doc.querySelector("[data-carosello]");
-  if (carosello) (function () {
-    var barra = doc.querySelector("[data-avanzamento]");
-    var indietro = doc.querySelector("[data-carosello-indietro]");
-    var avanti = doc.querySelector("[data-carosello-avanti]");
+  tutti("[data-carosello]").forEach(function (carosello, n) {
+    var dopoC = carosello.nextElementSibling;
+    var barra = dopoC && dopoC.querySelector("[data-avanzamento]");
+    var indietro = n === 0 ? doc.querySelector("[data-carosello-indietro]") : null; /* frecce: solo la fila del computer */
+    var avanti = n === 0 ? doc.querySelector("[data-carosello-avanti]") : null;
     var listaC = carosello.querySelector(".carosello__lista");
     function aggiorna() {
       var max = carosello.scrollWidth - carosello.clientWidth;
@@ -767,7 +787,7 @@
     if (avanti) avanti.addEventListener("click", function () { carosello.scrollBy({ left: passo(), behavior: meno.matches ? "auto" : "smooth" }); });
     aggiorna();
     window.addEventListener("load", aggiorna);
-  })();
+  });
 
   /* ---------- Prima e dopo con cursore ---------- */
   tutti("[data-confronto]").forEach(function (box) {

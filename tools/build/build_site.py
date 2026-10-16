@@ -88,7 +88,7 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261017a"
+VERSIONE = "20261017b"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 900px), (orientation: landscape)"
@@ -107,16 +107,20 @@ def wa(msg):
 WA_GENERALE = wa("vorrei un sopralluogo per il mio giardino.")
 
 
-def picture(nome, alt, sizes, classe="", loading="lazy", priorita=None):
+def picture(nome, alt, sizes, classe="", loading="lazy", priorita=None, pigra=False):
+    """pigra=True: niente indirizzi nell'HTML (data-pigro-*), li mette main.js quando il primo video in cima ha in
+    memoria il suo primo turno e la fila è vicina allo schermo (17/10/2026: su Fast 4G le foto della striscia
+    partivano a 0,5 s insieme al primo video e ne ritardavano l'avvio)."""
     m = MAN[nome]
     webp = ", ".join("assets/img/%s-%d.webp %dw" % (nome, w, w) for w in m["webp"])
     jpg = "assets/img/%s-%d.jpg" % (nome, m["jpg"])
     extra = ' fetchpriority="%s"' % priorita if priorita else ""
     cl = ' class="%s"' % classe if classe else ""
+    a = "data-pigro-" if pigra else ""
     # --ratio: il riquadro prende le proporzioni del file, cosi' la foto si vede intera (mai ritagli)
-    return ('<picture%s style="--ratio: %d / %d"><source type="image/webp" srcset="%s" sizes="%s">'
-            '<img src="%s" alt="%s" width="%d" height="%d" loading="%s" decoding="async" draggable="false"%s></picture>'
-            % (cl, m["w"], m["h"], webp, sizes, jpg, e(alt), m["w"], m["h"], loading, extra))
+    return ('<picture%s style="--ratio: %d / %d"><source type="image/webp" %ssrcset="%s" sizes="%s">'
+            '<img %ssrc="%s" alt="%s" width="%d" height="%d" loading="%s" decoding="async" draggable="false"%s></picture>'
+            % (cl, m["w"], m["h"], a, webp, sizes, a, jpg, e(alt), m["w"], m["h"], loading, extra))
 
 
 def srcset(nome):
@@ -154,17 +158,18 @@ def tel(nome):
     return f if os.path.exists(os.path.join(SITO, f)) else None
 
 
-def video_box(nome, alt, sizes, classe="", tag="div"):
+def video_box(nome, alt, sizes, classe="", tag="div", pigra=False):
     """Video muto in loop, senza comandi, INTERO (il riquadro ha le proporzioni del video).
     Si scarica e gira solo quando entra nello schermo: nessuna sorgente nell'HTML, l'indirizzo sta in data-src
     (data-src-tel sul telefono) e main.js lo mette solo quando serve (dopo il primo video in cima).
     Niente attributo poster: lo scaricherebbe subito; l'attesa e' la <picture> qui sotto, pigra."""
     w, h = misura_video(nome)
     b = "assets/video/" + nome
+    a = "data-pigro-" if pigra else ""
     return ('<%s class="video-box%s" data-clip style="--ratio: %d / %d">'
-            '<picture><source type="image/webp" srcset="%s" sizes="%s"><img src="%s-poster.jpg" alt="%s" width="%d" height="%d" loading="lazy" decoding="async" draggable="false"></picture>'
+            '<picture><source type="image/webp" %ssrcset="%s" sizes="%s"><img %ssrc="%s-poster.jpg" alt="%s" width="%d" height="%d" loading="lazy" decoding="async" draggable="false"></picture>'
             '<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-src="%s.mp4"%s></video></%s>'
-            % (tag, (" " + classe) if classe else "", w, h, poster_srcset(nome), sizes, b, e(alt), w, h,
+            % (tag, (" " + classe) if classe else "", w, h, a, poster_srcset(nome), sizes, a, b, e(alt), w, h,
                b, (' data-src-tel="%s"' % tel(nome)) if tel(nome) else "", tag))
 
 
@@ -227,6 +232,19 @@ GALLERIA = [
     ("foto", "lav-chioma", "Ricostruzione della chioma di un albero"),
 ]
 ALTEZZA_STRISCIA = (320, 480)  # px: telefono, computer
+# Sul TELEFONO (MQ_TEL) la striscia si divide in due file che non mischiano i formati (Francesco 15/10/2026: «fai
+# un carosello separato sotto per i video orizzontali e non mischiarli con quelli verticali»): prima tutte le
+# voci verticali di GALLERIA nello stesso ordine, sotto le orizzontali, con in più i due video orizzontali
+# dell'apertura del computer (il furgone con la targa sfocata e i fiori). Sul computer la striscia resta UNA,
+# mista, com'è (Francesco 16/10/2026: «dal web si vede bene sia l'orizzontale che il verticale»).
+STRISCIA_TEL_ORIZZONTALI = [
+    ("video", "gerani-villa", "Gerani, ulivo e graminacee nel giardino di una villa"),
+    ("foto", "lav-uliveto-collina", "Uliveto in collina: prato nuovo, rose e ulivi messi a dimora"),
+    ("video", "hero-furgone", "Il furgone Astra Gardens nel giardino con piscina"),
+    ("video", "giro-giardino-fontana", "Il giardino con la fontana e le aiuole rialzate in pietra"),
+    ("foto", "lav-erba-sintetica", "Erba sintetica e ciottoli di marmo bianco con un acero giapponese"),
+    ("video", "hero-fiori", "Verbena, doccia e piscina affacciate sulle colline"),
+]
 
 # Servizi nell'ordine del lavoro: dalla prima visita alla cura di ogni stagione.
 SERVIZI = [
@@ -548,33 +566,54 @@ def intro():
        "video": video_box("giardino-piscina-1", "Giardino con piscina e vista sulle colline", "430px")}
 
 
-def galleria():
-    ht, hp = ALTEZZA_STRISCIA
+def misure(tipo, nome):
+    return (MAN[nome]["w"], MAN[nome]["h"]) if tipo == "foto" else misura_video(nome)
+
+
+def voci_striscia(elenco, sizes_foto, sizes_video):
+    """Le voci di una fila, due volte di fila (la fila scorre senza fine). sizes_*(w, h) -> attributo sizes."""
     voci = []
     for copia in (0, 1):
-        for i, (tipo, nome, alt) in enumerate(GALLERIA):
+        for i, (tipo, nome, alt) in enumerate(elenco):
             nascosta = ' aria-hidden="true"' if copia else ""
             tab = ' tabindex="-1"' if copia else ""
+            w, h = misure(tipo, nome)
+            larga = w > h
             if tipo == "foto":
-                r = proporzione(nome)
-                media = picture(nome, alt, "(min-width: 900px) %dpx, %dpx" % (round(hp * r), round(ht * r)))
-                dati = 'data-media="foto" data-src="%s" data-srcset="%s" data-w="%d" data-h="%d"' % (grande(nome), srcset(nome), MAN[nome]["w"], MAN[nome]["h"])
+                media = picture(nome, alt, sizes_foto(w, h), pigra=True)
+                dati = 'data-media="foto" data-src="%s" data-srcset="%s" data-w="%d" data-h="%d"' % (grande(nome), srcset(nome), w, h)
                 etichetta = "Apri la foto: " + alt
-                stile = "--ratio: %d / %d" % (MAN[nome]["w"], MAN[nome]["h"])
             else:
-                w, h = misura_video(nome)
-                larga = w > h
                 # tutti i video della striscia partono da soli quando entrano nello schermo, anche gli
                 # orizzontali (Francesco 15/10/2026 21:51); sul telefono le versioni leggere NOME-tel.mp4
-                media = video_box(nome, alt, ("(min-width: 900px) %dpx, 88vw" % round(hp * w / h)) if larga else
-                                  "(min-width: 900px) %dpx, %dpx" % (round(hp * w / h), round(ht * w / h)), tag="span")
+                media = video_box(nome, alt, sizes_video(w, h), tag="span", pigra=True)
                 dati = 'data-media="video" data-src="assets/video/%s.mp4"%s data-poster="assets/video/%s-poster.jpg" data-w="%d" data-h="%d"' % (
                     nome, (' data-src-tel="%s"' % tel(nome)) if tel(nome) else "", nome, w, h)
                 etichetta = "Apri il video: " + alt
-                stile = "--ratio: %d / %d" % (w, h)
             classe = "striscia__voce striscia__voce--larga" if tipo == "video" and larga else "striscia__voce"
-            voci.append('        <li class="%s" style="%s"%s><button class="striscia__btn" type="button" %s data-indice="%d" data-alt="%s" aria-label="%s"%s>%s</button></li>'
-                        % (classe, stile, nascosta, dati, i, e(alt), e(etichetta), tab, media))
+            voci.append('        <li class="%s" style="--ratio: %d / %d"%s><button class="striscia__btn" type="button" %s data-indice="%d" data-alt="%s" aria-label="%s"%s>%s</button></li>'
+                        % (classe, w, h, nascosta, dati, i, e(alt), e(etichetta), tab, media))
+    return "\n".join(voci)
+
+
+def orizzontale(voce):
+    w, h = misure(voce[0], voce[1])
+    return w > h
+
+
+def galleria():
+    ht, hp = ALTEZZA_STRISCIA
+    # computer: la striscia di sempre, mista (le stesse misure di prima: sizes in px del telefono e del computer)
+    pc = voci_striscia(
+        GALLERIA,
+        lambda w, h: "(min-width: 900px) %dpx, %dpx" % (round(hp * w / h), round(ht * w / h)),
+        lambda w, h: ("(min-width: 900px) %dpx, 88vw" % round(hp * w / h)) if w > h else
+                     "(min-width: 900px) %dpx, %dpx" % (round(hp * w / h), round(ht * w / h)))
+    # telefono: le verticali alte ht, le orizzontali alte quanto serve per stare in 88vw
+    verticali = [v for v in GALLERIA if not orizzontale(v)]
+    tel_v = voci_striscia(verticali, lambda w, h: "%dpx" % round(ht * w / h), lambda w, h: "%dpx" % round(ht * w / h))
+    tel_o = voci_striscia(STRISCIA_TEL_ORIZZONTALI, lambda w, h: "calc(88vw * %d / %d * 9 / 16)" % (w, h),
+                          lambda w, h: "calc(88vw * %d / %d * 9 / 16)" % (w, h))
     return """  <section class="cantieri sezione--chiara" id="cantieri" aria-labelledby="titolo-cantieri">
     <div class="contenitore cantieri__testa">
       <div class="rivela">
@@ -583,13 +622,23 @@ def galleria():
       </div>
       <p class="cantieri__aiuto rivela" style="--ritardo: .15s">Scorri, tocca una foto o un video per vederlo in grande.</p>
     </div>
-    <div class="striscia rivela" data-striscia tabindex="0" role="region" aria-label="Foto e video dai nostri cantieri, scorrono da soli" style="--h-tel: %(ht)dpx; --h-pc: %(hp)dpx">
+    <div class="striscia rivela vista-pc" data-striscia tabindex="0" role="region" aria-label="Foto e video dai nostri cantieri, scorrono da soli" style="--h-tel: %(ht)dpx; --h-pc: %(hp)dpx">
       <ul class="striscia__lista" role="list">
-%(voci)s
+%(pc)s
+      </ul>
+    </div>
+    <div class="striscia striscia--tel rivela vista-tel" data-striscia tabindex="0" role="region" aria-label="Foto e video verticali dai nostri cantieri, scorrono da soli" style="--h-tel: %(ht)dpx">
+      <ul class="striscia__lista" role="list">
+%(tel_v)s
+      </ul>
+    </div>
+    <div class="striscia striscia--tel striscia--orizzontale rivela vista-tel" data-striscia tabindex="0" role="region" aria-label="Foto e video orizzontali dai nostri cantieri, scorrono da soli" style="--h-tel: %(ht)dpx; --ritardo: .1s">
+      <ul class="striscia__lista" role="list">
+%(tel_o)s
       </ul>
     </div>
   </section>
-""" % {"voci": "\n".join(voci), "ht": ht, "hp": hp}
+""" % {"pc": pc, "tel_v": tel_v, "tel_o": tel_o, "ht": ht, "hp": hp}
 
 
 def chi_siamo():
@@ -648,33 +697,66 @@ def servizi():
 """ % {"voci": "\n".join(voci)}
 
 
-def progetti():
-    schede = []
-    for i, (foto, titolo, testo, alt) in enumerate(PROGETTI):
-        schede.append("""        <li class="scheda">
+ALTEZZA_SCHEDA = (350, 475)  # px dell'immagine: telefono, computer (le schede 4:5 restano 280x350 e 380x475)
+
+
+def schede(elenco, sizes):
+    """Ogni scheda prende le proporzioni della sua foto: altezza fissa della fila, larghezza = altezza x proporzione.
+    Così la foto riempie la scheda da bordo a bordo, intera (niente bande vuote, niente ritagli; 17/10/2026)."""
+    out = []
+    for foto, titolo, testo, alt in elenco:
+        w, h = MAN[foto]["w"], MAN[foto]["h"]
+        out.append("""        <li class="scheda" style="--ratio: %d / %d">
           %s
           <h3>%s</h3>
           <p>%s</p>
-        </li>""" % (picture(foto, alt, "(min-width: 900px) 380px, 280px", classe="scheda__foto"), e(titolo), e(testo)))
+        </li>""" % (w, h, picture(foto, alt, sizes(w, h), classe="scheda__foto"), e(titolo), e(testo)))
+    return "\n".join(out)
+
+
+def progetti():
+    ht, hp = ALTEZZA_SCHEDA
+    pc = schede(PROGETTI, lambda w, h: "%dpx" % round(hp * w / h))
+    # telefono (Francesco 15/10/2026: i formati non si mischiano): le verticali, e sotto le orizzontali
+    vert = [p for p in PROGETTI if MAN[p[0]]["w"] <= MAN[p[0]]["h"]]
+    oriz = [p for p in PROGETTI if MAN[p[0]]["w"] > MAN[p[0]]["h"]]
+    tel_v = schede(vert, lambda w, h: "%dpx" % round(ht * w / h))
+    tel_o = schede(oriz, lambda w, h: "calc(88vw * %d / %d * 9 / 16)" % (w, h))
     return """  <section class="progetti" id="lavori" aria-labelledby="titolo-progetti">
     <div class="contenitore progetti__testa">
       <div class="rivela">
         <p class="pillola">I nostri lavori</p>
         <h2 id="titolo-progetti">I nostri lavori più belli.</h2>
       </div>
-      <div class="progetti__frecce solo-pc">
+      <div class="progetti__frecce vista-pc">
         <button class="freccia" type="button" data-carosello-indietro aria-label="Lavoro precedente">%(icsx)s</button>
         <button class="freccia freccia--piena" type="button" data-carosello-avanti aria-label="Lavoro successivo">%(icdx)s</button>
       </div>
     </div>
-    <div class="carosello rivela" data-carosello tabindex="0" role="region" aria-label="I nostri lavori più belli, scorri per vederli tutti" style="--ritardo: .1s">
-      <ul class="carosello__lista" role="list">
-%(schede)s
-      </ul>
+    <div class="vista-pc">
+      <div class="carosello rivela" data-carosello tabindex="0" role="region" aria-label="I nostri lavori più belli, scorri per vederli tutti" style="--ritardo: .1s; --h-scheda: %(hp)dpx">
+        <ul class="carosello__lista" role="list">
+%(pc)s
+        </ul>
+      </div>
+      <div class="contenitore"><div class="avanzamento" aria-hidden="true"><span class="avanzamento__barra" data-avanzamento></span></div></div>
     </div>
-    <div class="contenitore"><div class="avanzamento" aria-hidden="true"><span class="avanzamento__barra" data-avanzamento></span></div></div>
+    <div class="vista-tel">
+      <div class="carosello rivela" data-carosello tabindex="0" role="region" aria-label="I nostri lavori più belli in verticale, scorri per vederli tutti" style="--ritardo: .1s; --h-scheda: %(ht)dpx">
+        <ul class="carosello__lista" role="list">
+%(tel_v)s
+        </ul>
+      </div>
+      <div class="contenitore"><div class="avanzamento" aria-hidden="true"><span class="avanzamento__barra" data-avanzamento></span></div></div>
+      <div class="carosello carosello--orizzontale rivela" data-carosello tabindex="0" role="region" aria-label="I nostri lavori più belli in orizzontale, scorri per vederli tutti" style="--ritardo: .1s; --h-scheda: min(%(ht)dpx, calc(88vw * 9 / 16))">
+        <ul class="carosello__lista" role="list">
+%(tel_o)s
+        </ul>
+      </div>
+      <div class="contenitore"><div class="avanzamento" aria-hidden="true"><span class="avanzamento__barra" data-avanzamento></span></div></div>
+    </div>
   </section>
-""" % {"schede": "\n".join(schede), "icsx": icona("i-sx"), "icdx": icona("i-dx")}
+""" % {"pc": pc, "tel_v": tel_v, "tel_o": tel_o, "ht": ht, "hp": hp, "icsx": icona("i-sx"), "icdx": icona("i-dx")}
 
 
 def confronto(oggi, progetto, alt_oggi, alt_progetto, titolo, sx, dx, nota, sizes, didascalia=""):
