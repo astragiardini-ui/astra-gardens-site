@@ -212,11 +212,15 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
 .hero__schermo { position: relative; aspect-ratio: var(--ratio-tel); background: var(--verde); overflow: hidden; }
 .hero__poster, .hero__poster img, .hero__v { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .hero__poster img, .hero__v { object-fit: contain; }
-.hero__v { opacity: 0; transition: opacity .5s ease; }
-.hero__v.attivo { opacity: 1; }
+/* dissolvenza incrociata senza calo di luce: il video che entra sta SOPRA e sale da 0 a 1, quello che esce resta pieno
+   SOTTO finché l'altro lo copre (classe «uscente»), poi sparisce. Il primo cambio (dopo l'ape) è morbido e più lungo. */
+.hero__v { opacity: 0; z-index: 0; }
+.hero__v.uscente { opacity: 1; z-index: 1; }
+.hero__v.attivo { opacity: 1; z-index: 2; transition: opacity .5s ease; }
+.hero__schermo.morbida .hero__v.attivo { transition: opacity 1.2s cubic-bezier(.45, 0, .55, 1); }
 .hero__v[data-set="pc"] { display: none; }
 .hero__marchio {
-  position: absolute; left: 0; right: 0; top: 18px; z-index: 2; isolation: isolate; display: flex; flex-direction: column; align-items: center;
+  position: absolute; left: 0; right: 0; top: 18px; z-index: 3; isolation: isolate; display: flex; flex-direction: column; align-items: center;
   gap: 10px; padding: 0 16px; pointer-events: none; text-align: center;
 }
 .hero__marchio > * { animation: entra 1.2s .3s var(--curva) both; }
@@ -242,7 +246,7 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
 }
 .hero__giu { display: none; }
 @media (max-width: 339.98px) { .hero__pillola { letter-spacing: .1em; } }
-.hero__punti { position: absolute; left: 0; right: 0; bottom: 8px; z-index: 2; display: flex; justify-content: center; }
+.hero__punti { position: absolute; left: 0; right: 0; bottom: 8px; z-index: 3; display: flex; justify-content: center; }
 .hero__punti:empty { display: none; }
 .hero__punto { -webkit-appearance: none; appearance: none; border: 0; background: none; padding: 10px; margin: 0; cursor: pointer; }
 .hero__punto::before {
@@ -269,7 +273,7 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
   .hero__pillola { padding: 5px 15px; font-size: 11px; letter-spacing: .2em; }
   /* freccia rotonda in basso al centro, che porta alla presentazione */
   .hero__giu {
-    position: absolute; left: 50%; bottom: 22px; z-index: 2; width: 52px; height: 52px; margin-left: -26px; border-radius: 50%;
+    position: absolute; left: 50%; bottom: 22px; z-index: 3; width: 52px; height: 52px; margin-left: -26px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center; background: #fff; color: var(--verde);
     box-shadow: 0 6px 20px -6px rgba(0, 0, 0, .45); animation: entra 1.2s .9s var(--curva) both;
     transition: background-color .25s ease, color .25s ease;

@@ -222,7 +222,10 @@
        si resta su quello in onda: mai un fotogramma nero o fermo.
      - Il video nascosto si mette in pausa e quando torna riprende da dove era: a ogni giro si vedono i
        secondi successivi. Ogni video gira anche in loop su se stesso.
-     - Il primo (gerani con l'ape) resta in onda 4 s al primo caricamento, poi parte il giro.
+     - Il primo (gerani con l'ape) va SEMPRE a velocità normale (Francesco 16/10/2026: «non voglio che lo velocizzi»):
+       l'ape vola via a circa 0,9 s di filmato, a 2,6 s parte una dissolvenza morbida di 1,2 s nel video successivo,
+       poi il giro normale. Il tempo si conta sul filmato (currentTime), non sull'orologio: se la rete rallenta, il
+       taglio cade comunque nello stesso punto della ripresa.
      - Si scaricano uno alla volta, in ordine: il successivo parte quando il precedente ha finito (o quando il
        browser smette da solo di scaricarlo); mai due insieme all'inizio. */
   var hero = doc.querySelector("[data-hero]");
@@ -231,7 +234,10 @@
     var punti = hero.querySelector(".hero__punti");
     var lista = [], i = 0, tGiro = null, tCoda = null, inVista = true, primoGiro = true;
     var scelta = -1, pausaFino = 0, tScelta = null;
+    var NORMALE = 500, MORBIDA = 1200; /* ms: dissolvenza di ogni cambio e del primo, dopo l'ape (style.css) */
     function ciclo() { return meno.matches ? 6000 : 2000; }
+    /* secondi di filmato del primo video prima della dissolvenza morbida */
+    function fineTurno() { return meno.matches ? 6 : 2.6; }
     function sorgente(v) {
       var hd = v.getAttribute("data-src-hd"), t = v.getAttribute("data-src-tel");
       if (t && telefono) return t;
@@ -275,10 +281,9 @@
       if (p && p.catch) p.catch(function () { v._riscalda = false; });
       setTimeout(basta, 250);
     }
-    /* il primo video ha in memoria tutto il primo turno: fino a ~9 s di filmato se va a 2x, ~6,5 s se resta a
-       velocità normale (rete lenta: il 2x non parte) */
+    /* il primo video ha in memoria tutto il primo turno: fino alla fine della dissolvenza morbida, più un margine */
     function primoTurnoInMemoria(v) {
-      var serve = v._turnoLento ? 6.5 : 9.5;
+      var serve = fineTurno() + MORBIDA / 1000 + 0.6;
       try { var b = v.buffered; return scaricato(v) || (b.length && b.end(b.length - 1) >= serve); } catch (_) { return true; }
     }
     function staScaricando(v) {
@@ -349,55 +354,48 @@
       aggiornaPunti();
       attendiScelta();
     }
-    function mostra(k) {
+    /* morbida = la dissolvenza lunga del primo cambio. Chi entra sale sopra, chi esce resta pieno sotto finché è
+       coperto («uscente»), poi si ferma: niente calo di luce a metà dissolvenza. */
+    function mostra(k, morbida) {
       var prec = lista[i];
       i = k;
       var v = lista[i];
+      var durata = morbida ? MORBIDA : NORMALE;
       carica(v);
-      v.classList.add("attivo");
-      if (inVista) parti(v); /* riprende da dove era rimasto */
+      hero.classList.toggle("morbida", !!morbida);
+      lista.forEach(function (x) { /* un cambio a metà di un altro: chi era sotto si toglie subito */
+        if (x !== prec && x !== v && x.classList.contains("uscente")) { clearTimeout(x._tFuori); x.classList.remove("uscente"); ferma(x); }
+      });
       if (prec && prec !== v) {
-        clearTimeout(prec._tVel); clearTimeout(prec._tGuarda);
-        prec.playbackRate = 1; /* ai giri successivi tutti a velocità normale */
+        clearTimeout(prec._tFuori);
+        prec.classList.add("uscente");
         prec.classList.remove("attivo");
-        setTimeout(function () { if (!prec.classList.contains("attivo")) ferma(prec); }, 600);
+      }
+      clearTimeout(v._tFuori);
+      v.classList.remove("uscente");
+      v.classList.add("attivo");
+      if (inVista) parti(v); /* riprende da dove era rimasto, sempre a velocità normale */
+      if (prec && prec !== v) {
+        prec._tFuori = setTimeout(function () {
+          prec.classList.remove("uscente");
+          if (!prec.classList.contains("attivo")) ferma(prec);
+        }, durata + 100);
       }
       aggiornaPunti();
+    }
+    /* il prossimo video con il suo turno già in memoria, -1 se nessuno è pronto */
+    function prossimo() {
+      for (var d = 1; d < lista.length; d++) {
+        var j = (i + d) % lista.length;
+        if (pronto(lista[j])) return j;
+      }
+      return -1;
     }
     function giro() {
       if (!inVista || doc.visibilityState !== "visible" || lista.length < 2) return;
       if (leggeri || scelta >= 0 || adesso() < pausaFino) return;
-      for (var d = 1; d < lista.length; d++) {
-        var j = (i + d) % lista.length;
-        if (pronto(lista[j])) { mostra(j); return; }
-      }
-    }
-    /* cambio di velocità a piccoli passi (6 passi in 0,3 s), mai uno scatto */
-    function velocita(v, da, a, fatto) {
-      clearTimeout(v._tVel);
-      var k = 0;
-      (function passo() {
-        k++;
-        try { v.playbackRate = da + (a - da) * k / 6; } catch (_) {}
-        if (k < 6) v._tVel = setTimeout(passo, 50); else if (fatto) fatto();
-      })();
-    }
-    function primaVelocita(v) {
-      v._tVel = setTimeout(function () {
-        if (!v.classList.contains("attivo") || avanti(v) < 3) { v._turnoLento = true; coda(); return; } /* poco in memoria: resta a velocità normale */
-        velocita(v, 1, 2);
-        (function guarda() {
-          if (!v.classList.contains("attivo")) return;
-          if (v.playbackRate > 1 && avanti(v) < 1.5) { clearTimeout(v._tVel); v.playbackRate = 1; v._turnoLento = true; return; }
-          v._tGuarda = setTimeout(guarda, 200);
-        })();
-      }, 2000);
-    }
-    function finePrimo(v) {
-      clearTimeout(v._tVel); clearTimeout(v._tGuarda);
-      if (v.playbackRate !== 1) {
-        if (v.classList.contains("attivo")) velocita(v, v.playbackRate, 1); else v.playbackRate = 1;
-      }
+      var j = prossimo();
+      if (j >= 0) mostra(j);
     }
     function programma(primo, ritardo) {
       clearTimeout(tGiro);
@@ -407,25 +405,22 @@
         tGiro = setTimeout(passo, ciclo());
       }
       if (!primo) { tGiro = setTimeout(passo, ritardo || ciclo()); return; }
-      /* primo giro (Francesco 15/10/2026): circa 5 secondi contati da quando il video parte davvero; i primi 2
-         a velocità normale (l'ape si vede con calma), poi si passa piano a 2x per mostrare anche l'aiuola,
-         l'ulivo e l'ingresso. Il 2x solo con almeno 3 secondi già in memoria, così non si ferma mai. */
-      var v = lista[i];
-      var via = function () {
-        clearTimeout(tGiro);
-        if (!meno.matches) primaVelocita(v); else v._turnoLento = true;
-        tGiro = setTimeout(function () { finePrimo(v); passo(); }, Math.max(ciclo(), 5000));
-      };
-      /* «parte davvero» = in riproduzione con i dati: lo si controlla ogni 100 ms (l'evento playing può essere
-         già passato prima che questo script arrivasse) */
-      var t0 = adesso(), fatto = false;
-      var via0 = via;
-      via = function () { if (fatto) return; fatto = true; v.removeEventListener("playing", via); via0(); };
-      v.addEventListener("playing", via);
-      (function controlla() {
-        if (fatto) return;
-        if ((!v.paused && v.readyState >= 3 && v.currentTime > 0) || adesso() - t0 > 15000) { via(); return; }
-        tGiro = setTimeout(controlla, 100);
+      /* primo turno: l'ape a velocità normale fino a fineTurno() secondi di FILMATO, poi la dissolvenza morbida nel
+         primo video pronto (se nessuno è pronto si resta sull'ape, che continua da sola). Dopo il cambio il nuovo
+         video resta pieno quanto gli altri (ciclo meno la dissolvenza normale), poi il giro di sempre. */
+      var v = lista[i], t0 = adesso();
+      (function guarda() {
+        if (lista[i] !== v || !v.classList.contains("attivo")) return; /* puntino toccato: decide la scelta */
+        if (v.paused && v.currentTime === 0 && adesso() - t0 > 15000) { passo(); return; } /* non parte: giro normale */
+        if (v.currentTime >= fineTurno() && inVista && doc.visibilityState === "visible" && scelta < 0) {
+          var j = prossimo();
+          if (j >= 0) {
+            mostra(j, true);
+            tGiro = setTimeout(passo, MORBIDA + ciclo() - NORMALE);
+            return;
+          }
+        }
+        tGiro = setTimeout(guarda, 40);
       })();
     }
     function avvia() {
