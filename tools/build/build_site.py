@@ -88,12 +88,22 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261017b"
+VERSIONE = "20261018a"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 900px), (orientation: landscape)"
 # Telefono (anche girato in orizzontale): si usano le versioni leggere NOME-tel.mp4 (Francesco 15/10/2026).
 MQ_TEL = "(max-width: 899.98px), (max-height: 499.98px)"
+# Le stesse regole scritte per le <source media> del primo video in cima (18/10/2026): il browser sceglie il file
+# mentre legge la pagina, prima di qualsiasi script. Il contrario esatto di MQ_PC (telefono e tablet in verticale):
+MQ_SET_TEL = "(max-width: 899.98px) and (orientation: portrait)"
+# MQ_PC e MQ_TEL insieme (telefono girato in orizzontale), scritte come elenco di condizioni semplici:
+MQ_PC_TEL = ("(min-width: 900px) and (max-height: 499.98px), (orientation: landscape) and (max-width: 899.98px), "
+             "(orientation: landscape) and (max-height: 499.98px)")
+# Versione 2560 dove lo schermo supera i 2000 pixel veri (la regola di main.js: larghezza x densita' > 2000):
+MQ_HD = ("(min-width: 1001px) and (min-resolution: 2dppx), (min-width: 1001px) and (-webkit-min-device-pixel-ratio: 2), "
+         "(min-width: 1334px) and (min-resolution: 1.5dppx), (min-width: 1334px) and (-webkit-min-device-pixel-ratio: 1.5), "
+         "(min-width: 2001px)")
 
 
 def e(t):
@@ -384,6 +394,11 @@ def jsonld():
 
 # ---------------------------------------------------------------- parti comuni
 
+# ⚠️ Lo script che mette la classe «js» sta PRIMA del foglio di stile, e dopo il foglio di stile non c'è nessuno
+# script nella pagina (solo main.js con defer). Verificato con Safari del simulatore iOS il 18/10/2026: uno script
+# dopo il foglio di stile ferma la lettura della pagina finché il CSS non arriva, e in quella pausa Safari scarica in
+# anticipo TUTTE le foto dei <picture>, ignorando loading="lazy" (46 foto, ~10 MB): il video in cima restava senza
+# banda e si vedeva l'immagine ferma. Con lo script prima del CSS le foto tornano pigre (3 richieste invece di 46).
 def testa(titolo, descrizione, percorso, extra=""):
     url = BASE + percorso
     return """<!doctype html>
@@ -391,6 +406,7 @@ def testa(titolo, descrizione, percorso, extra=""):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>document.documentElement.className += " js";</script>
 <title>%(titolo)s</title>
 <meta name="description" content="%(desc)s">
 <link rel="canonical" href="%(url)s">
@@ -414,7 +430,6 @@ def testa(titolo, descrizione, percorso, extra=""):
 <link rel="preload" href="assets/fonts/dm-sans-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/style.css?v=%(v)s">
-<script>document.documentElement.className += " js";</script>
 %(extra)s</head>
 """ % {"titolo": e(titolo), "desc": e(descrizione), "url": url, "base": BASE, "v": VERSIONE, "extra": extra}
 
@@ -500,48 +515,64 @@ def riga_legale(privacy_href):
 # ---------------------------------------------------------------- sezioni della pagina
 
 def hero():
-    """Video in cima: tutti nel DOM senza src; il primo lo avvia subito lo script qui sotto, gli altri
-    main.js li scarica poco prima del loro turno (mai tutti insieme)."""
+    """Video in cima. Il PRIMO video di ogni serie ha la sorgente nell'HTML (<source media>), autoplay e preload
+    auto: il browser lo scarica e lo avvia mentre legge la pagina, senza aspettare gli script (18/10/2026, Francesco
+    vedeva sull'iPhone l'immagine ferma dell'ape e poi il video partire). Le <source media> fanno scaricare solo il
+    file della serie che si vede: il telefono non tocca i video del computer e viceversa. Gli altri video restano
+    senza sorgente: main.js li scarica poco prima del loro turno (mai tutti insieme).
+    Sopra tutto la COPERTINA verde col logo: main.js la toglie quando il video avanza davvero (mai un fotogramma
+    fermo che poi parte); senza script non c'è copertina e il video parte da solo."""
     wt, ht = misura_video(HERO_TEL[0][0])
     wp, hp = misura_video(HERO_PC[0][0])
     video = []
-    for nome, alt in HERO_TEL:
+    for n, (nome, alt) in enumerate(HERO_TEL):
         b = "assets/video/" + nome
-        video.append('      <video class="hero__v" data-set="tel" data-src="%s" data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
-                     % (tel(nome) or b + ".mp4", b, e(alt)))
-    for nome, alt, hd in HERO_PC:
+        src = tel(nome) or b + ".mp4"
+        if n == 0:
+            video.append('      <video class="hero__v attivo" data-set="tel" data-primo data-src="%s" data-poster="%s-poster.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1" data-alt="%s">'
+                         '<source src="%s" type="video/mp4" media="%s"></video>' % (src, b, e(alt), src, MQ_SET_TEL))
+        else:
+            video.append('      <video class="hero__v" data-set="tel" data-src="%s" data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
+                         % (src, b, e(alt)))
+    for n, (nome, alt, hd) in enumerate(HERO_PC):
         b = "assets/video/" + nome
         extra = (' data-src-hd="assets/video/%s.mp4"' % hd if hd else "") + (' data-src-tel="%s"' % tel(nome) if tel(nome) else "")
-        video.append('      <video class="hero__v" data-set="pc" data-src="%s.mp4"%s data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
-                     % (b, extra, b, e(alt)))
-    avvio = ("<script>(function(){var b=document.querySelector('[data-hero]');if(!b)return;"
-             "var s=matchMedia(b.getAttribute('data-mq')).matches?'pc':'tel';"
-             "var v=b.querySelector('video[data-set='+s+']');if(!v)return;"
-             "var hd=v.getAttribute('data-src-hd'),t=v.getAttribute('data-src-tel');"
-             "v.src=t&&matchMedia('" + MQ_TEL + "').matches?t:hd&&innerWidth*(devicePixelRatio||1)>2000?hd:v.getAttribute('data-src');"
-             "v.setAttribute('data-caricato','1');v.preload='auto';v.muted=true;v.className+=' attivo';"
-             "try{var p=v.play();if(p&&p.catch)p.catch(function(){})}catch(_){}})();</script>")
+        if n == 0:
+            sorgenti = ""
+            if tel(nome):
+                sorgenti += '<source src="%s" type="video/mp4" media="%s">' % (tel(nome), MQ_PC_TEL)
+            if hd:
+                sorgenti += '<source src="assets/video/%s.mp4" type="video/mp4" media="%s">' % (hd, MQ_HD)
+            sorgenti += '<source src="%s.mp4" type="video/mp4" media="%s">' % (b, MQ_PC)
+            video.append('      <video class="hero__v attivo" data-set="pc" data-primo data-src="%s.mp4"%s data-poster="%s-poster.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1" data-alt="%s">%s</video>'
+                         % (b, extra, b, e(alt), sorgenti))
+        else:
+            video.append('      <video class="hero__v" data-set="pc" data-src="%s.mp4"%s data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
+                         % (b, extra, b, e(alt)))
+    logo = ('<picture><source type="image/webp" srcset="assets/img/logo-bianco-640.webp 640w, assets/img/logo-bianco-960.webp 960w, '
+            'assets/img/logo-bianco-1400.webp 1400w" sizes="(min-width: 900px) clamp(200px, 23vw, 360px), 176px">'
+            '<img src="assets/img/logo-bianco-640.png" alt="%s" width="640" height="131"></picture>')
     return """  <section class="hero" id="inizio" aria-label="I nostri giardini in video">
     <div class="hero__schermo" data-hero data-mq="%(mq)s" data-mq-tel="%(mqtel)s" style="--ratio-tel: %(wt)d / %(ht)d; --ratio-pc: %(wp)d / %(hp)d">
       <picture class="hero__poster">
         <source media="%(mq)s" type="image/webp" srcset="assets/video/%(pc)s-poster.webp">
         <source media="%(mq)s" srcset="assets/video/%(pc)s-poster.jpg">
         <source type="image/webp" srcset="assets/video/%(tel)s-poster.webp">
-        <img src="assets/video/%(tel)s-poster.jpg" alt="Giardino curato da Astra Gardens" width="%(wt)d" height="%(ht)d" fetchpriority="high" decoding="async">
+        <img src="assets/video/%(tel)s-poster.jpg" alt="Giardino curato da Astra Gardens" width="%(wt)d" height="%(ht)d" fetchpriority="low" decoding="async">
       </picture>
 %(video)s
       <div class="hero__marchio">
-        <picture><source type="image/webp" srcset="assets/img/logo-bianco-640.webp 640w, assets/img/logo-bianco-960.webp 960w, assets/img/logo-bianco-1400.webp 1400w" sizes="(min-width: 900px) clamp(200px, 23vw, 360px), 176px"><img src="assets/img/logo-bianco-640.png" alt="Astra Gardens" width="640" height="131"></picture>
+        %(logo)s
         <p class="hero__pillola">Progettazione • Realizzazione • Manutenzione</p>
         <p class="hero__sottotitolo">Dal 2023 progettiamo, realizziamo e curiamo giardini in tutta la provincia di Brescia, su misura per ogni esigenza e ogni gusto.</p>
       </div>
       <div class="hero__punti" role="group" aria-label="Scegli il video"></div>
       <a class="hero__giu" href="#intro" aria-label="Scorri alla presentazione">%(icgiu)s</a>
+      <div class="hero__copertina" aria-hidden="true">%(logo_copertina)s</div>
     </div>
-    %(avvio)s
   </section>
 """ % {"mq": MQ_PC, "mqtel": MQ_TEL, "wt": wt, "ht": ht, "wp": wp, "hp": hp, "pc": HERO_PC[0][0], "tel": HERO_TEL[0][0],
-       "video": "\n".join(video), "avvio": avvio, "icgiu": icona("i-giu")}
+       "video": "\n".join(video), "icgiu": icona("i-giu"), "logo": logo % "Astra Gardens", "logo_copertina": logo % ""}
 
 
 def intro():

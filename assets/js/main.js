@@ -95,6 +95,7 @@
      energetico) resta l'immagine ferma e i video partono al primo tocco. */
   var video = tutti("video");
   var serveSblocco = false;
+  var alRifiuto = null; /* l'apertura: se il telefono rifiuta l'avvio, la copertina si toglie subito */
   /* Il primo video in cima ha la precedenza su tutta la rete: gli altri video (striscia, introduzione, chi siamo)
      non mettono nemmeno la sorgente finché il primo non ha in memoria il suo primo turno (o è scaricato).
      Lo segnala il blocco dell'apertura; senza apertura (privacy) si parte subito. */
@@ -122,7 +123,12 @@
     try { p = v.play(); } catch (_) { p = null; }
     if (p && typeof p.then === "function") {
       p.then(function () { scatola(v).classList.add("in-play"); })
-       .catch(function (err) { if (!err || err.name !== "AbortError") serveSblocco = true; });
+       .catch(function (err) {
+         if (!err || err.name !== "AbortError") {
+           serveSblocco = true;
+           if (alRifiuto && v.classList.contains("hero__v") && v.classList.contains("attivo")) alRifiuto(err);
+         }
+       });
     } else if (!v.paused) {
       scatola(v).classList.add("in-play");
     }
@@ -233,6 +239,92 @@
     var mq = window.matchMedia(hero.getAttribute("data-mq"));
     var punti = hero.querySelector(".hero__punti");
     var lista = [], i = 0, tGiro = null, tCoda = null, inVista = true, primoGiro = true;
+    /* ---- Primo video e copertina (18/10/2026) ----
+       Il primo video di ogni serie ha la sorgente nell'HTML (<source media>) e l'autoplay: il browser lo scarica e lo
+       avvia mentre legge la pagina. Qui lo si ADOTTA così com'è: niente nuovo indirizzo, niente salti, niente
+       ripartenze. L'altra serie (computer sul telefono e viceversa) non ha scelto nessun file: 0 byte.
+       La copertina verde si toglie (0,3 s) appena il video AVANZA davvero: due fotogrammi presentati con il tempo che
+       cresce (requestVideoFrameCallback), o il tempo del filmato oltre 0,3 s. Si toglie prima se il telefono rifiuta
+       l'avvio (Risparmio energetico: resta la locandina e il video parte al primo tocco) o se il file non arriva; e
+       comunque al TETTO, misurato con Safari del simulatore iOS su una rete 4G lenta a cache vuota. */
+    /* ms dall'apertura della pagina. Misure 18/10/2026 (Safari iOS 18.6, cache vuota): il video avanza a 2,8 s con
+       8 Mbit/s, 3,5 s con 5 Mbit/s, 4,2 s con 3,5 Mbit/s (quanto il video stesso). Oltre i 7 s si mostra la locandina. */
+    var TETTO = 7000;
+    var copertina = hero.querySelector(".hero__copertina");
+    var scoperto = !copertina || getComputedStyle(copertina).display === "none";
+    var filmAlloScoperto = 0; /* secondi di filmato già passati quando l'apertura diventa visibile */
+    function scopri(motivo) {
+      if (scoperto) return;
+      scoperto = true;
+      var a = lista[i];
+      filmAlloScoperto = a && motivo === "moto" ? a.currentTime : 0;
+      hero.classList.add("scoperto");
+      hero.setAttribute("data-scoperto", motivo + " " + Math.round(adesso()));
+    }
+    function sceltaNellHtml(v) { /* il file che il browser ha scelto leggendo la pagina, "" se nessuno */
+      if (v.currentSrc) return v.currentSrc;
+      var s = tutti("source", v).filter(function (x) {
+        var m = x.getAttribute("media");
+        return !m || window.matchMedia(m).matches;
+      })[0];
+      return s ? s.src : "";
+    }
+    tutti("video.hero__v[data-primo]", hero).forEach(function (v) {
+      if (sceltaNellHtml(v)) {
+        v.setAttribute("data-caricato", "1");
+        v._inizioCarico = 0; /* lo scarico è partito con la pagina */
+        /* errore vero: il video stesso, o la <source> giusta per questo schermo senza un'altra valida dopo. Una <source>
+           con media che non vale manda anch'essa «error» (regola HTML) e il browser passa alla successiva: non conta. */
+        v.addEventListener("error", function (e) {
+          var t = e.target;
+          if (t === v) { scopri("errore"); return; }
+          if (!t || t.tagName !== "SOURCE") return;
+          var vale = function (x) { var m = x.getAttribute("media"); return !m || window.matchMedia(m).matches; };
+          if (!vale(t)) return;
+          var tutte = tutti("source", v);
+          if (!tutte.slice(tutte.indexOf(t) + 1).some(vale)) scopri("errore");
+        }, true);
+      } else {
+        v.removeAttribute("autoplay"); /* serie che non si vede: parte solo se diventa quella giusta */
+      }
+    });
+    function quandoAvanza(v, fn) {
+      var fatto = false, ultimo = -1;
+      function ok() { if (!fatto) { fatto = true; fn(); } }
+      if (typeof v.requestVideoFrameCallback === "function") {
+        var cb = function (ora, md) {
+          if (fatto) return;
+          var t = md && typeof md.mediaTime === "number" ? md.mediaTime : v.currentTime;
+          if (!v.paused && ultimo >= 0 && t > ultimo && t > 0.04) { ok(); return; }
+          if (!v.paused) ultimo = t;
+          v.requestVideoFrameCallback(cb);
+        };
+        v.requestVideoFrameCallback(cb);
+      }
+      (function guarda() { /* riserva: il filmato è andato avanti di almeno 0,3 s */
+        if (fatto) return;
+        if (!v.paused && v.readyState >= 2 && v.currentTime > 0.3) { ok(); return; }
+        setTimeout(guarda, 50);
+      })();
+    }
+    if (!scoperto) {
+      alRifiuto = function (err) { if (err && err.name === "NotAllowedError") scopri("bloccato"); };
+      var tetto = function () {
+        if (scoperto) return;
+        /* scheda aperta dietro: il tetto vale da quando la pagina si vede, con un po' di margine */
+        if (doc.visibilityState !== "visible") {
+          var vista = function () {
+            if (doc.visibilityState !== "visible") return;
+            doc.removeEventListener("visibilitychange", vista);
+            setTimeout(function () { scopri("tetto"); }, 2500);
+          };
+          doc.addEventListener("visibilitychange", vista);
+          return;
+        }
+        scopri("tetto");
+      };
+      setTimeout(tetto, Math.max(0, TETTO - adesso()));
+    }
     var scelta = -1, pausaFino = 0, tScelta = null;
     var NORMALE = 500, MORBIDA = 1200; /* ms: dissolvenza di ogni cambio e del primo, dopo l'ape (style.css) */
     function ciclo() { return meno.matches ? 6000 : 2000; }
@@ -414,7 +506,7 @@
       (function guarda() {
         if (lista[i] !== v || !v.classList.contains("attivo")) return; /* puntino toccato: decide la scelta */
         if (v.paused && v.currentTime === 0 && adesso() - t0 > 15000) { passo(); return; } /* non parte: giro normale */
-        if (v.currentTime >= fineTurno() && inVista && doc.visibilityState === "visible" && scelta < 0) {
+        if (scoperto && v.currentTime >= filmAlloScoperto + fineTurno() && inVista && doc.visibilityState === "visible" && scelta < 0) {
           var j = prossimo();
           if (j >= 0) {
             mostra(j, true);
@@ -449,6 +541,13 @@
       i = attivi.length ? lista.indexOf(attivi[0]) : 0;
       lista.forEach(function (v, n) { if (n !== i) v.classList.remove("attivo"); });
       mostra(i);
+      if (!scoperto) {
+        var a0 = lista[i];
+        if (!sceltaNellHtml(a0) && !a0.getAttribute("src")) scopri("senza-video");
+        /* il file era già fallito prima di questo script: nessuna sorgente rimasta */
+        else if (a0.error || (a0.networkState === 3 && !a0.currentSrc && !a0.getAttribute("src"))) scopri("errore");
+        else quandoAvanza(lista[i], function () { scopri("moto"); });
+      }
       programma(primoGiro);
       primoGiro = false;
       coda();

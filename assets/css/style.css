@@ -222,11 +222,30 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
 .hero__v.attivo { opacity: 1; z-index: 2; transition: opacity .5s ease; }
 .hero__schermo.morbida .hero__v.attivo { transition: opacity 1.2s cubic-bezier(.45, 0, .55, 1); }
 .hero__v[data-set="pc"] { display: none; }
+/* COPERTINA dell'apertura (Francesco 18/10/2026: «appena vedo lo schermo con il sito aperto parta istantaneamente il
+   video»). Verde del marchio sopra video, logo e scritte finché il primo video AVANZA davvero (main.js aggiunge
+   «scoperto»): mai un fotogramma fermo che poi parte. Il logo bianco sta dove sta quello dell'apertura e compare
+   solo se l'attesa supera mezzo secondo. Senza script non c'è copertina; se main.js non arriva, la toglie
+   comunque l'animazione qui sotto dopo 10 s (main.js ha il suo tetto a 7 s). */
+.hero__copertina { display: none; }
+.js .hero__copertina {
+  display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4; background: var(--verde);
+  pointer-events: none; animation: copertina-via .3s ease 10s forwards;
+}
+.js .hero__copertina img {
+  position: absolute; left: 50%; top: 18px; width: 176px; height: auto; transform: translateX(-50%); opacity: 0;
+  animation: copertina-logo .5s ease .5s forwards;
+}
+.hero__schermo.scoperto .hero__copertina { animation: none; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility 0s linear .3s; }
+@keyframes copertina-via { to { opacity: 0; visibility: hidden; } }
+@keyframes copertina-logo { to { opacity: 1; } }
 .hero__marchio {
   position: absolute; left: 0; right: 0; top: 18px; z-index: 3; isolation: isolate; display: flex; flex-direction: column; align-items: center;
   gap: 10px; padding: 0 16px; pointer-events: none; text-align: center;
 }
 .hero__marchio > * { animation: entra 1.2s .3s var(--curva) both; }
+/* con la copertina logo e pillola compaiono insieme al video in moto, già al loro posto (niente entrata) */
+.js .hero__marchio > * { animation: none; }
 /* logo e pillola restano SEMPRE in vista (Francesco 15/10/2026): con il giro ogni 2 secondi niente dissolvenze.
    Dietro, un'ombra radiale leggerissima solo sotto le scritte (niente fasce) per leggerle anche su fiori e facciate */
 .hero__marchio::before {
@@ -273,6 +292,7 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
   .hero__v[data-set="pc"] { display: block; }
   .hero__marchio { top: 4%; gap: 12px; }
   .hero__marchio img { width: clamp(200px, 23vw, 360px); filter: drop-shadow(0 2px 12px rgba(0, 0, 0, .5)); }
+  .js .hero__copertina img { top: 4%; width: clamp(200px, 23vw, 360px); }
   .hero__pillola { padding: 5px 15px; font-size: 11px; letter-spacing: .2em; }
   /* freccia rotonda in basso al centro, che porta alla presentazione */
   .hero__giu {
