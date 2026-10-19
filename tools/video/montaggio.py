@@ -11,6 +11,10 @@ Regola fissa di Francesco (06/10/2026, «i video sono sgranati, voglio la massim
   allargarlo;
 - il peso della pagina si gestisce caricando le clip solo quando entrano nello schermo
   (preload="none" + assets/js/main.js), mai abbassando la qualità.
+- 19/10/2026 (video che si bloccavano): in OGNI codifica un fotogramma chiave ogni "chiave_s" secondi (video.json,
+  oggi 1 s) e un tetto di bitrate (computer 8 Mbit/s, telefono 4,5 Mbit/s): una ripresa dopo la pausa, il ritorno
+  all'inizio del loop o un pezzo buttato dalla memoria del browser non costringono più a decodificare 8 secondi di
+  filmato prima di mostrare un fotogramma. "controlla" verifica la distanza fra i fotogrammi chiave.
 
 Uso, dalla cartella del sito (Pillow serve per i poster: stesso venv di tools/prima-dopo):
     /private/tmp/claude-501/allinea/bin/python tools/video/montaggio.py apertura   # apertura + poster + copia per Google
@@ -20,7 +24,8 @@ Uso, dalla cartella del sito (Pillow serve per i poster: stesso venv di tools/pr
     python3 tools/video/montaggio.py hd       # video HD del 14/10/2026: copia + furgone 2560 + poster
     python3 tools/video/montaggio.py telefono # versioni del telefono (NOME-tel.mp4) con tetto di bitrate
     /private/tmp/claude-501/allinea/bin/python tools/video/montaggio.py tutto
-    python3 tools/video/montaggio.py controlla   # ffprobe di tutti i video pubblicati
+    python3 tools/video/montaggio.py controlla   # ffprobe di tutti i video pubblicati (anche i fotogrammi chiave)
+    --senza-poster: rifà solo i video (i poster restano: il primo fotogramma non cambia)
 
 Cosa serve: ffmpeg (Homebrew) e, per i .mov dell'iPhone, avconvert (già dentro macOS).
 
@@ -60,6 +65,17 @@ SITO = os.path.abspath(os.path.join(QUI, "..", ".."))
 MEDIA = os.path.expanduser(os.environ.get("ASTRA_MEDIA", "~/Documents/AstraMarketing"))
 CACHE = os.path.join(tempfile.gettempdir(), "astra-video-cache")
 LATO_MINIMO = 1080
+CHIAVE_S = 1  # secondi fra due fotogrammi chiave (video.json "chiave_s")
+SENZA_POSTER = "--senza-poster" in sys.argv
+
+
+def chiavi():
+    """Un fotogramma chiave ogni CHIAVE_S secondi, esatti (niente chiavi in più sui cambi di scena)."""
+    return ["-force_key_frames", "expr:gte(t,n_forced*%g)" % CHIAVE_S, "-sc_threshold", "0"]
+
+
+def tetto_di(q):
+    return ["-maxrate", q["maxrate"], "-bufsize", q["bufsize"]] if q.get("maxrate") else []
 
 
 def esegui(cmd):
@@ -156,7 +172,7 @@ def codifica(src, out, q):
     esegui(["ffmpeg", "-v", "error", "-y", "-i", src, "-an", "-map_metadata", "-1", "-map_chapters", "-1",
             "-vf", "scale=%d:%d:flags=lanczos,setsar=1" % (w, h),
             "-c:v", "libx264", "-profile:v", "high", "-level", "5.1" if w > 1080 else "4.1", "-preset", q["preset"],
-            "-crf", str(q["crf"]), "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709",
+            "-crf", str(q["crf"])] + tetto_di(q) + chiavi() + ["-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709",
             "-color_trc", "bt709", "-color_range", "tv", "-movflags", "+faststart", out])
     W, H, br, dur, size = descrivi(out)
     print("  %s  %dx%d  crf %s %s  %.1f s  %.1f Mbit/s  %.1f MB"
@@ -165,6 +181,8 @@ def codifica(src, out, q):
 
 def poster(video, base, larghezza=1080):
     """Primo fotogramma come immagine d'attesa: WebP per tutti, JPEG di riserva per i browser vecchi."""
+    if SENZA_POSTER:
+        return
     from PIL import Image
     png = base + ".tmp.png"
     esegui(["ffmpeg", "-v", "error", "-y", "-i", video, "-frames:v", "1", png])
@@ -239,7 +257,8 @@ def interi(cfg):
             raise SystemExit("%s: %d px chiesti ma l'originale è largo %d: niente ingrandimenti" % (v["nome"], ow, w))
         out = os.path.join(SITO, v_cfg["cartella"], v["nome"] + ".mp4")
         print("  video intero: %s (%dx%d -> %dx%d)" % (v["nome"], w, h, ow, oh))
-        q = {"larghezza": ow, "crf": v_cfg["crf"], "preset": v_cfg["preset"]}
+        q = {"larghezza": ow, "crf": v_cfg["crf"], "preset": v_cfg["preset"], "maxrate": v_cfg.get("maxrate"),
+             "bufsize": v_cfg.get("bufsize")}
         tmp = tempfile.mkdtemp(prefix="astra-intero-")
         try:
             grezzo = os.path.join(tmp, "grezzo.mp4")
@@ -334,7 +353,7 @@ def _rendi_zoom(src, v, out, crf, preset, tetto=None):
     enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", "%dx%d" % (ow, oh),
                             "-r", "30", "-i", "-", "-an", "-map_metadata", "-1",
                             "-vf", "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p",
-                            "-c:v", "libx264", "-profile:v", "high", "-preset", preset, "-crf", str(crf)] + extra +
+                            "-c:v", "libx264", "-profile:v", "high", "-preset", preset, "-crf", str(crf)] + extra + chiavi() +
                            ["-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
                             "-color_range", "tv", "-movflags", "+faststart", out], stdin=subprocess.PIPE)
     dim = w * h * 3
@@ -367,7 +386,7 @@ def _rendi(src, v, out, crf, preset, tetto=None):
     if v.get("ritaglio_verticale", {}).get("zoom"):
         return _rendi_zoom(src, v, out, crf, preset, tetto)
     """Una codifica H.264 alla larghezza v["larghezza"] (mai ingrandita), con il ritaglio verticale se c'è.
-    tetto = (maxrate, bufsize): solo per le versioni del telefono."""
+    tetto = (maxrate, bufsize): dal 19/10/2026 per tutte le versioni (computer 8 Mbit/s, telefono 4,5)."""
     w, h, _ = info(src)
     ow = int(v["larghezza"])
     oh = round(ow * h / w) // 2 * 2
@@ -386,7 +405,7 @@ def _rendi(src, v, out, crf, preset, tetto=None):
     extra = ["-maxrate", tetto[0], "-bufsize", tetto[1]] if tetto else []
     esegui(["ffmpeg", "-v", "error", "-y", "-i", src, "-an", "-map_metadata", "-1", "-map_chapters", "-1",
             "-vf", filtro_v,
-            "-c:v", "libx264", "-profile:v", "high", "-preset", preset, "-crf", str(crf)] + extra +
+            "-c:v", "libx264", "-profile:v", "high", "-preset", preset, "-crf", str(crf)] + extra + chiavi() +
            ["-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
             "-color_range", "tv", "-movflags", "+faststart", out])
     W, H, br, dur, size = descrivi(out)
@@ -403,7 +422,7 @@ def hd(cfg, solo=None):
     Il nome dell'originale non sfocato del furgone ("vietati") fa fermare tutto. --solo NOME = una voce."""
     c = cfg["hd"]
     cartella = os.path.join(SITO, c["cartella"])
-    for v in c["copia"]:
+    for v in c.get("copia", []):
         if solo and v["nome"] != solo:
             continue
         src = _sorgente_hd(c, v["file"])
@@ -417,7 +436,7 @@ def hd(cfg, solo=None):
             continue
         src = _sorgente_hd(c, v["file"])
         out = os.path.join(cartella, v["nome"] + ".mp4")
-        _rendi(src, v, out, v["crf"], v["preset"])
+        _rendi(src, v, out, v["crf"], v["preset"], (c["maxrate"], c["bufsize"]) if c.get("maxrate") else None)
         if v.get("poster"):
             poster(out, os.path.join(cartella, v["nome"] + "-poster"), int(v["poster"]))
 
@@ -437,8 +456,15 @@ def telefono(cfg, solo=None):
         _rendi(src, v, os.path.join(cartella, v["nome"] + "-tel.mp4"), t["crf"], t["preset"], tetto)
 
 
+def chiavi_di(p):
+    """istanti dei fotogrammi chiave"""
+    out = esegui(["ffprobe", "-v", "error", "-select_streams", "v:0", "-skip_frame", "nokey", "-show_entries",
+                  "frame=pts_time", "-of", "csv=p=0", p])
+    return [float(x.strip(",")) for x in out.split() if x.strip(",")]
+
+
 def controlla():
-    """ffprobe di ogni video pubblicato: lato corto almeno 1080 px."""
+    """ffprobe di ogni video pubblicato: lato corto almeno 1080 px, fotogrammi chiave al massimo ogni CHIAVE_S."""
     cartella = os.path.join(SITO, "assets", "video")
     male = 0
     for radice, _, files in os.walk(cartella):
@@ -447,16 +473,21 @@ def controlla():
                 continue
             p = os.path.join(radice, f)
             W, H, br, dur, size = descrivi(p)
-            ok = min(W, H) >= LATO_MINIMO
+            k = chiavi_di(p)
+            salto = max([b - a for a, b in zip(k, k[1:])] + [dur - k[-1]])
+            ok = min(W, H) >= LATO_MINIMO and salto <= CHIAVE_S + 0.05
             male += not ok
-            print("%-48s %4dx%-5d %5.1f s  %5.1f Mbit/s  %5.1f MB  %s"
-                  % (os.path.relpath(p, SITO), W, H, dur, br / 1e6, size / 1048576, "ok" if ok else "SOTTO 1080 px"))
+            print("%-48s %4dx%-5d %5.1f s  %5.1f Mbit/s  %5.1f MB  chiavi %2d (max %.2f s)  %s"
+                  % (os.path.relpath(p, SITO), W, H, dur, br / 1e6, size / 1048576, len(k), salto,
+                     "ok" if ok else ("SOTTO 1080 px" if min(W, H) < LATO_MINIMO else "CHIAVI TROPPO DISTANTI")))
     if male:
-        raise SystemExit("%d video sotto i %d px" % (male, LATO_MINIMO))
+        raise SystemExit("%d video sotto i %d px o con le chiavi troppo distanti" % (male, LATO_MINIMO))
 
 
 def main():
+    global CHIAVE_S
     cfg = json.load(open(os.path.join(QUI, "video.json"), encoding="utf-8"))
+    CHIAVE_S = cfg.get("chiave_s", CHIAVE_S)
     cosa = sys.argv[1] if len(sys.argv) > 1 else "tutto"
     solo = sys.argv[sys.argv.index("--solo") + 1] if "--solo" in sys.argv else None
     if cosa in ("apertura", "tutto"):

@@ -19,15 +19,19 @@
     radice.style.scrollBehavior = "auto";
     try { fn(); } finally { radice.style.scrollBehavior = prima; }
   }
-  /* «Risparmio dati» attivo o rete più lenta del 4G: in cima un solo video, nella striscia solo locandine */
+  /* «Risparmio dati» attivo o rete da 2G: in cima un solo video, nella striscia solo locandine.
+     19/10/2026: la stima di Chrome (effectiveType) NON si ascolta più a metà visita. Misurato: su una linea da
+     20 Mbit/s, dopo un minuto di video la stima scendeva a «3g» e 1,5 Mbit/s (la linea era piena dei nostri stessi
+     video) e il sito passava ai dati leggeri per sempre: l'apertura si fermava su un video e la striscia restava sulle
+     foto. All'apertura vale solo il 2G vero; la linea la misura il primo video (main.js, «lenta»). A metà visita conta
+     solo il Risparmio dati scelto dalla persona. */
   var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   var leggeri = false;
-  try { leggeri = !!(conn && (conn.saveData || (conn.effectiveType && conn.effectiveType !== "4g"))); } catch (_) {}
+  try { leggeri = !!(conn && (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || ""))); } catch (_) {}
   if (leggeri) radice.classList.add("dati-leggeri");
-  /* la stima della rete arriva anche dopo: se diventa lenta si passa ai dati leggeri (mai il contrario) */
   if (conn && conn.addEventListener) conn.addEventListener("change", function () {
     try {
-      if (!leggeri && (conn.saveData || (conn.effectiveType && conn.effectiveType !== "4g"))) {
+      if (!leggeri && conn.saveData) {
         leggeri = true;
         radice.classList.add("dati-leggeri");
       }
@@ -36,10 +40,15 @@
   /* telefono (anche in orizzontale): versioni leggere dei video, NOME-tel.mp4 (Francesco 15/10/2026) */
   var heroEl = doc.querySelector("[data-hero]");
   var telefono = window.matchMedia((heroEl && heroEl.getAttribute("data-mq-tel")) || "(max-width: 899.98px), (max-height: 499.98px)").matches;
+  /* linea lenta: la misura il primo video in cima mentre si scarica (19/10/2026). Se la linea porta meno di 1,6 volte
+     il peso del video, anche sul computer i video successivi e quelli a schermo intero usano le versioni leggere */
+  var lenta = false;
   function scegliSrc(el) {
     var t = el.getAttribute("data-src-tel");
-    return t && telefono ? t : el.getAttribute("data-src");
+    return t && (telefono || lenta) ? t : el.getAttribute("data-src");
   }
+  /* i riquadri (striscia, introduzione, chi siamo) sono piccoli: sempre la versione leggera, 1080 pieno a 4,5 Mbit/s */
+  function srcRiquadro(el) { return el.getAttribute("data-src-tel") || el.getAttribute("data-src"); }
 
   /* ---------- Testata: ombra quando la pagina scorre ---------- */
   var testata = doc.querySelector(".testata");
@@ -108,6 +117,7 @@
     inAttesaPrimo.splice(0).forEach(function (fn) { try { fn(); } catch (_) {} });
   }
   function scatola(v) { return v.closest("[data-clip]") || v.parentNode; }
+  function riquadro(v) { return !!v.closest("[data-clip]"); }
   function visibile(el) {
     var r = el.getBoundingClientRect();
     return r.bottom > -40 && r.top < window.innerHeight + 40 && r.right > 0 && r.left < window.innerWidth && r.width > 0;
@@ -115,37 +125,29 @@
   function haSorgente(v) { return !!(v.currentSrc || v.getAttribute("src") || v.querySelector("source")); }
   function parti(v) {
     /* video fuori dall'apertura: l'indirizzo si mette solo adesso (versione leggera sul telefono) */
-    if (!haSorgente(v) && !v.classList.contains("hero__v") && v.getAttribute("data-src")) v.src = scegliSrc(v);
+    if (!haSorgente(v) && !v.classList.contains("hero__v") && v.getAttribute("data-src")) v.src = srcRiquadro(v);
     if (!haSorgente(v)) return;
     if (v.preload !== "auto") v.preload = "auto";
     v.muted = true;
     var p;
     try { p = v.play(); } catch (_) { p = null; }
     if (p && typeof p.then === "function") {
-      p.then(function () { scatola(v).classList.add("in-play"); })
+      p.then(function () { if (!riquadro(v)) scatola(v).classList.add("in-play"); })
        .catch(function (err) {
          if (!err || err.name !== "AbortError") {
            serveSblocco = true;
            if (alRifiuto && v.classList.contains("hero__v") && v.classList.contains("attivo")) alRifiuto(err);
          }
        });
-    } else if (!v.paused) {
+    } else if (!v.paused && !riquadro(v)) {
       scatola(v).classList.add("in-play");
     }
   }
   function ferma(v) {
+    if (riquadro(v)) scatola(v).classList.remove("in-play"); /* quando torna nello schermo riparte dalla foto */
     if (v.paused) return;
     v._fermatoDaNoi = true;
     v.pause();
-  }
-  function urlDi(v) {
-    var s = v.currentSrc || v.getAttribute("src") || "";
-    if (!s && v.classList.contains("hero__v")) {
-      var t = v.getAttribute("data-src-tel");
-      s = (t && telefono) ? t : v.getAttribute("data-src") || "";
-    }
-    if (!s && v.getAttribute("data-src")) s = scegliSrc(v) || "";
-    try { return new URL(s, location.href).href; } catch (_) { return s; }
   }
   function scaricato(v) {
     try {
@@ -153,28 +155,26 @@
       return v.readyState >= 4 && b.length && b.end(b.length - 1) >= (v.duration || 0) - 0.3;
     } catch (_) { return true; }
   }
+  /* secondi di filmato già in memoria davanti al punto in cui è il video; in loop conta anche l'inizio del giro dopo */
   function avanti(v) {
     try {
-      var b = v.buffered, t = v.currentTime;
-      for (var k = 0; k < b.length; k++) if (b.start(k) <= t + 0.1 && b.end(k) > t) return b.end(k) - t;
+      var b = v.buffered, t = v.currentTime, d = v.duration || 0;
+      for (var k = 0; k < b.length; k++) {
+        if (b.start(k) <= t + 0.1 && b.end(k) > t) {
+          var a = b.end(k) - t;
+          if (v.loop && d && k > 0 && b.end(k) >= d - 0.1 && b.start(0) <= 0.1) a += b.end(0);
+          return a;
+        }
+      }
     } catch (_) {}
     return 0;
-  }
-  function inScarico(v) {
-    if (!(v.getAttribute("data-caricato") || v._avviato) || scaricato(v) || v.error) return false;
-    return v.networkState === 2 || v.readyState < 3;
-  }
-  /* lo stesso file lo sta già scaricando un altro video della pagina: si aspetta e poi lo dà la cache */
-  function doppione(v) {
-    var u = urlDi(v);
-    return !!u && video.some(function (x) { return x !== v && urlDi(x) === u && inScarico(x); });
   }
   video.forEach(function (v) {
     v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true;
     v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.removeAttribute("controls");
     try { v.disablePictureInPicture = true; } catch (_) {}
     try { v.disableRemotePlayback = true; } catch (_) {}
-    v.addEventListener("playing", function () { scatola(v).classList.add("in-play"); });
+    v.addEventListener("playing", function () { if (!riquadro(v)) scatola(v).classList.add("in-play"); });
     v.addEventListener("pause", function () {
       if (v._fermatoDaNoi) { v._fermatoDaNoi = false; return; }
       setTimeout(function () {
@@ -185,15 +185,58 @@
     v.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   });
 
-  /* le clip partono quando entrano nello schermo e si fermano quando escono */
+  /* le clip partono quando entrano nello schermo e si fermano quando escono.
+     19/10/2026 (video che si bloccavano): si scarica UNA clip alla volta, fra quelle sullo schermo (la prossima parte
+     quando quella prima ha 4 s davanti o è tutta arrivata), così non si rubano la linea; e il video compare sopra la
+     foto solo quando gira davvero con almeno 2 s già in memoria, o 1 s con la linea che tiene il passo (Safari sul
+     telefono parte con meno di 2 s e la memoria cresce piano: con la sola soglia dei 2 s restava sulla foto). Se si
+     ferma, o la memoria sta per finire con la linea che non tiene il passo, torna la foto (dissolvenza rapida) e il
+     video ricompare quando ha di nuovo strada davanti: mai un fotogramma fermo. Prima una clip aspettava che finisse lo scarico dello stesso file in cima, e un video in cima fermo fuori
+     schermo risultava «in scarico» per sempre: la striscia restava sulle foto. */
   var clip = tutti("[data-clip] video");
+  function caricaClip(x) {
+    if (!x._avviato || !x._vista || x.error || scaricato(x)) return false;
+    if (adesso() - (x._t0 || 0) > 15000) return false; /* linea lentissima: dopo 15 s passa la prossima */
+    return x.readyState < 3 || avanti(x) < 4; /* con 4 s davanti regge anche dividendo la linea con la prossima */
+  }
   function partiClip(v) {
     clearTimeout(v._attesa);
     if (leggeri) return; /* resta la locandina: il video si guarda toccandolo */
     if (!primoPronto) { if (!v._inCoda) { v._inCoda = true; quandoPrimoPronto(function () { v._inCoda = false; if (v._vista) partiClip(v); }); } return; }
-    if (doppione(v)) { v._attesa = setTimeout(function () { if (v._vista) partiClip(v); }, 500); return; }
-    v._avviato = true;
+    if (!v._avviato && clip.some(function (x) { return x !== v && caricaClip(x); })) {
+      v._attesa = setTimeout(function () { if (v._vista) partiClip(v); }, 400);
+      return;
+    }
+    if (!v._avviato) { v._avviato = true; v._t0 = adesso(); }
     parti(v);
+  }
+  /* la memoria cresce più in fretta di quanto il video la consuma? (secondi di filmato in arrivo ogni secondo, sull'ultimo
+     secondo circa: sopra 1 la linea tiene il passo) */
+  function velocita(v) {
+    var now = adesso(), fine = 0;
+    try { var b = v.buffered; if (b.length) fine = b.end(b.length - 1); } catch (_) {}
+    if (!v._bT || now - v._bT >= 1000) {
+      if (v._bT) v._vel = (fine - v._bE) / ((now - v._bT) / 1000);
+      v._bE = fine; v._bT = now;
+    }
+    return v._vel || 0;
+  }
+  function guardaClip(v) {
+    if (!v._avviato) return;
+    var box = scatola(v), t = v.currentTime, mosso = t !== v._tPrec, vel = velocita(v);
+    v._tPrec = t;
+    var tutto = scaricato(v), davanti = avanti(v);
+    if (box.classList.contains("in-play")) {
+      /* fermo da 300 ms, o memoria quasi finita con la linea che non tiene il passo: torna la foto prima del fermo */
+      var fermo = !v.paused && !v.seeking && !mosso && ++v._fermo >= 2;
+      if (mosso) v._fermo = 0;
+      if (fermo || (!v.paused && !tutto && davanti < 0.4 && vel < 1)) {
+        box.classList.add("rapido"); box.classList.remove("in-play"); v._fermo = 0;
+      }
+    } else if (v._vista && mosso && !v.paused && v.readyState >= 3 && (tutto || davanti >= 2 || (davanti >= 1 && vel >= 1.1))) {
+      box.classList.remove("rapido");
+      box.classList.add("in-play");
+    }
   }
   if (haIO) {
     var osservaClip = new IntersectionObserver(function (voci) {
@@ -221,6 +264,12 @@
   } else {
     clip.forEach(function (v) { v._vista = true; partiClip(v); });
   }
+  /* la guardia di tutti i video che si vedono: ogni 150 ms (apertura, riquadri, finestra a schermo intero) */
+  var guardie = [function () { clip.forEach(guardaClip); }];
+  setInterval(function () {
+    if (doc.visibilityState !== "visible") return;
+    guardie.forEach(function (g) { try { g(); } catch (_) {} });
+  }, 150);
 
   /* ---------- Apertura: i video interi che si danno il cambio ogni 2 secondi ----------
      Richiesta di Francesco (15/10/2026): «deve cambiare ogni due secondi e continuare in loop».
@@ -233,7 +282,14 @@
        poi il giro normale. Il tempo si conta sul filmato (currentTime), non sull'orologio: se la rete rallenta, il
        taglio cade comunque nello stesso punto della ripresa.
      - Si scaricano uno alla volta, in ordine: il successivo parte quando il precedente ha finito (o quando il
-       browser smette da solo di scaricarlo); mai due insieme all'inizio. */
+       browser smette da solo di scaricarlo); mai due insieme all'inizio.
+     Regole del 19/10/2026 («il video si blocca e non si carica bene»), misurate con Chrome e Safari su linee lente:
+     - si passa a un video solo se è PRONTO: scaricato tutto, o con in memoria il suo turno (2,5 s) più 0,5 s di margine;
+       se nessuno è pronto si resta su quello in onda, che intanto continua: un'attesa più lunga, mai un fermo;
+     - si prepara un video alla volta, nell'ordine del giro, e solo quando quello in onda ha almeno 4 s davanti (o è
+       tutto scaricato): quello che si vede ha sempre la precedenza sulla linea;
+     - se quello in onda si ferma (o sta per finire la memoria), dissolvenza rapida su uno pronto;
+     - la linea si misura sul primo video: se è lenta, sul computer i successivi usano le versioni leggere. */
   var hero = doc.querySelector("[data-hero]");
   if (hero) (function () {
     var mq = window.matchMedia(hero.getAttribute("data-mq"));
@@ -288,22 +344,35 @@
         v.removeAttribute("autoplay"); /* serie che non si vede: parte solo se diventa quella giusta */
       }
     });
+    /* «avanza davvero»: un fotogramma presentato con il tempo che cresce, il logo bianco già caricato (niente logo che
+       compare dopo il video), e il filmato con un po' di strada davanti: almeno 1 s già in memoria, oppure già 0,4 s
+       percorsi senza fermarsi. Visto sul sito vero il 18/10/2026: Safari a volte parte con pochi decimi in memoria,
+       va 0,3 s e si ferma quasi un secondo; così quella pausa resta sotto la copertina. Mai più di 1,2 s di filmato
+       sotto la copertina: l'ape vola via a 0,9 s. */
+    var logoAperta = hero.querySelector(".hero__marchio img");
     function quandoAvanza(v, fn) {
-      var fatto = false, ultimo = -1;
+      var fatto = false, ultimo = -1, tPrec = -1;
+      function pronto(t) {
+        if (t >= 1.2) return true;
+        var logo = !logoAperta || logoAperta.complete;
+        return logo && (t >= 0.4 || scaricato(v) || avanti(v) >= 1);
+      }
       function ok() { if (!fatto) { fatto = true; fn(); } }
       if (typeof v.requestVideoFrameCallback === "function") {
         var cb = function (ora, md) {
           if (fatto) return;
           var t = md && typeof md.mediaTime === "number" ? md.mediaTime : v.currentTime;
-          if (!v.paused && ultimo >= 0 && t > ultimo && t > 0.04) { ok(); return; }
+          if (!v.paused && ultimo >= 0 && t > ultimo && t > 0.04 && pronto(t)) { ok(); return; }
           if (!v.paused) ultimo = t;
           v.requestVideoFrameCallback(cb);
         };
         v.requestVideoFrameCallback(cb);
       }
-      (function guarda() { /* riserva: il filmato è andato avanti di almeno 0,3 s */
+      (function guarda() { /* riserva senza requestVideoFrameCallback: il filmato oltre 0,3 s e ancora in movimento */
         if (fatto) return;
-        if (!v.paused && v.readyState >= 2 && v.currentTime > 0.3) { ok(); return; }
+        var t = v.currentTime;
+        if (!v.paused && v.readyState >= 3 && t > 0.3 && tPrec >= 0 && t > tPrec && pronto(t)) { ok(); return; }
+        tPrec = t;
         setTimeout(guarda, 50);
       })();
     }
@@ -326,15 +395,11 @@
       setTimeout(tetto, Math.max(0, TETTO - adesso()));
     }
     var scelta = -1, pausaFino = 0, tScelta = null;
-    var NORMALE = 500, MORBIDA = 1200; /* ms: dissolvenza di ogni cambio e del primo, dopo l'ape (style.css) */
+    var NORMALE = 500, MORBIDA = 1200, RAPIDA = 250; /* ms: dissolvenza di ogni cambio, del primo (dopo l'ape) e del soccorso (style.css) */
     function ciclo() { return meno.matches ? 6000 : 2000; }
     /* secondi di filmato del primo video prima della dissolvenza morbida */
     function fineTurno() { return meno.matches ? 6 : 2.6; }
-    function sorgente(v) {
-      var hd = v.getAttribute("data-src-hd"), t = v.getAttribute("data-src-tel");
-      if (t && telefono) return t;
-      return hd && window.innerWidth * (window.devicePixelRatio || 1) > 2000 ? hd : v.getAttribute("data-src");
-    }
+    function sorgente(v) { return scegliSrc(v); }
     function carica(v) {
       if (v.getAttribute("data-caricato")) return;
       v.setAttribute("data-caricato", "1");
@@ -344,13 +409,17 @@
       v.src = sorgente(v);
       try { v.load(); } catch (_) {}
     }
-    /* pronto = scaricato tutto, oppure ha già in memoria almeno il pezzo che servirà nel suo turno */
+    /* secondi di filmato che servono per un turno intero (il turno più la dissolvenza) più mezzo secondo di margine.
+       Basta mezzo secondo perché nessun altro video scarica finché quello in onda non ha 4 s davanti (comodo). */
+    function serve() { return (ciclo() + NORMALE) / 1000 + 0.5; }
+    /* pronto = scaricato tutto, oppure ha già in memoria il suo turno con il margine */
     function pronto(v) {
-      if (!v.getAttribute("data-caricato") || v.readyState < 3 || v._riscalda) return false;
-      return scaricato(v) || avanti(v) >= 2;
+      if (!v.getAttribute("data-caricato") || v.readyState < 3 || v._riscalda || v.error) return false;
+      return scaricato(v) || avanti(v) >= serve();
     }
     /* Un video fermo il browser lo scarica solo per qualche decimo di secondo: per averne pronto un pezzo
-       lo si fa girare nascosto finché ha in memoria 2,6 secondi, poi lo si ferma e si torna al punto di prima. */
+       lo si fa girare nascosto finché ha in memoria il suo turno con il margine, poi lo si ferma e si torna al punto
+       di prima (con la chiave ogni secondo il ritorno indietro è immediato). */
     function riscalda(v) {
       if (v._riscalda || v.classList.contains("attivo")) return;
       v._riscalda = true;
@@ -358,7 +427,7 @@
       function basta() {
         if (!v._riscalda) return;
         if (v.classList.contains("attivo")) { v._riscalda = false; return; }
-        if (scaricato(v) || avanti(v) + (v.currentTime - da) >= 2.6 || adesso() - t0 > 20000) {
+        if (scaricato(v) || avanti(v) + Math.max(0, v.currentTime - da) >= serve() + 0.5 || adesso() - t0 > 20000) {
           v._riscalda = false;
           v._fermatoDaNoi = true;
           try { v.pause(); v.currentTime = da; } catch (_) {}
@@ -378,18 +447,21 @@
       var serve = fineTurno() + MORBIDA / 1000 + 0.6;
       try { var b = v.buffered; return scaricato(v) || (b.length && b.end(b.length - 1) >= serve); } catch (_) { return true; }
     }
-    function staScaricando(v) {
+    /* quello in onda ha strada davanti: si può preparare il prossimo senza togliergli la linea. Il primo video (l'ape),
+       finché è in onda per la prima volta, è comodo quando ha in memoria tutto il suo primo turno e la linea è stata
+       misurata: così il secondo è pronto per la dissolvenza dopo l'ape e si scarica già nella versione giusta. */
+    var misurata = false, primoCambiato = false;
+    function comodo(v) {
+      /* su linea lenta il primo video non divide la linea finché non ha 4 s davanti: meglio l'ape più a lungo che a scatti */
+      if (v === lista[0] && !primoCambiato && !lenta) return misurata && primoTurnoInMemoria(v);
+      return (misurata || v !== lista[0]) && (scaricato(v) || avanti(v) >= 4);
+    }
+    /* un video che si sta preparando (primo scarico o riscaldamento) e non è ancora pronto */
+    function inPreparazione(v) {
       if (v._riscalda) return true;
-      if (!v.getAttribute("data-caricato") || scaricato(v) || v.error) return false;
-      /* finché il primo video non ha in memoria il primo turno, niente altri download: mai scatti all'apertura */
-      if (v === lista[0] && !primoPronto) return !primoTurnoInMemoria(v) && adesso() - (v._inizioCarico || 0) < 25000;
-      /* il primo turno è in memoria: il successivo parte subito, così è pronto per la dissolvenza dopo l'ape */
-      if (v === lista[0] && primoTurnoInMemoria(v)) return false;
-      /* quello in onda, se ha già 3,5 secondi in memoria, lascia spazio al prossimo: il giro parte prima */
-      if (v.classList.contains("attivo") && avanti(v) >= 3.5) return false;
-      if (v.networkState !== 2 && v.readyState >= 3) return false; /* il browser ha smesso da solo */
-      if (!v._inizioCarico) v._inizioCarico = adesso();
-      return adesso() - v._inizioCarico < 20000; /* rete lentissima: dopo 20 s si passa comunque al successivo */
+      if (v === lista[i] || !v.getAttribute("data-caricato") || v.error || pronto(v)) return false;
+      if (adesso() - (v._inizioCarico || 0) > 20000) return false; /* rete lentissima: dopo 20 s si passa oltre */
+      return v.networkState === 2 || v.readyState < 3;
     }
     function coda() {
       clearTimeout(tCoda);
@@ -397,21 +469,46 @@
           (primoTurnoInMemoria(lista[0]) || adesso() - (lista[0]._inizioCarico || 0) > 25000)) primoEPronto();
       if (leggeri) { if (!primoPronto) tCoda = setTimeout(coda, 400); return; }
       if (!inVista || doc.visibilityState !== "visible" || !lista.length) return;
-      if (lista.some(staScaricando)) { tCoda = setTimeout(coda, 400); return; }
-      var dopo = lista.filter(function (v) { return !v.getAttribute("data-caricato"); })[0];
-      if (dopo && doppione(dopo)) { tCoda = setTimeout(coda, 500); return; } /* lo sta scaricando la striscia */
-      if (dopo) {
-        carica(dopo);
-        var via = function () { dopo.removeEventListener("canplay", via); riscalda(dopo); };
-        if (dopo.readyState >= 3) via(); else dopo.addEventListener("canplay", via);
-        tCoda = setTimeout(coda, 400);
+      tCoda = setTimeout(coda, 300);
+      /* il primo turno dell'apertura non si tocca; poi un video alla volta, solo se quello in onda è comodo */
+      if (!primoPronto || !comodo(lista[i]) || lista.some(inPreparazione)) return;
+      for (var d = 1; d < lista.length; d++) {
+        var v = lista[(i + d) % lista.length];
+        if (pronto(v)) continue;
+        if (!v.getAttribute("data-caricato")) {
+          carica(v);
+          (function (x) {
+            var via = function () { x.removeEventListener("canplay", via); riscalda(x); };
+            if (x.readyState >= 3) via(); else x.addEventListener("canplay", via);
+          })(v);
+        } else {
+          riscalda(v);
+        }
         return;
       }
-      /* tutti avviati: chi è rimasto con poco in memoria si riscalda, uno alla volta */
-      var corto = lista.filter(function (v) {
-        return !v.classList.contains("attivo") && v.readyState >= 1 && !scaricato(v) && avanti(v) < 2.5;
-      })[0];
-      if (corto) riscalda(corto);
+    }
+    /* la linea si misura sul primo video mentre si scarica (prima che parta qualsiasi altra cosa): secondi di filmato
+       arrivati per secondo. Sotto 1,6 la linea porta poco più del peso del video: i successivi vanno leggeri. */
+    function misuraLinea(v) {
+      var t0 = null, b0 = 0, inizio = adesso();
+      (function giro() {
+        var b = 0;
+        try { if (v.buffered.length) b = v.buffered.end(v.buffered.length - 1); } catch (_) {}
+        var now = adesso();
+        if (t0 === null && (v.error || now - inizio > 15000)) { misurata = true; coda(); return; } /* il primo non arriva */
+        if (t0 === null && b > 0) { t0 = now; b0 = b; }
+        if (t0 !== null) {
+          var dt = (now - t0) / 1000, r = dt > 0 ? (b - b0) / dt : 0, finito = scaricato(v);
+          if (finito || (b - b0 >= 3 && dt >= 1) || dt > 12) {
+            if (!finito && r < 1.6) lenta = true;
+            misurata = true;
+            hero.setAttribute("data-linea", (finito ? "scaricato " : "") + r.toFixed(2) + (lenta ? " lenta" : ""));
+            coda();
+            return;
+          }
+        }
+        setTimeout(giro, 200);
+      })();
     }
     function aggiornaPunti() {
       tutti(".hero__punto", punti).forEach(function (b, n) {
@@ -448,15 +545,17 @@
       aggiornaPunti();
       attendiScelta();
     }
-    /* morbida = la dissolvenza lunga del primo cambio. Chi entra sale sopra, chi esce resta pieno sotto finché è
-       coperto («uscente»), poi si ferma: niente calo di luce a metà dissolvenza. */
-    function mostra(k, morbida) {
+    /* morbida = la dissolvenza lunga del primo cambio, rapida = il soccorso a un video che si è fermato. Chi entra sale
+       sopra, chi esce resta pieno sotto finché è coperto («uscente»), poi si ferma: niente calo di luce a metà. */
+    function mostra(k, morbida, rapida) {
       var prec = lista[i];
+      if (prec === lista[0] && k !== 0) primoCambiato = true;
       i = k;
       var v = lista[i];
-      var durata = morbida ? MORBIDA : NORMALE;
+      var durata = morbida ? MORBIDA : rapida ? RAPIDA : NORMALE;
       carica(v);
       hero.classList.toggle("morbida", !!morbida);
+      hero.classList.toggle("rapida", !morbida && !!rapida);
       lista.forEach(function (x) { /* un cambio a metà di un altro: chi era sotto si toglie subito */
         if (x !== prec && x !== v && x.classList.contains("uscente")) { clearTimeout(x._tFuori); x.classList.remove("uscente"); ferma(x); }
       });
@@ -468,6 +567,7 @@
       clearTimeout(v._tFuori);
       v.classList.remove("uscente");
       v.classList.add("attivo");
+      v._dal = adesso(); /* la guardia lo lascia partire prima di giudicarlo */
       if (inVista) parti(v); /* riprende da dove era rimasto, sempre a velocità normale */
       if (prec && prec !== v) {
         prec._tFuori = setTimeout(function () {
@@ -491,6 +591,31 @@
       var j = prossimo();
       if (j >= 0) mostra(j);
     }
+    /* Soccorso: il video in onda si è fermato (o ha meno di mezzo secondo in memoria e il file non è finito). Si passa
+       con una dissolvenza rapida a un video pronto; se nessuno lo è, a quello con più strada davanti (almeno 1,5 s e
+       più di quello in onda). Se non c'è niente di meglio si resta: il video riparte da solo appena arriva il resto. */
+    var tPrecA = -1;
+    function soccorri() {
+      var j = prossimo();
+      if (j < 0) {
+        var meglio = Math.max(1.5, avanti(lista[i]) + 1);
+        lista.forEach(function (x, k) {
+          if (k !== i && x.getAttribute("data-caricato") && !x._riscalda && !x.error && x.readyState >= 3 && avanti(x) >= meglio) { j = k; meglio = avanti(x); }
+        });
+      }
+      if (j < 0) return;
+      mostra(j, false, true);
+      programma(false);
+    }
+    function guardaHero() {
+      var a = lista[i];
+      if (!a || !scoperto || !inVista || leggeri || lista.length < 2 || scelta >= 0) { tPrecA = -1; return; }
+      var t = a.currentTime, mosso = t !== tPrecA;
+      tPrecA = t;
+      if (a.paused || a.seeking || adesso() - (a._dal || 0) < 450) return;
+      if (!mosso || (!scaricato(a) && avanti(a) < 0.5)) soccorri();
+    }
+    guardie.push(guardaHero);
     function programma(primo, ritardo) {
       clearTimeout(tGiro);
       if (leggeri) return; /* rete lenta o risparmio dati: un solo video, nessun giro */
@@ -541,6 +666,8 @@
       i = attivi.length ? lista.indexOf(attivi[0]) : 0;
       lista.forEach(function (v, n) { if (n !== i) v.classList.remove("attivo"); });
       mostra(i);
+      if (lista[0].getAttribute("data-caricato") && !lista[0]._misurata) { lista[0]._misurata = true; misuraLinea(lista[0]); }
+      else if (!lista[0]._misurata) misurata = true;
       if (!scoperto) {
         var a0 = lista[i];
         if (!sceltaNellHtml(a0) && !a0.getAttribute("src")) scopri("senza-video");
@@ -577,7 +704,7 @@
     video.forEach(function (v) {
       if (!v.paused || !haSorgente(v)) return;
       var eroe = v.classList.contains("hero__v");
-      if (!eroe && (leggeri || doppione(v))) return;
+      if (!eroe && leggeri) return;
       var inOnda = !eroe || v.classList.contains("attivo");
       if (inOnda && visibile(scatola(v))) { if (eroe) parti(v); else partiClip(v); return; }
       if (eroe && !v.getAttribute("data-caricato")) return; /* i video in cima li prepara il loro giro */
@@ -608,7 +735,16 @@
     var didascalia = dialog.querySelector(".lightbox__didascalia");
     var btnPrima = dialog.querySelector("[data-azione=prima]");
     var btnDopo = dialog.querySelector("[data-azione=dopo]");
-    var gruppo = [], indice = 0, ultimo = null, el = null, w = 0, h = 0;
+    var gruppo = [], indice = 0, ultimo = null, el = null, w = 0, h = 0, tLb = -1, fermoLb = 0;
+    /* video a schermo intero: se non gira (all'inizio o perché la linea non ce la fa) la rotella sopra dice che sta
+       arrivando, invece di un fotogramma fermo senza spiegazione */
+    guardie.push(function () {
+      if (!el || el.tagName !== "VIDEO" || !dialog.open) return;
+      var t = el.currentTime, mosso = t !== tLb;
+      tLb = t;
+      if (!el.paused && mosso) { fermoLb = 0; media.classList.remove("attende"); }
+      else if (!el.seeking && ++fermoLb >= 2) media.classList.add("attende");
+    });
     function adatta() {
       if (!el || !w || !h) return;
       el.style.width = ""; el.style.height = "";
@@ -625,13 +761,16 @@
       var alt = b.getAttribute("data-alt") || "";
       w = +b.getAttribute("data-w") || 0; h = +b.getAttribute("data-h") || 0;
       media.innerHTML = "";
+      media.classList.remove("attende");
       if (b.getAttribute("data-media") === "video") {
         el = doc.createElement("video");
-        el.muted = true; el.loop = true; el.playsInline = true; el.autoplay = true;
+        el.muted = true; el.loop = true; el.playsInline = true; el.autoplay = true; el.preload = "auto";
         el.setAttribute("muted", ""); el.setAttribute("playsinline", ""); el.setAttribute("aria-label", alt);
         el.poster = b.getAttribute("data-poster") || "";
-        el.src = scegliSrc(b);
+        el.src = scegliSrc(b); /* computer: versione piena, o leggera se la linea misurata è lenta; telefono: leggera */
         media.appendChild(el);
+        media.classList.add("attende"); /* la rotella finché il video non gira davvero */
+        tLb = -1; fermoLb = 0;
         var p; try { p = el.play(); } catch (_) { p = null; }
         if (p && p.catch) p.catch(function () {});
       } else {
@@ -668,6 +807,7 @@
     dialog.addEventListener("close", function () {
       radice.classList.remove("lightbox-aperta");
       media.innerHTML = ""; el = null;
+      media.classList.remove("attende");
       metti(ultimo, daTastiera);
     });
     window.addEventListener("resize", adatta);

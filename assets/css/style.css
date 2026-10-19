@@ -127,6 +127,8 @@ h2 { font-size: clamp(42px, 2.9vw + 32px, 72px); line-height: 1; }
 .video-box img, .video-box video { object-fit: contain; }
 .video-box video { opacity: 0; transition: opacity .6s ease; }
 .video-box.in-play video { opacity: 1; }
+/* video che si ferma per la linea: torna subito la foto (main.js, 19/10/2026), mai un fotogramma fermo */
+.video-box.rapido video { transition-duration: .2s; }
 
 /* ---------- testata ---------- */
 .testata {
@@ -221,6 +223,8 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
 .hero__v.uscente { opacity: 1; z-index: 1; }
 .hero__v.attivo { opacity: 1; z-index: 2; transition: opacity .5s ease; }
 .hero__schermo.morbida .hero__v.attivo { transition: opacity 1.2s cubic-bezier(.45, 0, .55, 1); }
+/* soccorso a un video che si è fermato: dissolvenza rapida su uno pronto (main.js, 19/10/2026) */
+.hero__schermo.rapida .hero__v.attivo { transition: opacity .25s ease; }
 .hero__v[data-set="pc"] { display: none; }
 /* COPERTINA dell'apertura (Francesco 18/10/2026: «appena vedo lo schermo con il sito aperto parta istantaneamente il
    video»). Verde del marchio sopra video, logo e scritte finché il primo video AVANZA davvero (main.js aggiunge

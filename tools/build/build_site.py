@@ -88,7 +88,7 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261018a"
+VERSIONE = "20261019a"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 900px), (orientation: landscape)"
@@ -100,10 +100,8 @@ MQ_SET_TEL = "(max-width: 899.98px) and (orientation: portrait)"
 # MQ_PC e MQ_TEL insieme (telefono girato in orizzontale), scritte come elenco di condizioni semplici:
 MQ_PC_TEL = ("(min-width: 900px) and (max-height: 499.98px), (orientation: landscape) and (max-width: 899.98px), "
              "(orientation: landscape) and (max-height: 499.98px)")
-# Versione 2560 dove lo schermo supera i 2000 pixel veri (la regola di main.js: larghezza x densita' > 2000):
-MQ_HD = ("(min-width: 1001px) and (min-resolution: 2dppx), (min-width: 1001px) and (-webkit-min-device-pixel-ratio: 2), "
-         "(min-width: 1334px) and (min-resolution: 1.5dppx), (min-width: 1334px) and (-webkit-min-device-pixel-ratio: 1.5), "
-         "(min-width: 2001px)")
+# Le versioni 2560 per gli schermi grandi sono state tolte il 19/10/2026: pesavano 15-19 Mbit/s e su una linea di
+# casa il video si fermava; il 1080 a 8 Mbit/s ingrandito sullo schermo Retina vale quasi uguale (VMAF 98,1 contro 99,6).
 
 
 def e(t):
@@ -213,10 +211,10 @@ HERO_TEL = [
     ("giardino-piscina-1", "Giardino con piscina e vista sulle colline"),
 ]
 HERO_PC = [
-    ("gerani-villa", "Un'ape su un geranio, poi l'ulivo, la villa e il vialetto di pietra", "gerani-villa-2560"),
-    ("hero-furgone", "Il furgone Astra Gardens nel giardino con piscina", "hero-furgone-2560"),
-    ("hero-fiori", "Verbena, doccia e piscina affacciate sulle colline", None),
-    ("giro-giardino-fontana", "Il giardino con la fontana e le aiuole rialzate in pietra", None),
+    ("gerani-villa", "Un'ape su un geranio, poi l'ulivo, la villa e il vialetto di pietra"),
+    ("hero-furgone", "Il furgone Astra Gardens nel giardino con piscina"),
+    ("hero-fiori", "Verbena, doccia e piscina affacciate sulle colline"),
+    ("giro-giardino-fontana", "Il giardino con la fontana e le aiuole rialzate in pietra"),
 ]
 
 # Striscia «Dai nostri cantieri»: foto e video verticali, nell'ordine della bozza approvata.
@@ -534,15 +532,13 @@ def hero():
         else:
             video.append('      <video class="hero__v" data-set="tel" data-src="%s" data-poster="%s-poster.webp" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-alt="%s"></video>'
                          % (src, b, e(alt)))
-    for n, (nome, alt, hd) in enumerate(HERO_PC):
+    for n, (nome, alt) in enumerate(HERO_PC):
         b = "assets/video/" + nome
-        extra = (' data-src-hd="assets/video/%s.mp4"' % hd if hd else "") + (' data-src-tel="%s"' % tel(nome) if tel(nome) else "")
+        extra = ' data-src-tel="%s"' % tel(nome) if tel(nome) else ""
         if n == 0:
             sorgenti = ""
             if tel(nome):
                 sorgenti += '<source src="%s" type="video/mp4" media="%s">' % (tel(nome), MQ_PC_TEL)
-            if hd:
-                sorgenti += '<source src="assets/video/%s.mp4" type="video/mp4" media="%s">' % (hd, MQ_HD)
             sorgenti += '<source src="%s.mp4" type="video/mp4" media="%s">' % (b, MQ_PC)
             video.append('      <video class="hero__v attivo" data-set="pc" data-primo data-src="%s.mp4"%s data-poster="%s-poster.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1" data-alt="%s">%s</video>'
                          % (b, extra, b, e(alt), sorgenti))
