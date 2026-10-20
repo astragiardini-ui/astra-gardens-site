@@ -282,7 +282,7 @@ SERVIZI = [
      "Terreno preparato e livellato, zolle posate con cura: un prato verde e uniforme.",
      "srv-prato", "Prato in zolla appena posato tra bossi e vialetti", None),
     ("sintetico", "Erba sintetica",
-     "Posa di erba sintetica di qualità dove il prato vero fatica: terrazzi, zone d'ombra, bordi piscina.",
+     "Posa di erba sintetica di qualità per terrazzi, zone d'ombra e bordi piscina sempre verdi.",
      "lav-erba-buddha", "Prato sintetico dal bordo curvo, ghiaia rosa e un'aiuola di ciottoli bianchi con succulente", None),
     ("irrigazione", "Irrigazione automatica",
      "Impianti a goccia e irrigatori a scomparsa, studiati zona per zona: l'acqua giusta, al momento giusto.",
@@ -348,9 +348,9 @@ NASTRO = ["srv-siepi", "srv-alberi", "srv-prato", "srv-ulivi", "srv-corten", "sr
           "srv-movimento-terra", "srv-robot", "lav-aiuola-ombra", "lav-zolle-siepe"]
 ALTEZZA_NASTRO = (200, 300)
 
-TITOLO = "Astra Gardens · Giardiniere a Flero e in provincia di Brescia"
-DESCRIZIONE = ("Giardinieri a Flero, in tutta la provincia di Brescia: progettiamo, realizziamo e curiamo giardini "
-               "su misura. Manutenzione, potature e tree climbing, prati in zolla, irrigazione. Scrivici su WhatsApp.")
+TITOLO = "Giardiniere a Flero e provincia di Brescia · Astra Gardens"
+DESCRIZIONE = ("Giardiniere a Flero e in provincia di Brescia: progetto, realizzazione, manutenzione, potature, "
+               "tree climbing, prati, irrigazione. Scrivici su WhatsApp.")
 
 
 def jsonld():
@@ -380,7 +380,9 @@ def jsonld():
                     "addressRegion": "BS", "addressCountry": "IT"},
         "areaServed": {"@type": "AdministrativeArea", "name": "Provincia di Brescia"},
         "sameAs": [IG, FB, GOOGLE],
-        "knowsAbout": [s[1] for s in SERVIZI],
+        "knowsAbout": ["Potatura in tree climbing", "Abbattimento controllato degli alberi", "Posa del prato in zolla",
+                       "Erba sintetica", "Impianti di irrigazione automatica", "Cura dell'ulivo", "Manutenzione del giardino",
+                       "Progettazione di giardini con render", "Bordure in corten", "Movimento terra"],
         "hasOfferCatalog": {
             "@type": "OfferCatalog", "name": "Servizi per il verde",
             "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": s[1], "description": s[2]}}
@@ -467,7 +469,7 @@ def testata(home=True):
   <div class="menu__piede">
     <a class="pillola-grande pillola-grande--chiara" href="%(wa)s" target="_blank" rel="noopener">Scrivici su WhatsApp</a>
     <a class="pillola-grande pillola-grande--chiara" href="tel:%(tel)s">Chiamaci · %(tel_breve)s</a>
-    <p class="menu__social"><a href="%(ig)s" target="_blank" rel="noopener">Instagram</a><a href="%(fb)s" target="_blank" rel="noopener">Facebook</a><a href="%(google)s" target="_blank" rel="noopener">Recensioni su Google</a></p>
+    <p class="menu__social"><a href="%(ig)s" target="_blank" rel="noopener">Instagram</a><a href="%(fb)s" target="_blank" rel="noopener">Facebook</a><a href="%(google)s" target="_blank" rel="noopener">Scheda Google</a></p>
   </div>
 </div>
 """ % {"p": p, "wa": WA_GENERALE, "tel": TEL_LINK, "tel_breve": TEL_BREVE, "ictel": icona("i-tel"),
@@ -490,7 +492,7 @@ def piede(home=True):
       <div><p class="piede__titoletto">Servizi</p><ul role="list">%(servizi)s</ul></div>
       <div><p class="piede__titoletto">Dove lavoriamo</p><ul role="list"><li>Sede a Flero</li><li>Brescia città</li><li>Tutta la provincia</li></ul></div>
       <div><p class="piede__titoletto">Contatti</p><ul role="list"><li><a href="tel:%(tel)s">%(tel_breve)s</a></li><li><a href="mailto:%(email)s">%(email_capo)s</a></li></ul></div>
-      <div><p class="piede__titoletto">Social</p><ul role="list"><li><a href="%(ig)s" target="_blank" rel="noopener">Instagram</a></li><li><a href="%(fb)s" target="_blank" rel="noopener">Facebook</a></li><li><a href="%(google)s" target="_blank" rel="noopener">Recensioni su Google</a></li></ul></div>
+      <div><p class="piede__titoletto">Social</p><ul role="list"><li><a href="%(ig)s" target="_blank" rel="noopener">Instagram</a></li><li><a href="%(fb)s" target="_blank" rel="noopener">Facebook</a></li><li><a href="%(google)s" target="_blank" rel="noopener">Scheda Google</a></li></ul></div>
     </div>
     <div class="piede__legale">
       <picture><source type="image/webp" srcset="assets/img/logo-bianco-640.webp"><img src="assets/img/logo-bianco-640.png" alt="Astra Gardens" width="640" height="131" loading="lazy"></picture>
@@ -575,7 +577,7 @@ def intro():
     return """  <section class="intro" id="intro" aria-labelledby="titolo-intro">
     <div class="contenitore intro__griglia">
       <div class="intro__testo">
-        <p class="occhiello solo-tel rivela">Giardinieri a Flero · in tutta la provincia di Brescia</p>
+        <p class="occhiello rivela">Giardinieri a Flero · in tutta la provincia di Brescia</p>
         <h1 id="titolo-intro" class="rivela" style="--ritardo: .1s">Il tuo giardino sempre bello.<br> <em>Ci&nbsp;pensiamo noi.</em></h1>
         <p class="intro__lead rivela" style="--ritardo: .2s">Una squadra giovane, guidata da un perito agrario iscritto all'albo: dal primo sopralluogo alla cura di ogni stagione, il tuo verde è in buone mani.</p>
         <div class="intro__azioni rivela" style="--ritardo: .3s">
@@ -682,6 +684,7 @@ def chi_siamo():
       <div class="chi__paragrafi">
         <p>Astra Gardens nasce a Flero nel 2023 da un gruppo di diplomati e laureati in agraria. Ci unisce la passione per il verde e un'idea semplice: un giardino deve essere bello, sano e facile da vivere.</p>
         <p>Ogni progetto parte dall'ascolto: studiamo lo spazio, la luce e il terreno, e prima di iniziare ti mostriamo il risultato con un render. Poi lo realizziamo e lo curiamo nel tempo, stagione dopo stagione.</p>
+        <p>Ti segue un perito agrario iscritto all'albo (n. 714 del Collegio dei Periti Agrari e dei Periti Agrari Laureati di Brescia, Mantova, Cremona e Sondrio). Lavoriamo con una polizza di responsabilità civile verso terzi con massimale di 2 milioni di euro, che comprende potature e abbattimenti: te ne mandiamo la copia quando vuoi.</p>
       </div>
       <a class="link-freccia" href="#servizi">Scopri cosa facciamo%(icfreccia)s</a>
     </div>
@@ -955,11 +958,11 @@ def privacy():
       <p><strong>Chi tratta i tuoi dati.</strong> %(denominazione)s, impresa individuale, P.IVA %(piva)s, REA %(rea)s, sede in %(indirizzo)s. Contatti: <a href="mailto:%(email)s">%(email)s</a> · PEC <a href="mailto:%(pec)s">%(pec)s</a> · <a href="tel:%(tel_link)s">%(tel)s</a>.</p>
       <p><strong>Questo sito.</strong> Non usa cookie, strumenti di analisi o pubblicità e non carica nulla da altri siti. Non ci sono moduli: attraverso il sito non raccogliamo dati. Il sito è ospitato da GitHub (GitHub, Inc., USA), che per sicurezza registra l'indirizzo IP dei visitatori come titolare autonomo, secondo la <a href="%(gh)s" target="_blank" rel="noopener">propria informativa</a>; GitHub aderisce al Data Privacy Framework UE-USA. Noi non riceviamo questi dati. I pulsanti WhatsApp e i link a Instagram e Facebook ti portano sui servizi di Meta, dove vale anche la loro informativa.</p>
       <p><strong>Quando ci contatti (WhatsApp, telefono, email).</strong> Trattiamo nome, numero o email, messaggi, foto e vocali che ci mandi e l'indirizzo del giardino, se ce lo dai: per rispondere, fissare il sopralluogo, preparare preventivo e render e svolgere il lavoro (misure precontrattuali e contratto, art. 6.1.b GDPR; se scrivi per un condominio o un'azienda, il nostro legittimo interesse a risponderti, art. 6.1.f); per fatture e obblighi fiscali (obbligo di legge, art. 6.1.c); per difenderci in caso di contestazioni (legittimo interesse, art. 6.1.f). Darci i dati non è obbligatorio, ma senza recapito e indirizzo del giardino non possiamo fare il preventivo né il lavoro.</p>
-      <p><strong>Foto dei lavori.</strong> Pubblichiamo foto e video dei giardini solo con il tuo consenso (art. 6.1.a), senza persone riconoscibili, targhe, numeri civici né indirizzo. Puoi ritirarlo quando vuoi: le togliamo entro 30 giorni.</p>
+      <p><strong>Foto dei lavori.</strong> Pubblichiamo foto e video dei lavori che riprendono soltanto il verde e le opere realizzate, senza persone, numeri civici, targhe, nomi o indirizzo, così che non si possa risalire a te né alla tua casa (nostro legittimo interesse a documentare il lavoro, art. 6.1.f). Se preferisci che quelle del tuo giardino non vengano pubblicate, scrivici anche in un secondo momento: le togliamo entro 30 giorni e non cambia nulla nel lavoro né nel prezzo. Per immagini in cui ti si può riconoscere, o si può riconoscere la tua casa, chiediamo prima un consenso scritto a parte (art. 6.1.a), che puoi ritirare quando vuoi.</p>
       <p><strong>Chi vede i dati.</strong> Solo noi e i collaboratori che lavorano al tuo intervento, più i fornitori che ci servono: messaggistica (WhatsApp, Meta), posta, calendario e fogli di lavoro (Google), fatturazione elettronica (Fatture in Cloud, TeamSystem), il commercialista, la banca e servizi di intelligenza artificiale che ci aiutano a preparare render e testi (OpenAI, Anthropic). Alcuni hanno sede negli Stati Uniti: il trasferimento avviene con le garanzie del GDPR (Data Privacy Framework o clausole contrattuali standard). Non vendiamo i dati e non li usiamo per pubblicità.</p>
-      <p><strong>Per quanto tempo.</strong> Richieste senza seguito: 24 mesi dall'ultimo messaggio. Clienti: per la durata del rapporto; preventivi, fatture e documenti contabili 10 anni (art. 2220 c.c.). Foto pubblicate: finché non ritiri il consenso.</p>
-      <p><strong>I tuoi diritti.</strong> Puoi chiedere di vedere, correggere o cancellare i tuoi dati, limitarne l'uso, riceverli in formato leggibile e opporti al trattamento basato sul legittimo interesse; puoi ritirare il consenso alle foto. Scrivi a <a href="mailto:%(email)s">%(email)s</a>: rispondiamo entro 30 giorni. Puoi anche fare reclamo al Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it/" target="_blank" rel="noopener">www.garanteprivacy.it</a>). Non prendiamo decisioni automatizzate che ti riguardano.</p>
-      <p class="pagina__data">Ultimo aggiornamento: 15 ottobre 2026</p>
+      <p><strong>Per quanto tempo.</strong> Richieste senza seguito: 24 mesi dall'ultimo messaggio. Clienti: per la durata del rapporto; preventivi, fatture e documenti contabili 10 anni (art. 2220 c.c.). Foto pubblicate: finché non ci chiedi di toglierle o, dove l'hai dato, finché non ritiri il consenso.</p>
+      <p><strong>I tuoi diritti.</strong> Puoi chiedere di vedere, correggere o cancellare i tuoi dati, limitarne l'uso, riceverli in formato leggibile e opporti al trattamento basato sul legittimo interesse, foto dei lavori comprese; puoi ritirare il consenso alle foto dove l'hai dato. Scrivi a <a href="mailto:%(email)s">%(email)s</a>: rispondiamo entro 30 giorni. Puoi anche fare reclamo al Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it/" target="_blank" rel="noopener">www.garanteprivacy.it</a>). Non prendiamo decisioni automatizzate che ti riguardano.</p>
+      <p class="pagina__data">Ultimo aggiornamento: 21 ottobre 2026</p>
     </div>
   </div>
 </main>
