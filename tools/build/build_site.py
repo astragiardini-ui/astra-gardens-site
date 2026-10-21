@@ -88,7 +88,7 @@ DENOMINAZIONE = "Astra Gardens di Guizzardi Francesco"
 # Avviso sotto ogni immagine di progetto fatta con l'IA (Codice del Consumo art. 21, AI Act art. 50)
 AVVISO_RENDER = ("Il render è un'immagine indicativa: forme, colori e dimensioni delle piante reali possono differire, "
                  "soprattutto nei primi mesi.")
-VERSIONE = "20261019a"
+VERSIONE = "20261021a"
 VERIFICA_GOOGLE = "googledb139c8fc3e627f5.html"
 # Quando la pagina usa i video orizzontali (computer, tablet, telefono girato): stessa regola in CSS e JS.
 MQ_PC = "(min-width: 900px), (orientation: landscape)"
@@ -362,7 +362,7 @@ def jsonld():
         "name": "Astra Gardens",
         "legalName": DENOMINAZIONE,
         "description": "Giardinieri a Flero (BS), nati nel 2023 da un gruppo di diplomati e laureati in agraria e guidati "
-                       "da un perito agrario iscritto all'albo: progettiamo, realizziamo e curiamo giardini chiavi in mano "
+                       "da un perito agrario laureato iscritto all'albo: progettiamo, realizziamo e curiamo giardini chiavi in mano "
                        "in tutta la provincia di Brescia, dal sopralluogo con progetto, render e studio botanico alla "
                        "realizzazione, con la nostra squadra e artigiani di fiducia: movimento terra, bordure in corten, "
                        "opere in ferro e lavori edili, prati in zolla ed erba sintetica, irrigazione automatica, "
@@ -480,7 +480,10 @@ def piede(home=True):
     p = "" if home else "./"
     servizi = [("Manutenzione", "manutenzione"), ("Realizzazioni chiavi in mano", "realizzazione"),
                ("Potature e abbattimenti", "potature"), ("Prati e irrigazione", "prati"), ("Antizanzare", "antizanzare")]
-    lista_servizi = "".join('<li><a href="%s#servizio-%s">%s</a></li>' % (p, a, e(t)) for t, a in servizi)
+    pagina_di = {"potature": "tree-climbing-abbattimento-alberi-brescia.html"}
+    pagina_di = {a: f for a, f in pagina_di.items() if f[:-5] in [q["slug"] for q in PAGINE_SERVIZIO]}
+    lista_servizi = "".join('<li><a href="%s">%s</a></li>' % (("./" if p else "") + pagina_di[a] if a in pagina_di else "%s#servizio-%s" % (p, a), e(t))
+                            for t, a in servizi)
     return """<footer class="piede" id="contatti">
   <div class="contenitore">
     <div class="piede__pulsanti">
@@ -579,7 +582,7 @@ def intro():
       <div class="intro__testo">
         <p class="occhiello rivela">Giardinieri a Flero · in tutta la provincia di Brescia</p>
         <h1 id="titolo-intro" class="rivela" style="--ritardo: .1s">Il tuo giardino sempre bello.<br> <em>Ci&nbsp;pensiamo noi.</em></h1>
-        <p class="intro__lead rivela" style="--ritardo: .2s">Una squadra guidata da un perito agrario iscritto all'albo: dal primo sopralluogo alla cura di ogni stagione, il tuo verde è in buone mani.</p>
+        <p class="intro__lead rivela" style="--ritardo: .2s">Una squadra guidata da un perito agrario laureato iscritto all'albo: dal primo sopralluogo alla cura di ogni stagione, il tuo verde è in buone mani.</p>
         <div class="intro__azioni rivela" style="--ritardo: .3s">
           <a class="btn btn--pieno btn--grande btn--wa" href="%(wa)s" target="_blank" rel="noopener">%(icwa)s<span>Scrivici su WhatsApp</span></a>
           <a class="btn btn--vuoto btn--grande" href="tel:%(tel)s">Chiamaci · %(tel_breve)s</a>
@@ -684,7 +687,7 @@ def chi_siamo():
       <div class="chi__paragrafi">
         <p>Astra Gardens nasce a Flero nel 2023 da un gruppo di diplomati e laureati in agraria. Ci unisce la passione per il verde e un'idea semplice: un giardino deve essere bello, sano e facile da vivere.</p>
         <p>Ogni progetto parte dall'ascolto: studiamo lo spazio, la luce e il terreno, e prima di iniziare ti mostriamo il risultato con un render. Poi lo realizziamo e lo curiamo nel tempo, stagione dopo stagione.</p>
-        <p>Ti segue un perito agrario iscritto all'albo (n. 714 del Collegio dei Periti Agrari e dei Periti Agrari Laureati di Brescia, Mantova, Cremona e Sondrio). Lavoriamo con una polizza di responsabilità civile verso terzi con massimale di 2 milioni di euro, che comprende potature e abbattimenti: te ne mandiamo la copia quando vuoi.</p>
+        <p>Ti segue un perito agrario laureato iscritto all'albo (n. 714 del Collegio dei Periti Agrari e dei Periti Agrari Laureati di Brescia, Mantova, Cremona e Sondrio). Lavoriamo con una polizza di responsabilità civile verso terzi con massimale di 2 milioni di euro, che comprende potature e abbattimenti: te ne mandiamo la copia quando vuoi.</p>
       </div>
       <a class="link-freccia" href="#servizi">Scopri cosa facciamo%(icfreccia)s</a>
     </div>
@@ -977,6 +980,149 @@ def privacy():
                  "il sito usa zero cookie e zero strumenti di analisi.", "privacy.html") + corpo
 
 
+def pagina_servizio(p):
+    """Pagina di un servizio (21/10/2026, struttura da 8 pagine approvata da Francesco). Un file .html nella radice,
+    cosi' i percorsi relativi di immagini, stili e script restano quelli della home. Testi SOLO con fatti veri."""
+    slug = p["slug"]
+    corpo_sezioni = []
+    for s in p["sezioni"]:
+        blocco = '    <h2>%s</h2>\n' % e(s["titolo"])
+        for par in s.get("paragrafi", []):
+            blocco += '    <p>%s</p>\n' % par
+        if s.get("elenco"):
+            blocco += '    <ul class="pagina__elenco" role="list">%s</ul>\n' % "".join("<li>%s</li>" % x for x in s["elenco"])
+        if s.get("foto"):
+            nome, alt, dida = s["foto"]
+            blocco += ('    <figure class="pagina__foto">%s<figcaption>%s</figcaption></figure>\n'
+                       % (picture(nome, alt, "(min-width: 900px) 520px, calc(100vw - 40px)"), e(dida)))
+        corpo_sezioni.append(blocco)
+    corpo = """<body class="pagina-testo">
+%(sprite)s
+%(testata)s
+<main id="contenuto" class="pagina pagina--servizio">
+  <div class="contenitore pagina__corpo">
+    <a class="link-freccia link-freccia--indietro" href="./">%(icsx)s<span>Torna alla pagina principale</span></a>
+    <p class="pillola">%(pillola)s</p>
+    <h1>%(h1)s</h1>
+    <p class="pagina__lead">%(lead)s</p>
+    <a class="btn btn--pieno btn--grande btn--wa" href="%(wa)s" target="_blank" rel="noopener">%(icwa)s<span>Scrivici su WhatsApp</span></a>
+    <div class="pagina__testo">
+%(sezioni)s
+    </div>
+    <a class="btn btn--pieno btn--grande btn--wa" href="%(wa)s" target="_blank" rel="noopener">%(icwa)s<span>Scrivici su WhatsApp</span></a>
+    <p class="pagina__data">Pagina aggiornata il %(data)s</p>
+  </div>
+</main>
+%(piede)s
+<script type="application/ld+json">
+%(jsonld)s
+</script>
+<script src="assets/js/main.js?v=%(v)s" defer></script>
+</body>
+</html>
+""" % {"sprite": SPRITE, "testata": testata(False), "piede": piede(False), "icsx": icona("i-sx"), "icwa": icona("i-wa"),
+       "pillola": e(p["pillola"]), "h1": p["h1"], "lead": p["lead"], "wa": wa(p["wa"]),
+       "sezioni": "\n".join(corpo_sezioni), "data": p["data"], "v": VERSIONE, "jsonld": jsonld_servizio(p)}
+    return testa(p["titolo_seo"], p["descrizione_seo"], slug + ".html") + corpo
+
+
+def jsonld_servizio(p):
+    url = BASE + p["slug"] + ".html"
+    dati = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {"@type": "Service", "@id": url + "#servizio", "name": p["servizio"], "serviceType": p["servizio"],
+             "description": p["descrizione_seo"], "url": url, "provider": {"@id": BASE + "#azienda"},
+             "areaServed": {"@type": "AdministrativeArea", "name": "Provincia di Brescia"}},
+            {"@type": "BreadcrumbList", "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Astra Gardens", "item": BASE},
+                {"@type": "ListItem", "position": 2, "name": p["servizio"], "item": url}]},
+        ],
+    }
+    return json.dumps(dati, ensure_ascii=False, indent=1)
+
+
+PAGINE_SERVIZIO = [
+    {
+        "slug": "tree-climbing-abbattimento-alberi-brescia",
+        "titolo_seo": "Tree climbing e abbattimento alberi a Brescia · Astra Gardens",
+        "descrizione_seo": "Potature in quota e abbattimenti controllati a Brescia e provincia: saliamo sulla pianta con funi e "
+                           "imbracatura, con un perito agrario laureato iscritto all'albo. Scrivici su WhatsApp.",
+        "servizio": "Tree climbing e abbattimento alberi",
+        "pillola": "Potature e abbattimenti",
+        "h1": "Tree climbing e abbattimento alberi <em>a Brescia e provincia.</em>",
+        "lead": "Potiamo e abbattiamo alberi alti salendo sulla pianta con funi e imbracatura, oppure dall'alto con la "
+                "piattaforma aerea. Rami e tronco scendono a sezioni, il giardino resta in ordine e ti segue un perito "
+                "agrario laureato iscritto all'albo.",
+        "wa": "vorrei un sopralluogo per potare o abbattere un albero del mio giardino.",
+        "data": "21 ottobre 2026",
+        "sezioni": [
+            {"titolo": "Come lavoriamo in quota",
+             "paragrafi": [
+                 "Il tree climbing permette di raggiungere la chioma anche negli spazi stretti, tra case e recinzioni: "
+                 "saliamo con funi e imbracatura, ci muoviamo tra i rami e lasciamo in ordine prato, aiuole e piante vicine. "
+                 "Dove la pianta o lo spazio lo chiedono, lavoriamo dall'alto con la piattaforma aerea.",
+                 "Per gli abbattimenti smontiamo l'albero a sezioni: i rami vengono calati a terra uno alla volta e il "
+                 "tronco viene ridotto dall'alto, pezzo dopo pezzo, in sicurezza. A fine lavoro raccogliamo, carichiamo e "
+                 "portiamo via il materiale di risulta e lasciamo il cantiere pulito."],
+             "foto": ("srv-abbattimenti", "Abbattimento controllato: il tronco viene ridotto a sezioni dall'alto",
+                      "Abbattimento controllato: il tronco viene ridotto a sezioni, dall'alto.")},
+            {"titolo": "Potature in quota",
+             "paragrafi": [
+                 "Per le potature degli alberi d'alto fusto decidiamo il taglio pianta per pianta, dopo un sopralluogo: "
+                 "tagli puliti che rispettano la forma naturale e la salute dell'albero. Lavoriamo su cedri, magnolie e "
+                 "altre piante d'alto fusto."],
+             "foto": ("lav-cedro", "Tree climbing su un grande cedro", "Tree climbing su un grande cedro.")},
+            {"titolo": "Prima di abbattere: le verifiche utili",
+             "paragrafi": [
+                 "Ogni Comune ha le sue regole sugli alberi dei giardini privati. A Brescia vale il Regolamento del Verde, "
+                 "efficace dal 26 luglio 2026; negli altri Comuni la procedura passa dallo sportello o dall'ufficio "
+                 "tecnico. Prima di partire controlliamo la procedura del tuo Comune e ti diciamo che cosa serve.",
+                 "Le verifiche che facciamo con te:"],
+             "elenco": ["il regolamento comunale sul verde e sugli alberi;",
+                        "gli eventuali vincoli paesaggistici o di parco dell'area;",
+                        "la presenza di alberi monumentali, tutelati dalla legge 10 del 2013."]},
+            {"titolo": "La relazione del perito agrario",
+             "paragrafi": [
+                 "Quando il Comune chiede una relazione tecnico-agronomica per autorizzare un abbattimento, la redige un "
+                 "professionista abilitato. Il Regolamento del Verde di Brescia indica tra i professionisti ammessi il "
+                 "perito agrario iscritto al Collegio.",
+                 "Noi ne abbiamo uno in squadra: perito agrario laureato, iscritto al Collegio dei Periti Agrari e dei "
+                 "Periti Agrari Laureati di Brescia, Mantova, Cremona e Sondrio (n. 714). Relazione e lavoro hanno così "
+                 "un unico referente."]},
+            {"titolo": "Nidi e stagioni",
+             "paragrafi": [
+                 "Le potature che si possono programmare le fissiamo nei mesi di riposo della pianta, in autunno e in "
+                 "inverno. Prima di tagliare controlliamo la presenza di nidi: se ne troviamo uno attivo ci fermiamo e "
+                 "ne parliamo con te."]},
+            {"titolo": "Sicurezza e assicurazione",
+             "paragrafi": [
+                 "Lavoriamo in quota con funi, imbracatura e casco, secondo le regole di sicurezza del D.Lgs. 81/2008. "
+                 "La polizza di responsabilità civile verso terzi ha un massimale di 2 milioni di euro e comprende "
+                 "potature e abbattimenti: te ne mandiamo la copia quando vuoi."]},
+            {"titolo": "Come si procede",
+             "elenco": ["Sopralluogo: guardiamo la pianta, l'accesso e quello che c'è intorno.",
+                        "Preventivo scritto, chiaro in ogni voce.",
+                        "Se serve, la pratica con il Comune e la relazione tecnica.",
+                        "La nostra prima disponibilità, da confermare insieme.",
+                        "L'intervento, con raccolta e pulizia finale."],
+             "foto": ("srv-alberi", "Giardiniere in tree climbing tra i rami di una grande magnolia",
+                      "Potatura in quota tra i rami di una magnolia.")},
+            {"titolo": "Domande frequenti",
+             "paragrafi": [
+                 "<strong>Serve un'autorizzazione per abbattere un albero nel mio giardino?</strong><br>Dipende dal Comune, "
+                 "dalla zona e dalla pianta. In alcuni Comuni basta una comunicazione, in altri serve l'autorizzazione, e a "
+                 "volte si chiede di mettere a dimora un albero nuovo al posto di quello abbattuto. Lo vediamo insieme al "
+                 "sopralluogo, controllando la procedura del tuo Comune.",
+                 "<strong>Potete lavorare tra case e recinzioni?</strong><br>Sì. Con il tree climbing saliamo sulla pianta "
+                 "e lavoriamo dall'alto; dove serve usiamo la piattaforma aerea.",
+                 "<strong>Che cosa succede ai rami e al tronco?</strong><br>Raccogliamo, carichiamo e portiamo via il "
+                 "materiale di risulta: fa parte del lavoro."]},
+        ],
+    },
+]
+
+
 def pagina_404():
     # Pagina autonoma: deve funzionare a qualsiasi profondità di percorso, quindi stile in linea e logo incorporato.
     import base64
@@ -1035,9 +1181,11 @@ def sitemap():
     return """<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>%(b)s</loc><lastmod>%(oggi)s</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
-  <url><loc>%(b)sprivacy.html</loc><lastmod>%(oggi)s</lastmod><changefreq>yearly</changefreq><priority>0.2</priority></url>
+%(pagine)s  <url><loc>%(b)sprivacy.html</loc><lastmod>%(oggi)s</lastmod><changefreq>yearly</changefreq><priority>0.2</priority></url>
 </urlset>
-""" % {"b": BASE, "oggi": oggi}
+""" % {"b": BASE, "oggi": oggi, "pagine": "".join(
+        '  <url><loc>%s%s.html</loc><lastmod>%s</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
+        % (BASE, q["slug"], oggi) for q in PAGINE_SERVIZIO)}
 
 
 def robots():
@@ -1057,6 +1205,7 @@ if __name__ == "__main__":
     for nome, contenuto in (("index.html", index()), ("privacy.html", privacy()), ("404.html", pagina_404()),
                             ("sitemap.xml", sitemap()), ("robots.txt", robots()), ("site.webmanifest", manifest()),
                             ("CNAME", "astragardens.it"),
+                            *[(q["slug"] + ".html", pagina_servizio(q)) for q in PAGINE_SERVIZIO],
                             # Verifica Google Search Console (astragiardini@gmail.com): MAI togliere
                             (VERIFICA_GOOGLE, "google-site-verification: " + VERIFICA_GOOGLE)):
         with open(os.path.join(SITO, nome), "w", encoding="utf-8") as f:

@@ -679,6 +679,20 @@ body.menu-aperto { position: fixed; left: 0; right: 0; width: 100%; overflow: hi
 .pagina__data { margin-top: 36px; font-size: 13px; color: var(--grigio); }
 .link-freccia--indietro .icona { width: 18px; height: 18px; }
 
+/* ---------- pagina di un servizio (21/10/2026): stessa colonna di testo della privacy, con foto intere e inviti a scrivere ---------- */
+.pagina--servizio .pagina__lead { max-width: 60ch; margin: 0 0 28px; font-size: 19px; line-height: 1.6; }
+.pagina--servizio .btn--wa { align-self: flex-start; }
+.pagina--servizio .pagina__testo { margin-block: 12px 36px; }
+.pagina--servizio .pagina__testo h2 { margin: 48px 0 16px; font-size: clamp(34px, 2vw + 24px, 52px); line-height: 1.02; }
+.pagina--servizio .pagina__testo p { max-width: 64ch; }
+.pagina__elenco { margin: 0 0 22px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; max-width: 64ch; }
+.pagina__elenco li { position: relative; padding-left: 22px; font-size: 16px; line-height: 1.65; }
+.pagina__elenco li::before { content: ""; position: absolute; left: 0; top: .72em; width: 10px; height: 2px; background: var(--verde); }
+.pagina__foto { margin: 8px 0 30px; width: 100%; max-width: 520px; }
+.pagina__foto img { width: 100%; height: auto; border-radius: 4px; }
+.pagina__foto figcaption { margin-top: 10px; font-size: 13px; line-height: 1.5; color: var(--grigio); }
+@media (min-width: 900px) { .pagina--servizio .pagina__lead { font-size: 21px; } .pagina__foto { max-width: 560px; } }
+
 /* ---------- comparsa delle sezioni allo scorrere (solo con lo script attivo) ---------- */
 .anima .rivela {
   opacity: 0; transform: translateY(32px);
