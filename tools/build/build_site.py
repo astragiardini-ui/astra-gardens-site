@@ -291,7 +291,7 @@ SERVIZI = [
      "Luci per vialetti, alberi e aiuole: il giardino si vive anche la sera.",
      None, None, None),
     ("antizanzare", "Impianto antizanzare",
-     "Impianti a nebulizzazione per vivere il giardino la sera: progettati e installati da noi, con la manutenzione nel tempo.",
+     "Impianti a nebulizzazione per vivere il giardino la sera: installiamo noi la rete di tubicini lungo siepe e recinzione, fissata con fascette e tasselli.",
      "srv-antizanzare", "Impianto antizanzare: la nebulizzazione lungo la siepe", None),
     ("arredo", "Arredo e complementi",
      "Fioriere, vasi, bordure e complementi scelti insieme a te per completare il progetto.",
@@ -579,7 +579,7 @@ def intro():
       <div class="intro__testo">
         <p class="occhiello rivela">Giardinieri a Flero · in tutta la provincia di Brescia</p>
         <h1 id="titolo-intro" class="rivela" style="--ritardo: .1s">Il tuo giardino sempre bello.<br> <em>Ci&nbsp;pensiamo noi.</em></h1>
-        <p class="intro__lead rivela" style="--ritardo: .2s">Una squadra giovane, guidata da un perito agrario iscritto all'albo: dal primo sopralluogo alla cura di ogni stagione, il tuo verde è in buone mani.</p>
+        <p class="intro__lead rivela" style="--ritardo: .2s">Una squadra guidata da un perito agrario iscritto all'albo: dal primo sopralluogo alla cura di ogni stagione, il tuo verde è in buone mani.</p>
         <div class="intro__azioni rivela" style="--ritardo: .3s">
           <a class="btn btn--pieno btn--grande btn--wa" href="%(wa)s" target="_blank" rel="noopener">%(icwa)s<span>Scrivici su WhatsApp</span></a>
           <a class="btn btn--vuoto btn--grande" href="tel:%(tel)s">Chiamaci · %(tel_breve)s</a>
