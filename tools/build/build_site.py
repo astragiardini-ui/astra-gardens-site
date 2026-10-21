@@ -1046,8 +1046,8 @@ PAGINE_SERVIZIO = [
     {
         "slug": "tree-climbing-abbattimento-alberi-brescia",
         "titolo_seo": "Tree climbing e abbattimento alberi a Brescia · Astra Gardens",
-        "descrizione_seo": "Potature in quota e abbattimenti controllati a Brescia e provincia: saliamo sulla pianta con funi e "
-                           "imbracatura, con un perito agrario laureato iscritto all'albo. Scrivici su WhatsApp.",
+        "descrizione_seo": "Potature in quota e abbattimenti controllati a Brescia e provincia, con un perito agrario laureato "
+                           "iscritto all'albo. Scrivici su WhatsApp.",
         "servizio": "Tree climbing e abbattimento alberi",
         "pillola": "Potature e abbattimenti",
         "h1": "Tree climbing e abbattimento alberi <em>a Brescia e provincia.</em>",
