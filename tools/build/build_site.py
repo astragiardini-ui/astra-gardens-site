@@ -1090,11 +1090,6 @@ PAGINE_SERVIZIO = [
                  "Noi ne abbiamo uno in squadra: perito agrario laureato, iscritto al Collegio dei Periti Agrari e dei "
                  "Periti Agrari Laureati di Brescia, Mantova, Cremona e Sondrio (n. 714). Relazione e lavoro hanno così "
                  "un unico referente."]},
-            {"titolo": "Nidi e stagioni",
-             "paragrafi": [
-                 "Le potature che si possono programmare le fissiamo nei mesi di riposo della pianta, in autunno e in "
-                 "inverno. Prima di tagliare controlliamo la presenza di nidi: se ne troviamo uno attivo ci fermiamo e "
-                 "ne parliamo con te."]},
             {"titolo": "Sicurezza e assicurazione",
              "paragrafi": [
                  "Lavoriamo in quota con funi, imbracatura e casco, secondo le regole di sicurezza del D.Lgs. 81/2008. "
